@@ -1,0 +1,132 @@
+/* Estilos específicos para la página del carrito */
+.page-cart {
+  background-color: var(--secondary-color); /* Fondo del contenedor */
+}
+
+/* Contenedor de productos */
+.cart-item {
+  border: 1px solid black; /* Bordes negros */
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: var(--secondary-color); /* Fondo del producto */
+}
+
+/* Resumen del carrito */
+.cart-summary {
+  border: 1px solid black; /* Bordes negros */
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: var(--secondary-color); /* Fondo del resumen */
+}
+
+/* Botones */
+.cart-item button,
+.cart-summary button {
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+/* Botón "Pagar Ahora" */
+.cart-summary .btn-success {
+  background-color: var(--primary-color);
+  border: none;
+}
+
+.cart-summary .btn-success:hover {
+  background-color: var(--primary-color);
+}
+
+/* Subtítulos */
+.cart-summary h5 {
+  color: black; /* Texto negro */
+  font-size: 1rem;
+}
+
+/* Título principal */
+.page-cart h1 {
+  color: black; /* Texto negro */
+  font-size: 4rem; /* Ajusta tamaño del título */
+}
+
+/* Texto total */
+.text-success {
+  color: var(--primary-color) !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .cart-item {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cart-item img {
+    margin-bottom: 10px;
+  }
+
+  .cart-summary {
+    text-align: center;
+  }
+}
+/* Estilo para el contenedor del carrito */
+.page-cart .cart-summary {
+  height: 100%; /* Asegura que tome toda la altura disponible */
+  display: flex;
+  flex-direction: column; /* Los elementos dentro se organizan verticalmente */
+  justify-content: flex-start; /* Alinea el contenido al inicio */
+  border: 1px solid black; /* Bordes negros */
+  border-radius: 10px;
+  background-color: var(--secondary-color);
+}
+.page-cart .cart-item {
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: var(--secondary-color);
+}
+
+/* Responsivo: asegura alineación en dispositivos más pequeños */
+@media (max-width: 768px) {
+  .page-cart .row {
+    flex-direction: column;
+  }
+
+  .page-cart .cart-summary {
+    margin-top: 20px;
+  }
+}
+
+/* Ocultamos la flecha hacia arriba por defecto */
+.icono-flecha.arriba {
+  display: none;
+}
+
+/* Cuando el colapso está expandido (aria-expanded="true"), mostramos la flecha hacia arriba y ocultamos la de abajo */
+[data-bs-toggle="collapse"][aria-expanded="true"] .icono-flecha.arriba {
+  display: inline;
+}
+
+[data-bs-toggle="collapse"][aria-expanded="true"] .icono-flecha.abajo {
+  display: none;
+}
+
+/* Cuando el colapso está colapsado (aria-expanded="false"), mostramos la flecha hacia abajo y ocultamos la de arriba */
+[data-bs-toggle="collapse"][aria-expanded="false"] .icono-flecha.arriba {
+  display: none;
+}
+
+[data-bs-toggle="collapse"][aria-expanded="false"] .icono-flecha.abajo {
+  display: inline;
+}
+
+/* Opcional: Ajustar el tamaño de las flechas */
+.icono-flecha {
+  width: 16px; /* Ajusta el tamaño según tus necesidades */
+  height: 16px;
+}
+
+.page-cart .btn-hover {
+  margin-bottom: 0;
+}
+
+form .btn-hover {
+  margin: 0;
+  width: 100%;
+}

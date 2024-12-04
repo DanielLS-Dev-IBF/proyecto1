@@ -15,7 +15,7 @@
         <div id="flex-item-right">
             <a name="buscador">Buscar...</a>
             <a name="boton_cuenta">Cuenta</a>
-            <a name="boton_carrito">Carrito</a>
+            <a href="?controller=carrito&action=index" name="boton_carrito">Carrito</a>
         </div>
         <!-- Icono de menú para móviles -->
         <div class="menu-icon" onclick="toggleMenu()">

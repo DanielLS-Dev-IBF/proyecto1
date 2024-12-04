@@ -88,7 +88,6 @@ button {
   font-weight: 500; /* Texto en negrita media */
   margin: 48px 0px 32px;
   padding: 20px 40px; /* Espaciado interno */
-  min-width: 320px; /* Ancho mínimo */
   box-shadow: none; /* Sin sombra inicialmente */
   position: relative; /* Necesario para la sombra */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Transiciones suaves */
@@ -123,12 +122,23 @@ button {
   height: 85px;
 }
 
-/* Contenedor de la barra superior */
+/* Barra superior general */
 #barra_superior {
   display: flex;
-  justify-content: space-between; /* Espacio entre los elementos internos */
-  align-items: center; /* Centrar verticalmente */
-  width: 100%; /* Ocupa todo el ancho de la página */
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--secondary-color);
+  z-index: 1000; /* Asegura que esté en el frente */
+}
+
+#barra_superior #logo {
+  display: flex;
+  align-items: center;
+}
+
+#barra_superior #logo_topnav {
+  height: 75px; /* Ajusta el tamaño del logo */
+  width: auto;
 }
 
 #barra_superior a {
@@ -165,16 +175,42 @@ a#logo:hover {
   cursor: pointer;
 }
 
+/* Menú desplegable */
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 60px;
-  right: 20px;
-  background-color: var(--secondary-color) !important;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  width: 200px;
+  top: 80px; /* Aparece debajo de la barra superior */
+  left: 0;
+  width: 100%;
+  background-color: var(--secondary-color);
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para distinguirlo */
+  padding: 10px 0;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: black;
+  text-align: left;
+}
+
+.dropdown-menu a:hover {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  /* Muestra el menú hamburguesa */
+  .menu-icon {
+    display: block;
+  }
+
+  #barra_superior {
+    justify-content: space-between; /* Logo y hamburguesa */
+  }
 }
 
 .dropdown-menu a,
@@ -527,6 +563,10 @@ a#logo:hover {
   font-size: 16px;
 }
 
+.card-price {
+  color: var(--primary-color);
+}
+
 .modal {
   position: fixed;
   z-index: 1000;
@@ -560,15 +600,21 @@ a#logo:hover {
   cursor: pointer;
 }
 
-/* Contenedor principal de la tarjeta */
+/* Tarjeta del producto */
 .producto-card {
-  width: 100%; /* Ocupa todo el ancho disponible */
-  margin: auto; /* Centrar la tarjeta */
-  border-radius: 10px;
-  overflow: hidden; /* Asegura que el contenido no se salga de los bordes redondeados */
-  min-height: 400px; /* Altura mínima para la tarjeta */
-  display: flex; /* Habilita el diseño en línea */
-  flex-direction: row; /* Imagen y contenido en una fila */
+  display: flex;
+  flex-direction: row; /* Imagen y contenido en fila */
+  border-radius: 8px;
+  overflow: hidden;
+  gap: 20px; /* Espacio entre imagen y contenido */
+}
+
+/* Imagen */
+.producto-imagen img {
+  object-fit: cover;
+  width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
 }
 
 /* Imagen del producto dentro de la tarjeta */
@@ -593,6 +639,15 @@ a#logo:hover {
 }
 
 /* Detalles del producto */
+.producto-detalles {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  text-align: left;
+}
+
+/* Detalles del producto */
 .producto-card .producto-detalles {
   padding: 1.5rem; /* Espaciado interno para los detalles */
   display: flex;
@@ -609,4 +664,218 @@ a#logo:hover {
 /* Botones en el footer */
 .producto-card .producto-footer .btn {
   min-width: 120px; /* Asegura un tamaño uniforme para los botones */
+}
+
+/* Desactiva el hover específicamente para producto-card */
+.producto-card {
+  transition: none; /* Elimina las transiciones */
+}
+
+.producto-card:hover {
+  transform: none; /* Sin transformación */
+  box-shadow: none; /* Sin sombra */
+  cursor: default; /* Sin cursor de interacción */
+}
+/* Contenedor principal */
+.product-detail-container {
+  padding: 20px; /* Espacio para los bordes */
+}
+
+/* Ajustes generales */
+.product-detail-container .producto-card {
+  display: flex;
+  flex-direction: row; /* Alineación horizontal predeterminada */
+  gap: 20px;
+  border-radius: 10px;
+  align-items: stretch; /* Asegura que los elementos internos ocupen la misma altura */
+}
+
+.product-detail-container .producto-imagen {
+  flex-basis: 40%; /* La imagen ocupa el 40% */
+  max-width: 40%;
+  display: flex;
+  justify-content: center; /* Centra la imagen horizontalmente */
+  align-items: center; /* Centra la imagen verticalmente */
+}
+
+.product-detail-container .producto-detalles {
+  flex-grow: 1; /* Detalles ocupan todo el espacio restante */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Alinea los detalles arriba */
+  gap: 10px;
+}
+
+/* Ajuste del botón */
+.product-detail-container .agregar-carrito-form .btn-hover {
+  width: 100%; /* Botón ocupa todo el ancho del form */
+  margin-top: auto; /* Empuja el botón hacia abajo */
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .producto-card {
+    flex-direction: column; /* Cambia a diseño vertical */
+    align-items: center;
+  }
+
+  .producto-imagen {
+    flex-basis: auto; /* Imagen ocupa el espacio necesario */
+    max-width: 100%; /* Imagen ocupa todo el ancho */
+  }
+
+  .producto-detalles {
+    width: 100%; /* Detalles ocupan todo el ancho */
+    text-align: center; /* Centra el texto */
+  }
+
+  .product-title,
+  .product-description,
+  .product-price {
+    text-align: center; /* Centra los textos */
+  }
+
+  .agregar-carrito-form .btn-hover {
+    width: 100%; /* Botón ocupa todo el ancho */
+    margin-top: 20px;
+  }
+}
+
+/* Título */
+.product-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Título del producto */
+.product-detail-container .product-title {
+  font-size: 32px; /* Tamaño más grande */
+  font-weight: 700; /* Negrita */
+  margin: 0 0 10px; /* Reduce margen superior */
+  text-align: left;
+}
+
+/* Descripción */
+.product-description {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+/* Botón */
+.agregar-carrito-form {
+  margin-top: auto; /* Empuja el botón hacia el fondo */
+}
+
+/* Descripción del producto */
+.product-detail-container .product-description {
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0 0 15px; /* Espaciado inferior */
+  text-align: left;
+}
+
+/* Precio del producto */
+.product-detail-container .product-price {
+  font-family: var(--secondary-font);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-align: left;
+}
+
+/* Botón de agregar al carrito */
+.product-detail-container form {
+  margin-top: 20px;
+}
+
+/* Botón "Volver a la lista" */
+.product-detail-container .btn-secondary {
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .producto-card {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .producto-detalles {
+    text-align: center;
+  }
+
+  .btn-hover {
+    font-size: 16px;
+  }
+}
+
+/* Estilos específicos para la página show */
+.page-show .producto-detalles {
+  padding: 1.5rem; /* Margen interno consistente */
+  position: relative;
+}
+
+.page-show .agregar-carrito-form {
+  position: absolute;
+  bottom: 1.5rem; /* Ajusta el margen inferior */
+  left: 1.5rem; /* Alinea con el margen izquierdo del contenedor */
+  right: 1.5rem; /* Alinea con el margen derecho del contenedor */
+  margin: 0; /* Elimina margen adicional del form */
+}
+
+.page-show .btn-hover {
+  display: block;
+  width: 100%; /* Ocupa todo el ancho del form */
+  padding: 15px 0; /* Ajusta la altura del botón */
+  font-size: 18px;
+  text-align: center;
+  margin: 0; /* Elimina márgenes adicionales del botón */
+}
+
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .page-show .agregar-carrito-form {
+    bottom: 1rem; /* Margen inferior más pequeño en móviles */
+    left: 1rem; /* Ajusta los márgenes laterales */
+    right: 1rem;
+  }
+
+  .page-show .btn-hover {
+    font-size: 16px; /* Tamaño de texto más pequeño */
+  }
+}
+/* Ajustes específicos para el botón en la página "show" */
+.page-show .slick-prev {
+  background: none; /* Elimina el fondo del botón */
+  border: none; /* Elimina el borde */
+  box-shadow: none; /* Elimina la sombra */
+  top: 35px; /* Ajusta la posición vertical */
+  left: 20px; /* Ajusta la posición horizontal */
+  z-index: 1000; /* Asegura que esté por encima de otros elementos */
+  width: 50px; /* Tamaño del botón */
+  height: 50px; /* Tamaño del botón */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+/* Hover para mejor experiencia */
+.page-show .slick-prev:hover img {
+  opacity: 0.8; /* Suaviza el efecto al pasar el ratón */
+}
+
+/* Responsivo para pantallas pequeñas */
+@media (max-width: 768px) {
+  .page-show .slick-prev {
+    top: 60px; /* Ajusta ligeramente para pantallas pequeñas */
+    left: 10px; /* Reduce la distancia del borde izquierdo */
+    width: 40px; /* Tamaño del botón reducido */
+    height: 40px;
+  }
+
+  .page-show .slick-prev img {
+    width: 20px; /* Reduce el tamaño de la flecha */
+  }
 }

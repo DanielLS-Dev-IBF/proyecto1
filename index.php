@@ -1,33 +1,40 @@
 <?php
-//Controlador frontal PHP
-//Tiene la función de redirigir las peticiones a diferentes controladores y acciones
+session_start();
 
-//Importación de archivos necesarios para el funcionamiento del codigo, incluye la lógica y las configuraciones pertinentes
-include_once("controllers/productoController.php");
+// Importación de archivos necesarios
+foreach (glob("controllers/*Controller.php") as $file) {
+    include_once $file;
+}
 include_once("config/parameters.php");
 
-//Verificación de parametro controller con valor predeterminado
+// Controlador y acción por defecto
+$default_controller = 'productoController';
+$default_action = 'index';
+
+// Obtener el controlador de la URL o usar el predeterminado
 if (!isset($_GET['controller'])){
-    header("Location:" . $url . "?controller=Producto");
+    $nombre_controller = $default_controller;
+}else{
+    $nombre_controller = $_GET['controller']."Controller";
+}
+
+// Verificar si el controlador existe
+if (class_exists($nombre_controller)){
+    $controller = new $nombre_controller();
+
+    // Obtener la acción o usar la predeterminada
+    if (isset($_GET["action"]) && (method_exists($controller, $_GET["action"]))) {
+        $action = $_GET["action"];
+    }else{
+        $action = $default_action;
+    }
+
+    // Ejecutar la acción
+    $controller->$action();
 
 }else{
-    //Se obtiene el nombre del controlador al concatenar
-    //Si la clase existe crea una instancia de ella
-    $nombre_controller = $_GET['controller']."Controller";
-    if (class_exists($nombre_controller)){
-        $controller = new $nombre_controller();
-        
-        //Verifición y ejecución de la acción
-        if (isset($_GET["action"]) && (method_exists($controller, $_GET["action"]))) {
-            $action = $_GET["action"];
-        }else{
-            $action = default_action;
-        }
-
-        $controller ->$action();
-
-    }else{
-        //Si no existe el controlador
-        echo "No existe el controller ". $nombre_controller;
-    }
+    // Si no existe el controlador, mostrar error o redirigir
+    echo "No existe el controller ". $nombre_controller;
+    // header('Location: index.php?controller=error&action=index');
 }
+?>

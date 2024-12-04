@@ -1,6 +1,6 @@
 <?php
 
-include_once("models/BowlDAO.php");
+include_once("models/ProductoDAO.php");
 include_once("models/Producto.php");
 
 class productoController{
@@ -11,8 +11,8 @@ class productoController{
     }
     public function carta(){
         
-        // Usar BowlDAO para obtener todos los productos
-        $productos = BowlDAO::getAll();
+        // Usar ProductoDAO para obtener todos los productos
+        $productos = ProductoDAO::getAll();
         $view = 'views/productos/carta.php';
         include_once 'views/main.php';
     }
@@ -21,38 +21,35 @@ class productoController{
         include_once 'views/productos/create.php';
     }
 
-    public function store(){
-        //include_once 'views/productos/store.php';
-       $nombre = $_POST['nombre'];
-       $talla = $_POST['talla'];
-       $precio = $_POST['precio'];
+    // public function store(){
+    //     //include_once 'views/productos/store.php';
+    //    $nombre = $_POST['nombre'];
+    //    $talla = $_POST['talla'];
+    //    $precio = $_POST['precio'];
 
-       $producto = new Bowl();
-       $producto->setNombre($nombre);
-       $producto->setTalla($talla);
-       $producto->setprecio($precio);
+    //    $producto = new Producto();
+    //    $producto->setNombre($nombre);
+    //    $producto->setTalla($talla);
+    //    $producto->setprecio($precio);
 
-       CamisetaDAO::store($producto);
-       header('Location:?controller=producto');
+    //    CamisetaDAO::store($producto);
+    //    header('Location:?controller=producto');
 
 
-    }
+    // }
 
-    public function destroy(){
-        CamisetaDAO::destroy($_GET['id']);
-        header('Location:?controller=producto');
-    }
     public function show() {
         // Verifica si se proporcionó un ID válido
         if (isset($_GET['id']) && is_numeric($_GET['id'])) {
             $id = (int) $_GET['id'];
     
-            // Usar BowlDAO para obtener el producto
-            $producto = BowlDAO::getProducto($id);
+            // Usar ProductoDAO para obtener el producto
+            $producto = ProductoDAO::getProducto($id);
     
             // Verifica si el producto existe
             if ($producto) {
                 // Cambiar la vista a la nueva ruta
+                // $view = 'views/productos/show.php';
                 $view = 'views/productos/show.php';
                 include_once 'views/main.php';
             } else {
