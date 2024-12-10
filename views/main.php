@@ -8,11 +8,18 @@
         <link rel="stylesheet" href="css/Greeny.css">
     </head>
     <body>
-        <?php include_once "TopNav.php"; ?>
+        <?php
+            // Asegurarse de que la sesión está iniciada
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+        
+            // include_once "TopNav.php";
             
-        <?php include_once $view; ?>
+            include_once $view;
 
-        <?php include_once "Footer.php"; ?>
+            // include_once "Footer.php"; 
+        ?>
         <!-- Scripts -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     

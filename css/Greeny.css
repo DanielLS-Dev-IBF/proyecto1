@@ -82,7 +82,7 @@ button {
   text-decoration: none; /* Sin subrayado */
   background-color: var(--primary-color) !important; /* Fondo verde */
   color: #ffffff; /* Texto blanco */
-  border: 1px solid black; /* Borde negro delgado */
+  border: 1px solid black !important; /* Borde negro delgado */
   border-radius: 5px; /* Bordes redondeados */
   font-size: 18px; /* Tamaño del texto */
   font-weight: 500; /* Texto en negrita media */
@@ -96,7 +96,7 @@ button {
 /* Hover del botón */
 .btn-hover:hover {
   transform: translateY(-3px); /* Elevar ligeramente */
-  box-shadow: 5.3776px 5.3776px 0px 0px black; /* Sombra negra */
+  box-shadow: 5.3776px 5.3776px 0px 0px black !important; /* Sombra negra */
 }
 
 /* Estado activo (clic) */
@@ -362,8 +362,8 @@ a#logo:hover {
 
 .footer-logo img {
   margin-right: 10px;
-  width: 175px;
-  height: 85px;
+  width: auto;
+  height: 60px;
 }
 
 .footer-logo .language-selector {

@@ -1,3 +1,4 @@
+<?php include_once "TopNav.php"; ?>
 <main>
     <!-- Sección principal con título y descripción -->
     <section class="container my-5 text-center" id="section_home1">
@@ -89,7 +90,7 @@
         </div>
     </section>
 </main>
-
+<?php include_once "Footer.php"; ?>
 <!-- Importación de jQuery y Slick usando CDN -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">

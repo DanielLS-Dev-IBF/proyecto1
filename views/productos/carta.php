@@ -1,3 +1,5 @@
+<?php include_once "views/TopNav.php"; ?>
+
 <h1 class="text-center my-5 display-4 display-md-3 display-sm-5">Lista de Productos</h1>
 <div class="page-product-list">
     <div class="container">
@@ -31,3 +33,4 @@
         </div>
     </div>
 </div>
+<?php include_once "views/Footer.php"; ?>

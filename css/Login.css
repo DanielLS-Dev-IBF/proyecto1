@@ -1,0 +1,244 @@
+/* Resetear fondo de todos los elementos */
+* {
+  background-color: #ffffff !important;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Estilos para el Título */
+h1.login-title {
+  font-family: var(--secondary-font);
+  font-size: 36px !important; /* Tamaño de fuente aumentado a 36px */
+  font-weight: 700 !important; /* Mayor peso de fuente */
+  color: #333 !important; /* Color del texto */
+}
+
+/* Estilos para el Subtítulo */
+p.login-subtitle {
+  font-size: 18px !important; /* Tamaño de fuente aumentado a 18px */
+  font-weight: 500 !important; /* Mayor peso de fuente */
+  color: #555 !important; /* Color del texto */
+}
+
+/* Estilos para el Logo */
+.logo-login {
+  height: 72px;
+  width: auto;
+}
+
+/* Estilos para enlaces dentro de divs */
+div a {
+  color: black;
+}
+
+/* Estilos para enlaces y spans dentro de divs */
+div a,
+div span {
+  font-size: 16px; /* Tamaño de fuente aumentado a 16px */
+}
+
+/* Eliminar borde superior del footer */
+footer {
+  border-top: none !important;
+
+  /* Padding base: 2rem top/bottom, 2.5rem left/right */
+  padding: 2rem 2.5rem !important;
+
+  /* Fondo y color del texto (opcional) */
+  background-color: #ffffff; /* Fondo blanco */
+  color: #6c757d; /* Texto gris (similar a Bootstrap's text-muted) */
+}
+
+/* Media Query para pantallas medianas (≥ 768px) */
+@media (min-width: 768px) {
+  footer {
+    padding-top: 3rem !important; /* 48px */
+    padding-bottom: 3rem !important; /* 48px */
+    padding-left: 3rem !important; /* 48px */
+    padding-right: 3rem !important; /* 48px */
+  }
+
+  /* Ajustes para el Contenedor Interno del Footer */
+  footer .d-flex {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem; /* Mayor espacio entre elementos */
+  }
+}
+
+/* Media Query para pantallas grandes (≥ 1200px) */
+@media (min-width: 1200px) {
+  footer {
+    padding-left: 4rem !important; /* 64px */
+    padding-right: 4rem !important; /* 64px */
+  }
+}
+
+/* Ajustes para los Enlaces en el Footer */
+footer a {
+  color: #6c757d; /* Texto gris */
+  font-size: 0.75rem; /* Tamaño de fuente similar a referencia */
+  text-decoration: none; /* Sin subrayado */
+}
+
+footer a:hover {
+  color: #343a40; /* Texto más oscuro al pasar el cursor */
+  text-decoration: underline; /* Subrayado al pasar el cursor */
+}
+
+/* Ajustes para el Texto en el Footer */
+footer span {
+  font-size: 0.75rem; /* Tamaño de fuente similar a referencia */
+  text-align: center;
+}
+
+/* Estilos personalizados para los inputs */
+.input-custom {
+  font-size: 1rem !important; /* Fuente aumentada a 16px */
+  padding: 0.75rem 1.25rem !important; /* Aumentar padding para mayor tamaño */
+  padding-right: 3rem !important; /* Más espacio para el botón de toggle */
+  height: auto;
+  text-align: left !important; /* Alinear texto y placeholder a la izquierda */
+}
+
+/* Color del placeholder grisáceo */
+.input-custom::placeholder {
+  color: #999999;
+}
+
+/* Personalizar el estado de foco de los inputs */
+.input-custom:focus {
+  border-color: #4d64ff !important; /* Cambiar el color del borde al foco */
+  box-shadow: none !important; /* Eliminar la sombra de foco predeterminada de Bootstrap */
+  border-width: 1px !important; /* Hacer el borde más delgado */
+}
+
+/* Hover para enlaces en el footer */
+.hover-underline-on-hover:hover {
+  text-decoration: underline !important;
+}
+
+/* Eliminar margen-top negativo del main en pantallas medianas */
+@media (min-width: 768px) {
+  main {
+    margin-top: 0; /* Eliminado margen-top negativo */
+  }
+}
+
+/* Estilos para el botón de toggle de contraseña */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ajustes para el SVG dentro del botón */
+.toggle-password svg {
+  width: 28px; /* Aumentar tamaño a 28px */
+  height: 28px; /* Aumentar tamaño a 28px */
+  color: #999999;
+}
+
+/* Mantener el mismo color del SVG al pasar el cursor */
+.toggle-password:hover svg {
+  color: #999999; /* Sin cambio de color */
+}
+
+/* Estilo para el botón de envío personalizado */
+.btn-login {
+  /* Estilos generales */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1rem; /* Tamaño de fuente a 16px */
+  padding: 0.75rem 1.25rem; /* Padding para mayor tamaño */
+  height: 3rem; /* Altura de 3rem para igualar a los inputs */
+  background-color: #cacaca !important; /* Fondo gris cuando está deshabilitado */
+  color: #ffffff; /* Texto blanco */
+  border: none; /* Sin bordes */
+  border-radius: 0.375rem; /* Bordes redondeados */
+  cursor: not-allowed; /* Cursor no permitido cuando está deshabilitado */
+  width: 100%; /* Ancho completo para igualar a los inputs */
+}
+
+/* Estilos cuando el botón está habilitado */
+.btn-login:not(:disabled) {
+  background-color: #4d64ff !important; /* Fondo azul cuando está habilitado */
+  color: #ffffff; /* Texto blanco */
+  cursor: pointer; /* Cursor pointer cuando está habilitado */
+}
+
+/* Hover para el botón cuando está habilitado */
+.btn-login:not(:disabled):hover {
+  background-color: #3245bb !important; /* Fondo ligeramente más oscuro en hover */
+}
+
+/* Estilo para ajustar la altura del botón */
+.h-10 {
+  height: 3rem; /* Aumentar altura a 3rem */
+}
+
+/* Transiciones suaves para los SVGs */
+.toggle-password svg {
+  transition: opacity 0.3s ease;
+  opacity: 1;
+}
+
+.toggle-password svg.hidden {
+  opacity: 0;
+}
+
+/* Asegurar que los SVGs estén detrás del contenido principal */
+.svg-left,
+.svg-right {
+  z-index: 0;
+}
+
+/* Aumentar el z-index del contenido principal para que esté por encima de los SVGs */
+.main-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* Re-definir svg-left y svg-right para posicionamiento responsivo y tamaño */
+.svg-left {
+  position: absolute; /* Asegurar posición absoluta */
+  left: 0; /* Pegado al borde izquierdo */
+  top: 5%; /* Posición vertical: 5% desde la parte superior */
+  transform: none; /* Eliminar transformaciones */
+  margin-top: 0; /* Eliminar márgenes negativos */
+  width: 300px; /* Aumentar el tamaño del SVG */
+  height: auto; /* Mantener la proporción */
+}
+
+.svg-right {
+  position: absolute; /* Asegurar posición absoluta */
+  right: 0; /* Pegado al borde derecho */
+  bottom: 5%; /* Posición vertical: 5% desde la parte inferior */
+  transform: none; /* Eliminar transformaciones */
+  margin-top: 0; /* Eliminar márgenes negativos */
+  width: 300px; /* Aumentar el tamaño del SVG */
+  height: auto; /* Mantener la proporción */
+}
+
+/* Media Query para ocultar SVGs cuando el ancho de la pantalla es demasiado pequeño */
+@media (max-width: 1024px) {
+  /* Ajusta el breakpoint según sea necesario */
+  .svg-left,
+  .svg-right {
+    display: none;
+  }
+}

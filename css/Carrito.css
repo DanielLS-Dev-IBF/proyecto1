@@ -1,3 +1,12 @@
+/* Variables CSS para facilitar futuras modificaciones */
+:root {
+  --btn-cantidad-size: 14px; /* Reducido de 16px */
+  --icono-basura-size: 20px;
+  --primary-color: #00a82d;
+  --secondary-color: #f9f6f2;
+  --border-color: black;
+}
+
 /* Estilos específicos para la página del carrito */
 .page-cart {
   background-color: var(--secondary-color); /* Fondo del contenedor */
@@ -5,16 +14,115 @@
 
 /* Contenedor de productos */
 .cart-item {
-  border: 1px solid black; /* Bordes negros */
+  border: 1px solid var(--border-color); /* Bordes negros */
   border-radius: 10px; /* Bordes redondeados */
   background-color: var(--secondary-color); /* Fondo del producto */
+  padding: 15px; /* Padding interno para mejor apariencia */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* Resumen del carrito */
-.cart-summary {
-  border: 1px solid black; /* Bordes negros */
-  border-radius: 10px; /* Bordes redondeados */
-  background-color: var(--secondary-color); /* Fondo del resumen */
+/* Contenedor principal del producto: imagen y detalles */
+.product-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Contenedor de la imagen del producto */
+.product-image-container {
+  flex-shrink: 0; /* Evita que la imagen se encoja */
+}
+
+/* Imagen del producto */
+.product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Información del producto */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.product-info.text-start {
+  text-align: left;
+}
+
+.product-name {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Contenedor del botón de eliminar */
+.action-button-container {
+  flex-shrink: 0; /* Evita que el botón de eliminar se encoja */
+}
+
+/* Controles de cantidad */
+.quantity-controls-container {
+  display: flex;
+  align-items: center; /* Asegura la alineación vertical */
+  justify-content: center;
+  margin-top: 10px;
+  border: 1px solid #000000 !important;
+  border-radius: 25px;
+  padding: 5px; /* Añadido para mejor apariencia */
+}
+
+/* Controles de cantidad */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+}
+
+/* Asegurar que los botones de cantidad estén centrados */
+.btn-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px; /* Reducido para que sean más pequeños */
+}
+
+/* Reducir tamaño de los iconos de cantidad */
+.btn-cantidad img.icono-cantidad {
+  width: 10px; /* Reducido de var(--btn-cantidad-size) */
+  height: 10px; /* Reducido de var(--btn-cantidad-size) */
+  transition: transform 0.2s;
+}
+
+/* Efecto al hacer clic */
+.btn-cantidad:active img.icono-cantidad {
+  transform: scale(0.9);
+}
+
+/* Reducir tamaño del número de cantidad */
+.quantity-number {
+  font-size: 1.1rem; /* Reducido de 1.5rem */
+  min-width: 20px; /* Reducido de 30px */
+  text-align: center;
+  margin: 0 4px; /* Reducido de 8px */
+}
+
+/* Botón para eliminar producto */
+.icono-basura {
+  width: var(--icono-basura-size);
+  height: var(--icono-basura-size);
+  transition: transform 0.2s;
+}
+
+.icono-basura:hover {
+  transform: scale(1.1);
 }
 
 /* Botones */
@@ -22,16 +130,29 @@
 .cart-summary button {
   border-radius: 5px;
   font-size: 0.9rem;
+  background-color: transparent; /* Botones transparentes */
+  border: none; /* Sin bordes */
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Restaurar el borde de cart-summary */
+.cart-summary {
+  border: 1px solid var(--border-color); /* Bordes negros */
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: var(--secondary-color); /* Fondo del resumen */
+  padding: 20px; /* Añadir padding para mejor apariencia */
 }
 
 /* Botón "Pagar Ahora" */
-.cart-summary .btn-success {
-  background-color: var(--primary-color);
-  border: none;
+.cart-summary .btn-hover {
+  padding: 10px;
 }
 
-.cart-summary .btn-success:hover {
-  background-color: var(--primary-color);
+.cart-summary .btn-hover:hover {
+  background-color: #218838; /* Color ligeramente más oscuro */
+  border-color: #000000; /* Borde ligeramente más oscuro */
 }
 
 /* Subtítulos */
@@ -43,7 +164,7 @@
 /* Título principal */
 .page-cart h1 {
   color: black; /* Texto negro */
-  font-size: 4rem; /* Ajusta tamaño del título */
+  font-size: 2.5rem; /* Ajusta tamaño del título */
 }
 
 /* Texto total */
@@ -58,39 +179,31 @@
     text-align: center;
   }
 
-  .cart-item img {
-    margin-bottom: 10px;
-  }
-
-  .cart-summary {
+  .product-container {
+    flex-direction: column;
+    align-items: center;
     text-align: center;
   }
-}
-/* Estilo para el contenedor del carrito */
-.page-cart .cart-summary {
-  height: 100%; /* Asegura que tome toda la altura disponible */
-  display: flex;
-  flex-direction: column; /* Los elementos dentro se organizan verticalmente */
-  justify-content: flex-start; /* Alinea el contenido al inicio */
-  border: 1px solid black; /* Bordes negros */
-  border-radius: 10px;
-  background-color: var(--secondary-color);
-}
-.page-cart .cart-item {
-  border: 1px solid black;
-  border-radius: 10px;
-  background-color: var(--secondary-color);
-}
 
-/* Responsivo: asegura alineación en dispositivos más pequeños */
-@media (max-width: 768px) {
-  .page-cart .row {
-    flex-direction: column;
+  .product-info {
+    align-items: center;
+    text-align: center;
   }
 
-  .page-cart .cart-summary {
-    margin-top: 20px;
+  .delete-button-container {
+    margin-left: 0;
+    margin-top: 10px;
   }
+
+  .quantity-controls-container {
+    justify-content: center;
+  }
+}
+
+/* Estilo para las flechas de colapso */
+.icono-flecha {
+  width: 16px; /* Tamaño de las flechas */
+  height: 16px;
 }
 
 /* Ocultamos la flecha hacia arriba por defecto */
@@ -116,17 +229,19 @@
   display: inline;
 }
 
-/* Opcional: Ajustar el tamaño de las flechas */
-.icono-flecha {
-  width: 16px; /* Ajusta el tamaño según tus necesidades */
-  height: 16px;
+/* Asegurar que las imágenes se muestren */
+.cart-item img,
+.icono-cantidad,
+.icono-basura {
+  display: inline-block;
 }
 
-.page-cart .btn-hover {
-  margin-bottom: 0;
+/* Hover Efectos en Botones de Cantidad */
+.btn-cantidad:hover img.icono-cantidad {
+  transform: scale(1.1);
 }
 
-form .btn-hover {
-  margin: 0;
-  width: 100%;
+/* Feedback Visual en Botones */
+.btn-cantidad:active img.icono-cantidad {
+  transform: scale(0.9);
 }
