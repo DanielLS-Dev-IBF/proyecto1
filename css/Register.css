@@ -1,0 +1,227 @@
+/* Register.css */
+
+/* Fondo de la página */
+* {
+  background-color: #ffffff !important;
+}
+
+/* Estilos para el Logo */
+.logo-login {
+  height: 72px;
+  width: auto;
+}
+
+/* Estilos para el Título */
+h1.login-title {
+  font-family: var(--secondary-font);
+  font-size: 32px !important; /* Tamaño de fuente aumentado a 32px */
+  font-weight: 700 !important; /* Mayor peso de fuente */
+  color: #333 !important; /* Color del texto */
+}
+
+/* Estilos para el Subtítulo */
+.login-subtitle {
+  font-size: 1rem; /* Ajusta según tus necesidades */
+  font-weight: 500;
+  color: #555;
+}
+
+/* Estilos personalizados para los inputs */
+.input-custom {
+  font-size: 1rem !important; /* Fuente aumentada a 16px */
+  padding: 0.75rem 1.5rem !important; /* Aumentar padding para mayor tamaño */
+  padding-right: 3rem !important; /* Más espacio para el botón de toggle */
+  height: auto;
+  text-align: left !important; /* Alinear texto y placeholder a la izquierda */
+  max-width: 100%; /* Asegurar que no exceda el contenedor */
+}
+
+/* Color del placeholder grisáceo */
+.input-custom::placeholder {
+  color: #999999;
+}
+
+/* Personalizar el estado de foco de los inputs */
+.input-custom:focus {
+  border-color: #4d64ff !important; /* Cambiar el color del borde al foco */
+  box-shadow: none !important; /* Eliminar la sombra de foco predeterminada de Bootstrap */
+  border-width: 1px !important; /* Hacer el borde más delgado */
+}
+
+/* Estilo para el botón de envío personalizado */
+.btn-login {
+  /* Estilos generales */
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1rem; /* Tamaño de fuente a 16px */
+  padding: 0.75rem 1.25rem; /* Padding para mayor tamaño */
+  height: 3rem; /* Altura de 3rem para igualar a los inputs */
+  background-color: #cacaca !important; /* Fondo gris cuando está deshabilitado */
+  color: #ffffff; /* Texto blanco */
+  border: none; /* Sin bordes */
+  border-radius: 0.375rem; /* Bordes redondeados */
+  cursor: not-allowed; /* Cursor no permitido cuando está deshabilitado */
+  width: 100%; /* Ancho completo para igualar a los inputs */
+}
+
+/* Estilos cuando el botón está habilitado */
+.btn-login:not(:disabled) {
+  background-color: #4d64ff !important; /* Fondo azul cuando está habilitado */
+  color: #ffffff; /* Texto blanco */
+  cursor: pointer; /* Cursor pointer cuando está habilitado */
+}
+
+/* Hover para el botón cuando está habilitado */
+.btn-login:not(:disabled):hover {
+  background-color: #3245bb !important; /* Fondo ligeramente más oscuro en hover */
+}
+
+/* Estilos para el botón de toggle de contraseña */
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2; /* Asegura que el botón esté por encima de otros elementos */
+}
+
+.toggle-password svg {
+  width: 24px;
+  height: 24px;
+  color: #999; /* Color gris por defecto */
+  transition: color 0.3s ease;
+}
+
+/* Cambiar el color del ícono de toggle según el estado */
+.toggle-password.valid svg {
+  color: #28a745; /* Verde de Bootstrap */
+}
+
+.toggle-password.invalid svg {
+  color: #dc3545; /* Rojo de Bootstrap */
+}
+
+/* Botones de proveedores externos */
+.btn-outline-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #6b7280;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.btn-outline-secondary svg {
+  margin-right: 0.5rem;
+}
+
+/* Estilos para el footer */
+footer {
+  border-top: none !important;
+  padding: 0rem 0.75rem !important;
+  background-color: #ffffff; /* Fondo blanco */
+  color: #6c757d; /* Texto gris (similar a Bootstrap's text-muted) */
+}
+
+/* Media Query para pantallas medianas (≥ 768px) */
+@media (min-width: 768px) {
+  footer {
+    padding-top: 0rem !important; /* 0rem top */
+    padding-bottom: 1rem !important; /* 1rem bottom */
+    padding-left: 1rem !important; /* 1rem left */
+    padding-right: 1rem !important; /* 1rem right */
+  }
+
+  /* Ajustes para el Contenedor Interno del Footer */
+  footer .d-flex {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem; /* Mayor espacio entre elementos */
+  }
+}
+
+/* Media Query para pantallas grandes (≥ 1200px) */
+@media (min-width: 1200px) {
+  footer {
+    padding-left: 4rem !important; /* 4rem left */
+    padding-right: 4rem !important; /* 4rem right */
+  }
+}
+
+/* Ajustes para los Enlaces en el Footer */
+footer a {
+  color: #6c757d; /* Texto gris */
+  font-size: 0.75rem; /* Tamaño de fuente similar a referencia */
+  text-decoration: none; /* Sin subrayado */
+}
+
+footer a:hover {
+  color: #343a40; /* Texto más oscuro al pasar el cursor */
+  text-decoration: underline; /* Subrayado al pasar el cursor */
+}
+
+/* Ajustes para el Texto en el Footer */
+footer span {
+  font-size: 0.75rem; /* Tamaño de fuente similar a referencia */
+  text-align: center;
+}
+
+/* Estilos para limitar el ancho del formulario */
+.main-content {
+  max-width: 450px; /* Mantener o ajustar según necesidad */
+  width: 100%;
+}
+
+.main-content a,
+.main-content span {
+  font-size: 0.8125rem !important;
+  text-decoration: none;
+}
+
+/* Asegurar que la imagen en la columna derecha se ajuste bien */
+img.img-fluid.custom-image {
+  max-width: 90%; /* Ajustar según necesidad */
+  height: auto;
+}
+
+/* Estilos adicionales para la validación */
+.is-valid {
+  border-color: #28a745 !important;
+}
+
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+/* Asegurar que los mensajes de error no cubran el botón de toggle */
+.form-group {
+  position: relative;
+}
+
+/* Estilos para los mensajes de error */
+.invalid-feedback {
+  margin-top: 0.25rem;
+  margin-right: 0; /* Evita que el mensaje se desplace hacia la derecha */
+  display: block; /* Asegura que el mensaje se muestre debajo del input */
+  position: absolute;
+  bottom: -1.5rem; /* Ajusta según necesidad */
+  left: 0;
+  right: 0;
+  font-size: 0.875rem; /* Tamaño de fuente adecuado */
+  color: #dc3545; /* Color rojo de Bootstrap */
+}

@@ -9,11 +9,10 @@
             
             <!-- Redirecciones About us & Explorar -->
             <a href="">Acerca de nosotros</a>
-            <a href="">Explorar</a>
+            <a href="?controller=Producto&action=carta">Carta</a>
         </div>
         <!-- Buscador y Botones de Cuenta y Carrito -->
         <div id="flex-item-right">
-            <a name="buscador">Buscar...</a>
             <a name="boton_cuenta">Cuenta</a>
             <a href="?controller=carrito&action=index" name="boton_carrito">Carrito</a>
         </div>
@@ -28,7 +27,6 @@
 <div class="dropdown-menu" id="dropdown-menu">
     <a href="">Acerca de nosotros</a>
     <a href="">Explorar</a>
-    <a name="buscador">Buscar...</a>
     <a name="boton_cuenta">Cuenta</a>
     <a name="boton_carrito">Carrito</a>
 </div>
