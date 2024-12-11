@@ -187,9 +187,13 @@ footer span {
   width: 100%;
 }
 
-.main-content a,
+.main-content a {
+  font-size: 1rem !important;
+  text-decoration: none;
+}
+
 .main-content span {
-  font-size: 0.8125rem !important;
+  font-size: 1rem !important;
   text-decoration: none;
 }
 

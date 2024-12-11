@@ -5,7 +5,7 @@
             <div class="row min-vh-100">
                 <!-- Columna Izquierda con Formulario -->
                 <div class="col-lg-6 d-flex align-items-center justify-content-center">
-                    <div class="main-content py-2 px-4">
+                    <div class="main-content mb-4 py-2 px-4">
                         <!-- Logo -->
                         <div class="d-flex flex-column align-items-center mb-3">
                             <img class="logo-login mt-1 mb-2" src="/DAW2/Proyecto1/img/Iconos/Greeny-Logo.svg" alt="Logo de Greeny sin texto">
@@ -29,22 +29,21 @@
                                     <!-- Botón de toggle de contraseña -->
                                     <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
                                         <!-- SVG Original de Ocultar Contraseña -->
-                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "ocultar" -->
                                         <svg id="hideIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                             <!-- Contenido del SVG Original de Ocultar -->
-                                            <!-- Ejemplo placeholder -->
-                                            <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
-                                                     12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5c0 2.761-2.239 5-5 5z"/>
-                                            <circle cx="12" cy="12" r="2.5"/>
+                                            <path d="M3.59961 12C3.59961 12 3.59961 12.07 3.60961 12.1C4.60961 15.8 7.98961 18.53 11.9996 18.53C16.0096 18.53 19.3996 15.8 20.3996 12.1C20.3996 12.07 20.4096 12.03 20.4096 12M19.1296 12C18.1996 15.06 15.3596 17.28 12.0096 17.28C8.65961 17.28 5.81961 15.06 4.87961 12M12 20V18M19.4144 17.4142L18.0002 16M4.58594 17.4142L6.00015 16" 
+                                                fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                                            <path d="M12 20V18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M19.4144 17.4142L18.0002 16M4.58594 17.4142L6.00015 16" 
+                                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
                                         </svg>
                                         <!-- SVG Original de Mostrar Contraseña, inicialmente oculto -->
-                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "mostrar" -->
                                         <svg id="showIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
                                             <!-- Contenido del SVG Original de Mostrar -->
-                                            <!-- Ejemplo placeholder -->
-                                            <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
-                                                     12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"/>
-                                            <circle cx="12" cy="12" r="2.5"/>
+                                            <path d="M11.9992 14.5001C13.38 14.5001 14.4992 13.3809 14.4992 12.0001C14.4992 10.6193 13.38 9.5001 11.9992 9.5001C10.6184 9.5001 9.4992 10.6193 9.4992 12.0001C9.4992 13.3809 10.6184 14.5001 11.9992 14.5001Z" 
+                                                fill="currentColor"></path>
+                                            <path d="M11.995 5.4668C7.97745 5.4668 4.60511 8.19229 3.60172 11.8928C3.58328 11.9608 3.58328 12.0329 3.60172 12.1009C4.60511 15.8014 7.97745 18.5269 11.995 18.5269C16.0126 18.5269 19.3849 15.8014 20.3883 12.1009C20.4068 12.0329 20.4068 11.9608 20.3883 11.8928C19.3849 8.19229 16.0126 5.4668 11.995 5.4668ZM11.995 17.2769C8.6397 17.2769 5.80496 15.0546 4.8724 11.9968C5.80496 8.93905 8.6397 6.7168 11.995 6.7168C15.3504 6.7168 18.1851 8.93905 19.1177 11.9968C18.1851 15.0546 15.3504 17.2769 11.995 17.2769Z" 
+                                                fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"></path>
                                         </svg>
                                     </button>
                                     <div class="invalid-feedback">
@@ -56,22 +55,22 @@
                                     <!-- Botón de toggle para confirmar contraseña -->
                                     <button type="button" class="toggle-password" id="toggleConfirmPassword" aria-label="Mostrar contraseña">
                                         <!-- SVG Original de Ocultar Confirmar Contraseña -->
-                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "ocultar" -->
                                         <svg id="hideConfirmIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                                             <!-- Contenido del SVG Original de Ocultar Confirmar -->
-                                            <!-- Ejemplo placeholder -->
-                                            <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
-                                                     12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5c0 2.761-2.239 5-5 5z"/>
-                                            <circle cx="12" cy="12" r="2.5"/>
+                                            <path d="M3.59961 12C3.59961 12 3.59961 12.07 3.60961 12.1C4.60961 15.8 7.98961 18.53 11.9996 18.53C16.0096 18.53 19.3996 15.8 20.3996 12.1C20.3996 12.07 20.4096 12.03 20.4096 12M19.1296 12C18.1996 15.06 15.3596 17.28 12.0096 17.28C8.65961 17.28 5.81961 15.06 4.87961 12M12 20V18M19.4144 17.4142L18.0002 16M4.58594 17.4142L6.00015 16" 
+                                                fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"></path>
+                                            <path d="M12 20V18" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                            <path d="M19.4144 17.4142L18.0002 16M4.58594 17.4142L6.00015 16" 
+                                                stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
                                         </svg>
                                         <!-- SVG Original de Mostrar Confirmar Contraseña, inicialmente oculto -->
                                         <!-- Reemplaza el contenido de este SVG con tu SVG original de "mostrar" -->
                                         <svg id="showConfirmIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
                                             <!-- Contenido del SVG Original de Mostrar Confirmar -->
-                                            <!-- Ejemplo placeholder -->
-                                            <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
-                                                     12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"/>
-                                            <circle cx="12" cy="12" r="2.5"/>
+                                            <path d="M11.9992 14.5001C13.38 14.5001 14.4992 13.3809 14.4992 12.0001C14.4992 10.6193 13.38 9.5001 11.9992 9.5001C10.6184 9.5001 9.4992 10.6193 9.4992 12.0001C9.4992 13.3809 10.6184 14.5001 11.9992 14.5001Z" 
+                                                fill="currentColor"></path>
+                                            <path d="M11.995 5.4668C7.97745 5.4668 4.60511 8.19229 3.60172 11.8928C3.58328 11.9608 3.58328 12.0329 3.60172 12.1009C4.60511 15.8014 7.97745 18.5269 11.995 18.5269C16.0126 18.5269 19.3849 15.8014 20.3883 12.1009C20.4068 12.0329 20.4068 11.9608 20.3883 11.8928C19.3849 8.19229 16.0126 5.4668 11.995 5.4668ZM11.995 17.2769C8.6397 17.2769 5.80496 15.0546 4.8724 11.9968C5.80496 8.93905 8.6397 6.7168 11.995 6.7168C15.3504 6.7168 18.1851 8.93905 19.1177 11.9968C18.1851 15.0546 15.3504 17.2769 11.995 17.2769Z" 
+                                                fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"></path>
                                         </svg>
                                     </button>
                                     <div class="invalid-feedback">
@@ -128,8 +127,9 @@
 
                         <!-- Enlace a Login -->
                         <div class="mt-3 text-center">
-                            <a href="/login" class="text-indigo-600 hover:text-indigo-500 text-sm">
-                                ¿Ya tienes una cuenta? <span class="font-semibold">Inicia sesión</span>
+                            ¿Ya tienes una cuenta? 
+                            <a href="index.php?controller=usuario&amp;action=login" class="text-decoration-none">
+                                <span class="text-primary">Inicia sesión</span>
                             </a>
                         </div>
                     </div>
