@@ -18,24 +18,30 @@
                             
                             <!-- Etapa 1: Email y Contraseña -->
                             <div id="step-1">
-                                <div class="form-group mb-3 position-relative">
+                                <div class="form-group mb-4 position-relative">
                                     <input type="email" class="form-control input-custom" placeholder="Dirección de correo electrónico" name="email" id="email" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingresa un correo electrónico válido.
                                     </div>
                                 </div>
-                                <div class="form-group mb-3 position-relative">
+                                <div class="form-group mb-4 position-relative">
                                     <input type="password" class="form-control input-custom" placeholder="Contraseña" name="password" id="passwordInput" required>
                                     <!-- Botón de toggle de contraseña -->
                                     <button type="button" class="toggle-password" id="togglePassword" aria-label="Mostrar contraseña">
-                                        <!-- Ícono de ocultar -->
+                                        <!-- SVG Original de Ocultar Contraseña -->
+                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "ocultar" -->
                                         <svg id="hideIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <!-- Contenido del SVG Original de Ocultar -->
+                                            <!-- Ejemplo placeholder -->
                                             <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
                                                      12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5c0 2.761-2.239 5-5 5z"/>
                                             <circle cx="12" cy="12" r="2.5"/>
                                         </svg>
-                                        <!-- Ícono de mostrar, inicialmente oculto -->
+                                        <!-- SVG Original de Mostrar Contraseña, inicialmente oculto -->
+                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "mostrar" -->
                                         <svg id="showIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                                            <!-- Contenido del SVG Original de Mostrar -->
+                                            <!-- Ejemplo placeholder -->
                                             <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
                                                      12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"/>
                                             <circle cx="12" cy="12" r="2.5"/>
@@ -45,18 +51,24 @@
                                         La contraseña debe tener al menos 6 caracteres.
                                     </div>
                                 </div>
-                                <div class="form-group mb-3 position-relative">
+                                <div class="form-group mb-4 position-relative">
                                     <input type="password" class="form-control input-custom" placeholder="Confirmar Contraseña" name="confirm_password" id="confirmPasswordInput" required>
                                     <!-- Botón de toggle para confirmar contraseña -->
                                     <button type="button" class="toggle-password" id="toggleConfirmPassword" aria-label="Mostrar contraseña">
-                                        <!-- Ícono de ocultar -->
+                                        <!-- SVG Original de Ocultar Confirmar Contraseña -->
+                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "ocultar" -->
                                         <svg id="hideConfirmIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                            <!-- Contenido del SVG Original de Ocultar Confirmar -->
+                                            <!-- Ejemplo placeholder -->
                                             <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
                                                      12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5c0 2.761-2.239 5-5 5z"/>
                                             <circle cx="12" cy="12" r="2.5"/>
                                         </svg>
-                                        <!-- Ícono de mostrar, inicialmente oculto -->
+                                        <!-- SVG Original de Mostrar Confirmar Contraseña, inicialmente oculto -->
+                                        <!-- Reemplaza el contenido de este SVG con tu SVG original de "mostrar" -->
                                         <svg id="showConfirmIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                                            <!-- Contenido del SVG Original de Mostrar Confirmar -->
+                                            <!-- Ejemplo placeholder -->
                                             <path d="M12 5c-7.633 0-12 7-12 7s4.367 7 12 7 12-7 12-7-4.367-7-12-7zm0 
                                                      12c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"/>
                                             <circle cx="12" cy="12" r="2.5"/>
@@ -73,33 +85,33 @@
                             
                             <!-- Etapa 2: Información Personal -->
                             <div id="step-2" style="display: none;">
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-4">
                                     <input type="text" class="form-control input-custom" placeholder="Nombre Completo" name="nombre_completo" id="nombreCompleto" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingresa tu nombre completo.
                                     </div>
                                 </div>
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-4">
                                     <input type="text" class="form-control input-custom" placeholder="Dirección" name="direccion" id="direccion" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingresa tu dirección.
                                     </div>
                                 </div>
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-4">
                                     <input type="text" class="form-control input-custom" placeholder="Código Postal" name="codigo_postal" id="codigoPostal" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingresa un código postal válido de 5 dígitos.
                                     </div>
                                 </div>
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-4">
                                     <input type="tel" class="form-control input-custom" placeholder="Teléfono" name="telefono" id="telefono" required>
                                     <div class="invalid-feedback">
                                         Por favor, ingresa un número de teléfono válido.
                                     </div>
                                 </div>
                                 
-                                <!-- Botón de Volver -->
-                                <button type="button" class="btn btn-secondary mb-3" id="prevStepButton">Volver</button>
+                                <!-- Botón de Volver con clase btn-login -->
+                                <button type="button" class="btn-login mb-3" id="prevStepButton">Volver</button>
                                 
                                 <!-- Botón de Envío -->
                                 <button type="submit" class="btn-login mb-3" id="submitButton" disabled>Registrarse</button>
@@ -201,12 +213,14 @@
 
             // Feedback visual para email
             if (touchedFields.email) {
-                if (emailValid) {
+                if (email !== "" && emailValid) {
                     emailInputField.classList.add('is-valid');
                     emailInputField.classList.remove('is-invalid');
-                } else {
+                } else if (email !== "") {
                     emailInputField.classList.add('is-invalid');
                     emailInputField.classList.remove('is-valid');
+                } else {
+                    emailInputField.classList.remove('is-valid', 'is-invalid');
                 }
             } else {
                 emailInputField.classList.remove('is-valid', 'is-invalid');
@@ -214,16 +228,19 @@
 
             // Feedback visual para contraseña
             if (touchedFields.password) {
-                if (passwordValid) {
+                if (password !== "" && passwordValid) {
                     passwordInputField.classList.add('is-valid');
                     passwordInputField.classList.remove('is-invalid');
                     togglePassword.classList.remove('invalid');
                     togglePassword.classList.add('valid');
-                } else {
+                } else if (password !== "") {
                     passwordInputField.classList.add('is-invalid');
                     passwordInputField.classList.remove('is-valid');
                     togglePassword.classList.remove('valid');
                     togglePassword.classList.add('invalid');
+                } else {
+                    passwordInputField.classList.remove('is-valid', 'is-invalid');
+                    togglePassword.classList.remove('invalid', 'valid');
                 }
             } else {
                 passwordInputField.classList.remove('is-valid', 'is-invalid');
@@ -232,16 +249,19 @@
 
             // Feedback visual para confirmar contraseña
             if (touchedFields.confirm_password) {
-                if (passwordsMatch) {
+                if (confirmPassword !== "" && passwordsMatch) {
                     confirmPasswordField.classList.add('is-valid');
                     confirmPasswordField.classList.remove('is-invalid');
                     toggleConfirmPassword.classList.remove('invalid');
                     toggleConfirmPassword.classList.add('valid');
-                } else {
+                } else if (confirmPassword !== "") {
                     confirmPasswordField.classList.add('is-invalid');
                     confirmPasswordField.classList.remove('is-valid');
                     toggleConfirmPassword.classList.remove('valid');
                     toggleConfirmPassword.classList.add('invalid');
+                } else {
+                    confirmPasswordField.classList.remove('is-valid', 'is-invalid');
+                    toggleConfirmPassword.classList.remove('invalid', 'valid');
                 }
             } else {
                 confirmPasswordField.classList.remove('is-valid', 'is-invalid');
@@ -249,7 +269,8 @@
             }
 
             // Habilitar el botón de Continuar solo si todas las condiciones son verdaderas
-            nextStepButton.disabled = !(emailValid && passwordValid && passwordsMatch);
+            const canContinue = (emailValid && passwordValid && passwordsMatch) && (email !== "" && password !== "" && confirmPassword !== "");
+            nextStepButton.disabled = !canContinue;
         }
 
         // Función para validar Etapa 2 con feedback visual
@@ -317,7 +338,8 @@
             }
 
             // Habilitar el botón de Registrarse solo si todas las condiciones son verdaderas
-            submitButton.disabled = !(nombreValid && direccionValid && codigoPostalValid && telefonoValid);
+            const canRegister = (nombreValid && direccionValid && codigoPostalValid && telefonoValid) && (nombreCompleto !== "" && direccion !== "" && codigoPostal !== "" && telefono !== "");
+            submitButton.disabled = !canRegister;
         }
 
         // Inicializar el estado de los botones
@@ -361,7 +383,7 @@
             step2.style.display = 'block';
         });
 
-        // Manejar el botón de Volver (Paso 2 -> Paso 1)
+        // Manejar el botón de Volver (Paso 2 -> Paso 1) con clase btn-login
         prevStepButton.addEventListener('click', function () {
             step2.style.display = 'none';
             step1.style.display = 'block';
