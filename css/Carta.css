@@ -1,0 +1,71 @@
+/* Carta.css */
+
+/* 1. Alinear los filtros a la izquierda */
+.carta-filters-container {
+  text-align: left !important; /* Sobrescribe el alineamiento global */
+}
+
+/* 2. Estilos para los botones de filtro */
+.carta-filters-container .btn-filter {
+  color: #000 !important; /* Texto negro */
+  background-color: #f8f9fa !important; /* Fondo claro para botones inactivos */
+  border-color: #ced4da !important; /* Borde claro */
+  transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+}
+
+/* 2.a. Estilos para botones de filtro activos (seleccionados) */
+.carta-filters-container .btn-filter.btn-primary {
+  background-color: var(--primary-color) !important; /* Fondo verde */
+  color: #fff !important; /* Texto blanco */
+  border-color: var(--primary-color) !important; /* Borde verde */
+}
+
+/* 2.b. Estilos para botones de filtro inactivos al pasar el ratón */
+.carta-filters-container .btn-filter.btn-secondary:hover {
+  background-color: #e2e6ea !important; /* Fondo ligeramente más oscuro */
+  color: #000 !important; /* Mantiene el texto negro */
+}
+
+/* 3. Estilos para los enlaces de paginación */
+.carta-pagination .page-link {
+  color: #000 !important; /* Texto negro */
+  background-color: #fff !important; /* Fondo blanco */
+  border: 1px solid #dee2e6 !important; /* Borde gris claro */
+  transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+}
+
+/* 3.a. Estilos para el enlace de paginación activo */
+.carta-pagination .page-item.active .page-link {
+  background-color: var(--primary-color) !important; /* Fondo verde */
+  border-color: var(--primary-color) !important; /* Borde verde */
+  color: #fff !important; /* Texto blanco */
+}
+
+/* 3.b. Estilos para los enlaces de paginación al pasar el ratón */
+.carta-pagination .page-item a.page-link:hover {
+  background-color: #e2e6ea !important; /* Fondo ligeramente más oscuro */
+  color: #000 !important; /* Mantiene el texto negro */
+}
+
+/* 4. Estilos para estados de focus */
+
+.carta-filters-container .btn-filter:focus,
+.carta-pagination .page-link:focus {
+  outline: 2px solid var(--primary-color); /* Contorno verde */
+  outline-offset: 2px;
+  box-shadow: 0 0 0 0.2rem rgba(0, 168, 45, 0.25); /* Sombra verde suave */
+}
+
+/* 4.a. Asegurar que el botón activo mantenga el estilo al estar enfocado */
+.carta-filters-container .btn-filter.btn-primary:focus {
+  background-color: var(--primary-color) !important; /* Fondo verde */
+  color: #fff !important; /* Texto blanco */
+  border-color: var(--primary-color) !important; /* Borde verde */
+}
+
+/* 4.b. Asegurar que el enlace activo de paginación mantenga el estilo al estar enfocado */
+.carta-pagination .page-item.active .page-link:focus {
+  background-color: var(--primary-color) !important; /* Fondo verde */
+  color: #fff !important; /* Texto blanco */
+  border-color: var(--primary-color) !important; /* Borde verde */
+}

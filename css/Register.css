@@ -132,7 +132,7 @@ h1.login-title {
 /* Estilos para el footer */
 footer {
   border-top: none !important;
-  padding: 0rem 0.75rem !important;
+  padding: 1rem 1.5rem !important;
   background-color: #ffffff; /* Fondo blanco */
   color: #6c757d; /* Texto gris (similar a Bootstrap's text-muted) */
 }
@@ -140,10 +140,10 @@ footer {
 /* Media Query para pantallas medianas (≥ 768px) */
 @media (min-width: 768px) {
   footer {
-    padding-top: 0rem !important; /* 0rem top */
-    padding-bottom: 1rem !important; /* 1rem bottom */
-    padding-left: 1rem !important; /* 1rem left */
-    padding-right: 1rem !important; /* 1rem right */
+    padding-top: 3rem !important; /* 0rem top */
+    padding-bottom: 3rem !important; /* 1rem bottom */
+    padding-left: 3rem !important; /* 1rem left */
+    padding-right: 3rem !important; /* 1rem right */
   }
 
   /* Ajustes para el Contenedor Interno del Footer */
@@ -183,7 +183,7 @@ footer span {
 
 /* Estilos para limitar el ancho del formulario */
 .main-content {
-  max-width: 450px; /* Mantener o ajustar según necesidad */
+  max-width: 500px; /* Mantener o ajustar según necesidad */
   width: 100%;
 }
 

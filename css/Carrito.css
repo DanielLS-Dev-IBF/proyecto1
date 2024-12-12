@@ -74,10 +74,11 @@
   display: flex;
   align-items: center; /* Asegura la alineación vertical */
   justify-content: center;
-  margin-top: 10px;
+  margin-top: 30px;
   border: 1px solid #000000 !important;
   border-radius: 25px;
-  padding: 5px; /* Añadido para mejor apariencia */
+  padding-left: 5px; /* Añadido para mejor apariencia */
+  padding-right: 5px; /* Añadido para mejor apariencia */
 }
 
 /* Controles de cantidad */
