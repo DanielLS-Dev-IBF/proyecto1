@@ -12,47 +12,68 @@ class productoController {
         // Definir el número de productos por página
         $limit = 6;
 
-        // Obtener el parámetro 'tipo' si existe
-        $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : null;
+        // Obtener los parámetros 'tipo' y 'search' si existen
+        $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : 'Todos';
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
         // Validar el tipo para evitar inyecciones o errores
-        $tiposValidos = ['Bowl', 'Bebida', 'Postre'];
-        if ($tipo && !in_array($tipo, $tiposValidos)) {
+        $tiposValidos = ['Todos', 'Bowl', 'Bebida', 'Postre'];
+        if (!in_array($tipo, $tiposValidos)) {
             // Puedes manejar esto como prefieras, aquí mostramos todos los productos
-            $tipo = null;
+            $tipo = 'Todos';
         }
 
         // Obtener el parámetro 'page' si existe, sino asignar 1
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int) $_GET['page'] : 1;
         if ($page < 1) $page = 1;
 
-        if ($tipo) {
-            // Contar el total de productos para el tipo
-            $totalProductos = ProductoDAO::countProductosPorTipo($tipo);
-            // Calcular el total de páginas
-            $totalPaginas = ceil($totalProductos / $limit);
-            // Calcular el offset
-            $offset = ($page - 1) * $limit;
-            // Obtener los productos filtrados y paginados
-            $productos = ProductoDAO::getProductosPorTipoPaginados($tipo, $limit, $offset);
-        } else {
-            // Contar el total de productos
-            $totalProductos = ProductoDAO::countProductos();
-            // Calcular el total de páginas
-            $totalPaginas = ceil($totalProductos / $limit);
-            // Calcular el offset
-            $offset = ($page - 1) * $limit;
-            // Obtener todos los productos paginados
-            $productos = ProductoDAO::getAllPaginados($limit, $offset);
-        }
+        // Inicializar variables
+        $offset = ($page - 1) * $limit;
+        $totalProductos = 0;
+        $totalPaginas = 1;
+        $productos = [];
 
-        // Asegurar que la página actual no exceda el total de páginas
-        if ($page > $totalPaginas && $totalPaginas > 0) {
-            $page = $totalPaginas;
+        if (!empty($search)) {
+            // Búsqueda con término
+            $totalProductos = ProductoDAO::countProductosFiltrados($tipo, $search);
+            $totalPaginas = ceil($totalProductos / $limit);
             $offset = ($page - 1) * $limit;
-            if ($tipo) {
+
+            // Asegurar que la página actual no exceda el total de páginas
+            if ($page > $totalPaginas && $totalPaginas > 0) {
+                $page = $totalPaginas;
+                $offset = ($page - 1) * $limit;
+            }
+
+            // Obtener los productos filtrados y paginados
+            $productos = ProductoDAO::getProductosFiltrados($tipo, $search, $limit, $offset);
+        } else {
+            // Filtrado por tipo sin búsqueda
+            if ($tipo !== 'Todos') {
+                $totalProductos = ProductoDAO::countProductosPorTipo($tipo);
+                $totalPaginas = ceil($totalProductos / $limit);
+                $offset = ($page - 1) * $limit;
+
+                // Asegurar que la página actual no exceda el total de páginas
+                if ($page > $totalPaginas && $totalPaginas > 0) {
+                    $page = $totalPaginas;
+                    $offset = ($page - 1) * $limit;
+                }
+
+                // Obtener los productos filtrados y paginados
                 $productos = ProductoDAO::getProductosPorTipoPaginados($tipo, $limit, $offset);
             } else {
+                // Obtener todos los productos paginados
+                $totalProductos = ProductoDAO::countProductos();
+                $totalPaginas = ceil($totalProductos / $limit);
+                $offset = ($page - 1) * $limit;
+
+                // Asegurar que la página actual no exceda el total de páginas
+                if ($page > $totalPaginas && $totalPaginas > 0) {
+                    $page = $totalPaginas;
+                    $offset = ($page - 1) * $limit;
+                }
+
                 $productos = ProductoDAO::getAllPaginados($limit, $offset);
             }
         }

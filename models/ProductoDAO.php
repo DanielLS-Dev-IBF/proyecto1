@@ -3,10 +3,10 @@ include_once("Producto.php");
 include_once("config/db.php");
 
 class ProductoDAO {
-    // Obtener todos los productos
+    // Obtener todos los productos ordenados alfabéticamente
     public static function getAll() {
         $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM Proyecto1.Producto");
+        $stmt = $con->prepare("SELECT * FROM Proyecto1.Producto ORDER BY nombre ASC");
         if (!$stmt) {
             error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
             return [];
@@ -101,6 +101,8 @@ class ProductoDAO {
         $calorias = $producto->getCalorias();
 
         // Ajusta los tipos según los datos reales
+        // 's' para string, 'd' para double, 'i' para integer
+        // Suponiendo que 'volumen' e 'calorias' son enteros, ajusta si es necesario
         $stmt->bind_param("ssdsssi", $nombre, $descripcion, $precio_base, $img, $tipo, $volumen, $calorias);
 
         if (!$stmt->execute()) {
@@ -129,10 +131,10 @@ class ProductoDAO {
         $con->close();
     }
 
-    // Obtener productos por tipo con paginación
+    // Obtener productos por tipo con paginación y orden alfabético
     public static function getProductosPorTipoPaginados($tipo, $limit, $offset){
         $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM Proyecto1.Producto WHERE tipo = ? LIMIT ? OFFSET ?");
+        $stmt = $con->prepare("SELECT * FROM Proyecto1.Producto WHERE tipo = ? ORDER BY nombre ASC LIMIT ? OFFSET ?");
         if (!$stmt) {
             error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
             return [];
@@ -241,10 +243,10 @@ class ProductoDAO {
         return $total;
     }
 
-    // Obtener todos los productos con paginación
+    // Obtener todos los productos con paginación y orden alfabético
     public static function getAllPaginados($limit, $offset){
         $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM Proyecto1.Producto LIMIT ? OFFSET ?");
+        $stmt = $con->prepare("SELECT * FROM Proyecto1.Producto ORDER BY nombre ASC LIMIT ? OFFSET ?");
         if (!$stmt) {
             error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
             return [];
@@ -284,6 +286,139 @@ class ProductoDAO {
         error_log("getAllPaginados - Productos obtenidos: " . count($productos));
 
         return $productos;
+    }
+
+    /**
+     * Obtener productos filtrados por tipo y término de búsqueda con paginación.
+     *
+     * @param string|null $tipo
+     * @param string|null $search
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public static function getProductosFiltrados($tipo, $search, $limit, $offset){
+        $con = DataBase::connect();
+
+        // Construir la consulta con condiciones dinámicas
+        $sql = "SELECT * FROM Proyecto1.Producto WHERE 1=1";
+        $params = [];
+        $types = "";
+
+        if ($tipo && $tipo !== 'Todos') {
+            $sql .= " AND tipo = ?";
+            $params[] = $tipo;
+            $types .= "s";
+        }
+
+        if (!empty($search)) {
+            $sql .= " AND nombre LIKE ?";
+            $params[] = '%' . $search . '%';
+            $types .= "s";
+        }
+
+        $sql .= " ORDER BY nombre ASC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $types .= "i";
+        $params[] = $offset;
+        $types .= "i";
+
+        $stmt = $con->prepare($sql);
+        if (!$stmt) {
+            error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
+            return [];
+        }
+
+        // Enlazar parámetros dinámicamente
+        $stmt->bind_param($types, ...$params);
+
+        if (!$stmt->execute()) {
+            error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+            return [];
+        }
+
+        $result = $stmt->get_result();
+        if (!$result) {
+            error_log("Get result failed: (" . $stmt->errno . ") " . $stmt->error);
+            return [];
+        }
+
+        $productos = [];
+        while ($row = $result->fetch_assoc()) {
+            $producto = new Producto(
+                $row['id_producto'],
+                $row['nombre'],
+                $row['descripcion'],
+                $row['precio_base'],
+                $row['img'],
+                $row['tipo'],
+                isset($row['volumen']) ? $row['volumen'] : null,
+                isset($row['calorias']) ? $row['calorias'] : null
+            );
+            $productos[] = $producto;
+        }
+        $stmt->close();
+        $con->close();
+
+        return $productos;
+    }
+
+    /**
+     * Contar productos filtrados por tipo y término de búsqueda.
+     *
+     * @param string|null $tipo
+     * @param string|null $search
+     * @return int
+     */
+    public static function countProductosFiltrados($tipo, $search){
+        $con = DataBase::connect();
+
+        // Construir la consulta con condiciones dinámicas
+        $sql = "SELECT COUNT(*) as total FROM Proyecto1.Producto WHERE 1=1";
+        $params = [];
+        $types = "";
+
+        if ($tipo && $tipo !== 'Todos') {
+            $sql .= " AND tipo = ?";
+            $params[] = $tipo;
+            $types .= "s";
+        }
+
+        if (!empty($search)) {
+            $sql .= " AND nombre LIKE ?";
+            $params[] = '%' . $search . '%';
+            $types .= "s";
+        }
+
+        $stmt = $con->prepare($sql);
+        if (!$stmt) {
+            error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
+            return 0;
+        }
+
+        // Enlazar parámetros dinámicamente
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        if (!$stmt->execute()) {
+            error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+            return 0;
+        }
+
+        $result = $stmt->get_result();
+        if (!$result) {
+            error_log("Get result failed: (" . $stmt->errno . ") " . $stmt->error);
+            return 0;
+        }
+
+        $row = $result->fetch_assoc();
+        $total = $row['total'];
+
+        $stmt->close();
+        $con->close();
+
+        return $total;
     }
 }
 ?>
