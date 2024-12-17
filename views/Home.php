@@ -10,7 +10,7 @@
                 <p class="lead">con nuestra gran variedad de ingredientes,</p> 
                 <p class="lead"> ¡crea tu poke bowl ideal!</p>
                 <a class="btn-hover" href="?controller=Producto&action=carta">Que empiece la magia</a>
-                <p class="mt-3">¿Ya tienes una cuenta? <a href="#">Inicia sesión ahora</a></p>
+                <p class="mt-3">¿Ya tienes una cuenta? <a href="?controller=Usuario&action=login">Inicia sesión ahora</a></p>
             </div>
         </div>
     </section>
