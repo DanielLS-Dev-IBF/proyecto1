@@ -21,11 +21,18 @@
 
 /* CSS generales */
 * {
-  background-color: var(--secondary-color) !important;
   text-align: center;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/* Fondo global solo para el body y contenedores principales */
+body,
+main,
+footer,
+header {
+  background-color: var(--secondary-color) !important;
 }
 
 html,
@@ -41,15 +48,17 @@ main {
 }
 
 footer {
-  background-color: var(--secondary-color, #f9f6f2);
+  background-color: var(--secondary-color);
   padding: 20px;
   text-align: center;
   border-top: 1px solid black;
 }
 
 body {
+  background-color: var(--secondary-color);
   margin: 0;
   padding: 0;
+  height: 100%;
 }
 
 html {
@@ -152,7 +161,7 @@ button {
 
 #barra_superior a:hover,
 #barra_superior button:hover {
-  background-color: #ffffff !important;
+  background-color: #ffffff;
   color: #000000;
 }
 
@@ -175,30 +184,79 @@ a#logo:hover {
   cursor: pointer;
 }
 
-/* Menú desplegable */
+/* Estilos del botón cuenta con icono */
+.icono-cuenta {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  color: #000;
+  text-decoration: none;
+  font-size: var(--font-size-medium);
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  background-color: #f8f8f8;
+  border-radius: 5px;
+}
+
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 80px; /* Aparece debajo de la barra superior */
-  left: 0;
-  width: 100%;
+  top: 100%;
+  right: 0;
   background-color: var(--secondary-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 5px;
   z-index: 1000;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra para distinguirlo */
-  padding: 10px 0;
+  width: 150px;
+  text-align: left;
+}
+
+.dropdown-menu li {
+  list-style: none;
 }
 
 .dropdown-menu a {
   display: block;
-  padding: 10px 20px;
+  padding: 10px;
+  color: #000;
   text-decoration: none;
-  color: black;
-  text-align: left;
+  font-size: var(--font-size-medium);
+  transition: background-color 0.2s;
 }
 
 .dropdown-menu a:hover {
   background-color: var(--primary-color);
-  color: white;
+  color: #fff;
+}
+
+/* Mostrar menú desplegable cuando está activo */
+.dropdown-menu.active {
+  display: block;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+/* Mostrar el menú cuando está activo */
+.dropdown-menu.active {
+  display: block;
 }
 
 /* Ajustes para pantallas pequeñas */
@@ -877,5 +935,80 @@ a#logo:hover {
 
   .page-show .slick-prev img {
     width: 20px; /* Reduce el tamaño de la flecha */
+  }
+}
+
+/* Estilos del botón cuenta */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  color: #000;
+  font-size: var(--font-size-medium);
+  text-decoration: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  background-color: #f8f8f8;
+  border-radius: 5px;
+}
+
+/* Eliminar flecha predeterminada */
+.dropdown-toggle::after {
+  content: none;
+}
+
+/* Menú desplegable */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--secondary-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  z-index: 1000;
+  width: 150px;
+}
+
+.dropdown-menu.active {
+  display: block;
+}
+
+.dropdown-menu li {
+  list-style: none;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px;
+  color: #000;
+  text-decoration: none;
+  font-size: var(--font-size-medium);
+  transition: background-color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Menú hamburguesa */
+.menu-icon {
+  display: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .menu-icon {
+    display: block;
   }
 }

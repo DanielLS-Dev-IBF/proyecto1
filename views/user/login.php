@@ -50,6 +50,9 @@
         <a href="index.php?controller=usuario&amp;action=register" class="text-decoration-none" style="font-size: 1rem;">
             ¿No tienes cuenta? <span class="text-primary">Regístrate</span>
         </a>
+        <a href="index.php?controller=Producto&amp;action=index" class="text-decoration-none" style="font-size: 1rem;">
+            <span class="text-primary">Volver al inicio</span>
+        </a>
     </div>
     <!-- SVG Derecha -->
     <svg width="300" height="490" viewBox="0 0 300 490" fill="none" xmlns="http://www.w3.org/2000/svg" class="position-absolute svg-right d-none d-lg-block pointer-events-none">

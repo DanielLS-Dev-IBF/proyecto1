@@ -161,7 +161,7 @@ class UsuarioController {
         session_start();
         session_unset();
         session_destroy();
-        header('Location: index.php?controller=usuario&action=login');
+        header('Location: index.php?controller=Producto&action=index');
         exit();
     }
 

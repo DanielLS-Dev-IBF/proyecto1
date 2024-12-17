@@ -1,0 +1,75 @@
+/* Sobrescribir el fondo global para los botones específicos */
+
+/* Botón Cuenta */
+#boton_cuenta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-color) !important; /* Fondo secundario */
+  color: #000 !important; /* Texto negro */
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: var(--font-size-medium);
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  position: relative; /* Aislar estilos */
+  z-index: 10;
+}
+
+#boton_cuenta:hover,
+#boton_cuenta:focus {
+  background-color: var(
+    --secondary-color
+  ) !important; /* Forzar el color secundario */
+  color: #000 !important; /* Texto negro */
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 0px 0px black;
+}
+
+#boton_cuenta img {
+  width: 18px;
+  height: 18px;
+  margin-left: 5px;
+  fill: currentColor !important; /* Asegurar que el icono tome el color del texto */
+}
+
+/* Botón Carrito */
+#boton_carrito {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color) !important; /* Fondo primario */
+  color: #ffffff !important; /* Texto blanco */
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: var(--font-size-medium);
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  position: relative; /* Aislar estilos */
+  z-index: 10;
+}
+
+#boton_carrito:hover,
+#boton_carrito:focus {
+  background-color: var(
+    --primary-color
+  ) !important; /* Forzar el color primario */
+  color: #ffffff !important; /* Texto blanco */
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 0px 0px black;
+}
+
+#boton_carrito img {
+  width: 18px;
+  height: 18px;
+  margin-left: 5px;
+  fill: #ffffff !important; /* Asegurar que el icono permanezca blanco */
+}
+
+#menu_cuenta {
+  border: 1px solid black;
+}
