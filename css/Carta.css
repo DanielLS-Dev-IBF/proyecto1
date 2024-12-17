@@ -1,125 +1,86 @@
 /* Carta.css */
 
-/* Definir la variable de color primario */
 :root {
-  --primary-color: #00a82d; /* Verde */
+  --primary-color: #00a82d;
+  --secondary-color: #f8f9fa;
+  --gray-text: #6c757d;
 }
 
-/* 1. Alinear los filtros a la izquierda */
-.carta-filters-container {
-  text-align: left !important; /* Sobrescribe el alineamiento global */
-  background-color: var(--primary-color); /* Fondo color primario */
-  padding: 15px; /* Espaciado interno */
-  border-radius: 0.25rem; /* Bordes redondeados */
+/* Filtros por tipo como bloque con border-radius en el conjunto */
+
+/* Quitar el border-radius individual de cada botón */
+.btn-filter {
+  border: 1px solid #ccc !important;
+  border-radius: 0 !important;
 }
 
-/* 2. Estilos para los botones de filtro */
-.carta-filters-container .btn-filter {
-  color: #fff !important; /* Texto blanco */
-  background-color: transparent !important; /* Fondo transparente para aplicar el fondo del contenedor */
-  border-color: #fff !important; /* Borde blanco */
-  transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+/* El primer botón del grupo con borde redondeado a la izquierda */
+.btn-filter:first-child {
+  border-radius: 5px 0 0 5px !important;
 }
 
-/* 2.a. Estilos para botones de filtro activos (seleccionados) */
-.carta-filters-container .btn-filter.btn-primary {
-  background-color: #fff !important; /* Fondo blanco para resaltar el botón activo */
-  color: var(--primary-color) !important; /* Texto color primario */
-  border-color: #fff !important; /* Borde blanco */
+/* El último botón del grupo con borde redondeado a la derecha */
+.btn-filter:last-child {
+  border-radius: 0 5px 5px 0 !important;
 }
 
-/* 2.b. Estilos para botones de filtro inactivos al pasar el ratón */
-.carta-filters-container .btn-filter.btn-secondary:hover {
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.2
-  ) !important; /* Fondo ligeramente transparente */
-  color: #fff !important; /* Mantiene el texto blanco */
+/* Botón activo */
+.btn-filter.btn-primary {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
 }
 
-/* 3. Estilos para los enlaces de paginación */
-.carta-pagination .page-link {
-  color: var(--primary-color) !important; /* Texto color primario */
-  background-color: #fff !important; /* Fondo blanco */
-  border: 1px solid var(--primary-color) !important; /* Borde color primario */
-  transition: background-color 0.3s, color 0.3s; /* Transiciones suaves */
+/* Botón inactivo */
+.btn-filter.btn-secondary {
+  background-color: var(--secondary-color) !important;
+  color: #000 !important;
+}
+.btn-filter.btn-secondary:hover {
+  background-color: #e2e6ea !important;
+  color: #000 !important;
 }
 
-/* 3.a. Estilos para el enlace de paginación activo */
-.carta-pagination .page-item.active .page-link {
-  background-color: var(--primary-color) !important; /* Fondo color primario */
-  border-color: var(--primary-color) !important; /* Borde color primario */
-  color: #fff !important; /* Texto blanco */
+/* Paginación */
+.page-item.active .page-link {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+  border: 1px solid #ccc !important;
+}
+.page-link {
+  background-color: var(--secondary-color) !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+  transition: background-color 0.3s, color 0.3s;
+}
+.page-link:hover {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
 }
 
-/* 3.b. Estilos para los enlaces de paginación al pasar el ratón */
-.carta-pagination .page-item a.page-link:hover {
-  background-color: var(--primary-color) !important; /* Fondo color primario */
-  color: #fff !important; /* Texto blanco */
-}
-
-/* 4. Estilos para estados de focus */
-
-.carta-filters-container .btn-filter:focus,
-.carta-pagination .page-link:focus,
-.carta-search-container .search-icon:focus {
-  outline: 2px solid #fff; /* Contorno blanco */
-  outline-offset: 2px;
-  box-shadow: 0 0 0 0.2rem rgba(0, 168, 45, 0.25); /* Sombra color primario suave */
-}
-
-/* 4.a. Asegurar que el botón activo mantenga el estilo al estar enfocado */
-.carta-filters-container .btn-filter.btn-primary:focus {
-  background-color: #fff !important; /* Fondo blanco */
-  color: var(--primary-color) !important; /* Texto color primario */
-  border-color: #fff !important; /* Borde blanco */
-}
-
-/* 4.b. Asegurar que el enlace activo de paginación mantenga el estilo al estar enfocado */
-.carta-pagination .page-item.active .page-link:focus {
-  background-color: var(--primary-color) !important; /* Fondo color primario */
-  color: #fff !important; /* Texto blanco */
-  border-color: var(--primary-color) !important; /* Borde color primario */
-}
-
-/* 5. Estilos adicionales para el Buscador */
-
-/* Contenedor relativo para posicionar el ícono de búsqueda */
-.search-input-container {
-  position: relative;
-  width: 100%;
-  max-width: 250px; /* Ajustar según sea necesario */
-}
-
-/* Estilos para el campo de búsqueda */
-.search-input-container input[type="text"] {
-  width: 100%;
-  padding-right: 40px; /* Espacio para el ícono de búsqueda */
-  padding-left: 10px; /* Espacio para el texto a la izquierda */
-  border-radius: 0.25rem; /* Bordes redondeados estándar de Bootstrap */
-  border: 1px solid #ced4da; /* Borde estándar */
-  height: 38px; /* Altura consistente */
-  font-size: 1rem; /* Tamaño de fuente legible */
+/* Buscador */
+.search-input {
+  padding-right: 40px;
+  padding-left: 10px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ced4da;
+  height: 38px;
+  font-size: 1rem;
+  text-align: left;
   transition: border-color 0.3s, box-shadow 0.3s;
-  text-align: left; /* Alinear el texto a la izquierda */
+}
+.search-input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 0.2rem rgba(0, 168, 45, 0.25) !important;
+}
+.search-input::placeholder {
+  color: var(--gray-text);
 }
 
-/* Fondo del buscador */
-.carta-search-container {
-  background-color: var(--primary-color); /* Fondo color primario */
-  padding: 15px; /* Espaciado interno */
-  border-radius: 0.25rem; /* Bordes redondeados */
+/* Lupa */
+#search-form {
+  position: relative;
 }
-
-/* Cambiar el fondo del input para que coincida con el contenedor */
-.search-input-container input[type="text"] {
-  background-color: #fff; /* Fondo blanco para mejor legibilidad */
-  color: #000; /* Texto negro */
-}
-
-/* Estilos para el ícono de búsqueda */
 .search-icon {
   position: absolute;
   right: 10px;
@@ -127,36 +88,36 @@
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  color: var(
-    --primary-color
-  ); /* Mismo color que el background del contenedor */
+  color: var(--gray-text) !important;
   cursor: pointer;
   transition: color 0.3s;
 }
-
-/* Hover effect para el ícono de búsqueda */
 .search-icon:hover {
-  color: #fff; /* Cambia el color al pasar el ratón */
+  color: var(--primary-color) !important;
 }
 
-/* Responsive: Asegurar que el Buscador y los filtros se ajusten en pantallas pequeñas */
+/* Posicionamiento */
+.carta-filters-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.carta-search-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Responsive */
 @media (max-width: 767.98px) {
   .carta-filters-container .btn-group {
     width: 100%;
-    justify-content: center;
+    justify-content: start;
   }
-
   .carta-search-container {
     justify-content: center;
   }
-
-  .search-input-container {
-    max-width: 200px; /* Ajuste adicional para pantallas pequeñas */
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .search-icon {
-    right: 10px; /* Mantener margen derecho */
+  .search-input {
+    width: 100%;
   }
 }
