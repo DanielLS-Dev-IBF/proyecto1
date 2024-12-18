@@ -75,3 +75,25 @@
 #menu_cuenta {
   border: 1px solid black;
 }
+
+/* Media Query para pantallas con un ancho máximo de 768px */
+@media (max-width: 768px) {
+  /* Ocultar el botón "Cuenta" en la barra superior */
+  #boton_cuenta {
+    display: none;
+  }
+
+  /* Opcional: Ajustar el botón "Carrito" si también deseas ocultarlo */
+  #boton_carrito {
+    display: none;
+  }
+
+  /* Asegurar que el icono de menú hamburguesa sea visible */
+  .menu-icon {
+    display: block;
+  }
+
+  /* Opcional: Si el menú hamburguesa no está visible por defecto */
+  /* Asegúrate de que esté visible en pantallas pequeñas */
+  /* Por defecto, podrías tener display: none; */
+}
