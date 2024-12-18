@@ -7,8 +7,6 @@
             <a id="logo" href="?controller=Producto&action=index">
                 <img src="/DAW2/Proyecto1/img/Iconos/Greeny-Logo.png" alt="Logo Barra Superior" id="logo_topnav">
             </a>
-
-            <!-- Redirecciones About us & Explorar -->
             <a href="?controller=Producto&action=index">Acerca de nosotros</a>
             <a href="?controller=Producto&action=carta">Carta</a>
         </div>
@@ -18,7 +16,7 @@
             <div class="dropdown">
                 <?php if (isset($_SESSION['id_usuario'])): ?>
                     <!-- Botón Cuenta -->
-                    <div id="boton_cuenta" id="boton_cuenta">
+                    <div id="boton_cuenta">
                         Mi Cuenta
                         <img src="/DAW2/Proyecto1/img/Iconos/user-black.svg" alt="Icono Usuario">
                     </div>
@@ -48,7 +46,6 @@
     </nav>
 </header>
 
-
 <!-- Menú desplegable en móviles -->
 <div class="dropdown-menu" id="dropdown-menu">
     <a href="?controller=Producto&action=index">Acerca de nosotros</a>
@@ -69,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const menuCuenta = document.getElementById("menu_cuenta");
 
     // Mostrar/ocultar el menú desplegable
-    if (menuCuenta) {
+    if (menuCuenta && botonCuenta) {
         botonCuenta.addEventListener("click", function (e) {
             e.stopPropagation();
             menuCuenta.classList.toggle("active");

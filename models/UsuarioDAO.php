@@ -8,34 +8,61 @@ class UsuarioDAO {
 
     public static function newUser(Usuario $usuario) {
         $con = DataBase::connect();
-
-        $stmt = $con->prepare("INSERT INTO Proyecto1.Usuario (nombre_completo, email, password, direccion, codigo_postal, telefono, fecha_registro) VALUES (?, ?, ?, ?, ?, ?, CURDATE())");
+    
+        // Ahora la consulta no incluye direccion ni codigo_postal
+        $stmt = $con->prepare("INSERT INTO Proyecto1.Usuario (nombre_completo, email, password, telefono, fecha_registro) VALUES (?, ?, ?, ?, CURDATE())");
         if (!$stmt) {
             error_log("Error al preparar la consulta: " . $con->error);
             return false;
         }
-
+    
         $nombre_completo = $usuario->getNombre_completo();
         $email = $usuario->getEmail();
         $password = $usuario->getPassword();
-        $direccion = $usuario->getDireccion();
-        $codigo_postal = $usuario->getCodigo_postal();
         $telefono = $usuario->getTelefono();
-
-        if (!$stmt->bind_param("ssssii", $nombre_completo, $email, $password, $direccion, $codigo_postal, $telefono)) {
+    
+        if (!$stmt->bind_param("sssi", $nombre_completo, $email, $password, $telefono)) {
             error_log("Error al enlazar parámetros: " . $stmt->error);
             return false;
         }
-
+    
         if (!$stmt->execute()) {
             error_log("Error al ejecutar la consulta: " . $stmt->error);
             return false;
         }
+    
+        $stmt->close();
+        $lastId = $con->insert_id; // Obtenemos el id del usuario recién creado
+        $con->close();
+    
+        return $lastId; // Retornamos el ID para usarlo si queremos insertar la dirección después
+    }
 
+    public static function updateUser(Usuario $usuario) {
+        $con = DataBase::connect();
+    
+        $stmt = $con->prepare("UPDATE Proyecto1.Usuario SET nombre_completo = ?, email = ?, telefono = ? WHERE id_usuario = ?");
+        if (!$stmt) {
+            error_log("Error al preparar la consulta: " . $con->error);
+            return false;
+        }
+    
+        $nombre_completo = $usuario->getNombre_completo();
+        $email = $usuario->getEmail();
+        $telefono = $usuario->getTelefono();
+        $id_usuario = $usuario->getId_usuario();
+    
+        // Cambiar el tipo de 'telefono' a cadena
+        if (!$stmt->bind_param("sssi", $nombre_completo, $email, $telefono, $id_usuario)) {
+            error_log("Error al enlazar parámetros: " . $stmt->error);
+            return false;
+        }
+    
+        $resultado = $stmt->execute();
         $stmt->close();
         $con->close();
-
-        return true;
+    
+        return $resultado;
     }
 
     public static function obtenerUsuarioPorEmail($email) {
@@ -110,8 +137,6 @@ class UsuarioDAO {
         $usuario->setNombre_completo($data['nombre_completo']);
         $usuario->setEmail($data['email']);
         $usuario->setPassword($data['password']);
-        $usuario->setDireccion($data['direccion']);
-        $usuario->setCodigo_postal($data['codigo_postal']);
         $usuario->setTelefono($data['telefono']);
         $usuario->setFecha_registro($data['fecha_registro']);
         return $usuario;

@@ -6,6 +6,14 @@
   --gray-text: #6c757d;
 }
 
+/* Fondo global solo para el body y contenedores principales */
+body,
+main,
+footer,
+header {
+  background-color: var(--secondary-color) !important;
+}
+
 /* Filtros por tipo como bloque con border-radius en el conjunto */
 
 /* Quitar el border-radius individual de cada botón */

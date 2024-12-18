@@ -16,6 +16,7 @@
     box-shadow 0.2s ease;
   position: relative; /* Aislar estilos */
   z-index: 10;
+  cursor: pointer;
 }
 
 #boton_cuenta:hover,
@@ -26,6 +27,7 @@
   color: #000 !important; /* Texto negro */
   transform: translateY(-3px);
   box-shadow: 5px 5px 0px 0px black;
+  cursor: pointer;
 }
 
 #boton_cuenta img {

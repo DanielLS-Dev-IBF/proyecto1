@@ -7,6 +7,14 @@
   --border-color: black;
 }
 
+/* Fondo global solo para el body y contenedores principales */
+body,
+main,
+footer,
+header {
+  background-color: var(--secondary-color) !important;
+}
+
 /* Estilos específicos para la página del carrito */
 .page-cart {
   background-color: var(--secondary-color); /* Fondo del contenedor */

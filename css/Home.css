@@ -1,0 +1,7 @@
+/* Fondo global solo para el body y contenedores principales */
+body,
+main,
+footer,
+header {
+  background-color: var(--secondary-color) !important;
+}

@@ -5,8 +5,6 @@ class Usuario {
     protected $nombre_completo;
     protected $email;
     protected $password;
-    protected $direccion;
-    protected $codigo_postal;
     protected $telefono;
     protected $fecha_registro;
 
@@ -45,24 +43,6 @@ class Usuario {
 
     public function setPassword($password) {
         $this->password = $password;
-        return $this;
-    }
-
-    public function getDireccion() {
-        return $this->direccion;
-    }
-
-    public function setDireccion($direccion) {
-        $this->direccion = $direccion;
-        return $this;
-    }
-
-    public function getCodigo_postal() {
-        return $this->codigo_postal;
-    }
-
-    public function setCodigo_postal($codigo_postal) {
-        $this->codigo_postal = $codigo_postal;
         return $this;
     }
 

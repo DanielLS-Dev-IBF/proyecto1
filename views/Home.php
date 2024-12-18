@@ -1,3 +1,5 @@
+
+<link rel="stylesheet" href="css/Home.css">
 <?php include_once "TopNav.php"; ?>
 <main>
     <!-- Sección principal con título y descripción -->

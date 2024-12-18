@@ -27,14 +27,6 @@
   box-sizing: border-box;
 }
 
-/* Fondo global solo para el body y contenedores principales */
-body,
-main,
-footer,
-header {
-  background-color: var(--secondary-color) !important;
-}
-
 html,
 body {
   height: 100%; /* Asegura que la página ocupe toda la ventana */
@@ -154,7 +146,7 @@ button {
   text-decoration: none;
   color: #000;
   border-radius: 5px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-size: var(--font-size-medium);
   cursor: pointer;
 }
@@ -715,7 +707,7 @@ a#logo:hover {
 
 /* Footer de la tarjeta */
 .producto-card .producto-footer {
-  background-color: #f8f9fa; /* Fondo claro */
+  background-color: var(--secondary-color); /* Fondo claro */
   padding: 1rem; /* Espaciado interno */
 }
 
