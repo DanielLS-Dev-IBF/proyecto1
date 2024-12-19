@@ -1,4 +1,6 @@
 <?php
+// views/user/profile.php
+
 include_once "views/TopNav.php";
 ?>
 <link rel="stylesheet" href="css/Profile.css">
@@ -57,27 +59,12 @@ include_once "views/TopNav.php";
                                     <svg class="icono-flecha abajo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
                                       <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                                     </svg>
-                                    <svg class="icono-flecha arriba" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
+                                    <svg class="icono-flecha arriba d-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
                                       <path fill-rule="evenodd" d="M1.646 11.354a.5.5 0 0 1 .708 0L8 6.707l5.646 5.647a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1-.708 0l-6 6a.5.5 0 0 1 0-.708z"/>
                                     </svg>
                                 </button>
                                 <div class="collapse mt-3" id="detallePedido<?= $pedido['id_pedido'] ?>">
-                                    <?php
-                                        // Obtener los detalles del pedido
-                                        $sql_detalle = "SELECT * FROM detalle_pedidos WHERE id_pedido = ?";
-                                        $stmt_detalle = PedidoDAO::getConnection()->prepare($sql_detalle);
-                                        $stmt_detalle->bind_param("i", $pedido['id_pedido']);
-                                        $stmt_detalle->execute();
-                                        $result_detalle = $stmt_detalle->get_result();
-
-                                        $detalles = [];
-                                        while ($detalle = $result_detalle->fetch_assoc()) {
-                                            $detalles[] = $detalle;
-                                        }
-
-                                        $stmt_detalle->close();
-                                    ?>
-                                    <?php if (!empty($detalles)): ?>
+                                    <?php if (!empty($pedido['detalles'])): ?>
                                         <table class="table table-bordered">
                                             <thead>
                                                 <tr>
@@ -88,7 +75,7 @@ include_once "views/TopNav.php";
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php foreach ($detalles as $detalle): ?>
+                                                <?php foreach ($pedido['detalles'] as $detalle): ?>
                                                     <tr>
                                                         <td><?= htmlspecialchars($detalle['nombre_producto']) ?></td>
                                                         <td><?= number_format($detalle['precio_unitario'], 2) ?>€</td>
@@ -225,6 +212,18 @@ include_once "views/TopNav.php";
             saveCancelButtons.classList.add("d-none");
             editButton.classList.remove("d-none");
             if (fechaRegistro) fechaRegistro.classList.remove("d-none"); // Mostrar fecha de registro
+        });
+
+        // Opcional: Manejar la alternancia de los íconos de flecha
+        const buttons = document.querySelectorAll('button[data-bs-toggle="collapse"]');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const iconoAbajo = button.querySelector('.icono-flecha.abajo');
+                const iconoArriba = button.querySelector('.icono-flecha.arriba');
+
+                iconoAbajo.classList.toggle('d-none');
+                iconoArriba.classList.toggle('d-none');
+            });
         });
     });
 </script>

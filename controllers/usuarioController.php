@@ -3,6 +3,8 @@
 
 include_once("models/UsuarioDAO.php");
 include_once("models/Usuario.php");
+include_once("models/PedidoDAO.php");
+include_once("models/DireccionDAO.php");
 
 class UsuarioController {
     public function index() {
@@ -93,11 +95,10 @@ class UsuarioController {
                 if ($idUsuario) {
                     // Si el usuario ingresó una dirección, la guardamos
                     if (!empty($direccion) && !empty($codigo_postal)) {
-                        include_once("models/DireccionDAO.php");
                         $dirObj = new Direccion();
-                        $dirObj->setId_cliente($idUsuario);
+                        $dirObj->setIdUsuario($idUsuario);
                         $dirObj->setDireccion($direccion);
-                        $dirObj->setCodigo_postal((int)$codigo_postal);
+                        $dirObj->setCodigoPostal((int)$codigo_postal);
     
                         DireccionDAO::agregarDireccion($dirObj);
                     }
@@ -117,7 +118,6 @@ class UsuarioController {
             $this->register();
         }
     }
-    
 
     public function login() {
         $email = '';
@@ -192,9 +192,9 @@ class UsuarioController {
     
         if ($usuario) {
             // Obtener direcciones del usuario
-            include_once("models/DireccionDAO.php");
-            $direcciones = DireccionDAO::obtenerDireccionesPorUsuario($usuario->getId_usuario());
+            $direcciones = DireccionDAO::getDireccionesByUsuario($usuario->getId_usuario());
     
+            // Incluir la vista y pasar los datos
             $view = 'views/user/profile.php';
             include_once 'views/main.php';
         } else {
@@ -202,6 +202,39 @@ class UsuarioController {
             echo "Usuario no encontrado.";
         }
     }
+
+    public function pedidos() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['id_usuario'])) {
+            $_SESSION['error'] = "Debes iniciar sesión para ver tus pedidos.";
+            header('Location: index.php?controller=usuario&action=login');
+            exit();
+        }
+
+        $usuario_id = $_SESSION['id_usuario'];
+
+        // Obtener la información del usuario
+        $usuario = UsuarioDAO::obtenerUsuarioPorId($usuario_id);
+
+        if ($usuario) {
+            // Obtener direcciones del usuario
+            $direcciones = DireccionDAO::getDireccionesByUsuario($usuario_id);
+
+            // Obtener los pedidos del usuario con sus detalles
+            $pedidos = PedidoDAO::getPedidosConDetallesByUsuario($usuario_id);
+
+            // Incluir la vista y pasar los datos
+            $view = 'views/user/profile.php';
+            include_once 'views/main.php';
+        } else {
+            http_response_code(404);
+            echo "Usuario no encontrado.";
+        }
+    }
+
     public function update() {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -256,8 +289,6 @@ class UsuarioController {
                     if ($resultado) {
                         // Actualizar variables de sesión
                         $_SESSION['nombre_completo'] = $nombre_completo;
-                        $_SESSION['email'] = $email;
-                        $_SESSION['telefono'] = $telefono;
     
                         // Establecer mensaje de éxito en la sesión
                         $_SESSION['success'] = 'Perfil actualizado exitosamente.';
@@ -285,3 +316,4 @@ class UsuarioController {
         }
     }
 }
+?>

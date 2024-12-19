@@ -1,72 +1,50 @@
 <?php
-
 // models/DireccionDAO.php
-include_once("Direccion.php");
+
 include_once("config/db.php");
+include_once("Direccion.php");
 
 class DireccionDAO {
-    public static function agregarDireccion(Direccion $direccion) {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("INSERT INTO Proyecto1.Direccion (id_cliente, direccion, codigo_postal) VALUES (?, ?, ?)");
+    /**
+     * Obtener todas las direcciones de un usuario
+     *
+     * @param int $id_cliente
+     * @return array
+     */
+    public static function getDireccionesByUsuario($id_cliente) {
+        $conn = DataBase::connect();
+        $sql = "SELECT * FROM Direccion WHERE id_cliente = ?";
+        $stmt = $conn->prepare($sql);
         if (!$stmt) {
-            error_log("Error al preparar la consulta: " . $con->error);
-            return false;
+            error_log("Error preparando la consulta: " . $conn->error);
+            return [];
         }
 
-        $id_cliente = $direccion->getId_cliente();
-        $dir = $direccion->getDireccion();
-        $cp = $direccion->getCodigo_postal();
-
-        if (!$stmt->bind_param("isi", $id_cliente, $dir, $cp)) {
-            error_log("Error al enlazar parámetros: " . $stmt->error);
-            return false;
-        }
-
+        $stmt->bind_param("i", $id_cliente);
         if (!$stmt->execute()) {
-            error_log("Error al ejecutar la consulta: " . $stmt->error);
-            return false;
+            error_log("Error ejecutando la consulta: " . $stmt->error);
+            $stmt->close();
+            $conn->close();
+            return [];
         }
 
-        $stmt->close();
-        $con->close();
-        return true;
-    }
-
-    public static function obtenerDireccionesPorUsuario($id_usuario) {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("SELECT * FROM Proyecto1.Direccion WHERE id_cliente = ?");
-        if (!$stmt) {
-            error_log("Error al preparar la consulta: " . $con->error);
-            return [];
-        }
-    
-        if (!$stmt->bind_param("i", $id_usuario)) {
-            error_log("Error al enlazar parámetros: " . $stmt->error);
-            return [];
-        }
-    
-        if (!$stmt->execute()) {
-            error_log("Error al ejecutar la consulta: " . $stmt->error);
-            return [];
-        }
-    
         $result = $stmt->get_result();
         $direcciones = [];
-    
-        while ($data = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
             $direccion = new Direccion(
-                $data['id_direccion'],
-                $data['id_cliente'],
-                $data['direccion'],
-                $data['codigo_postal']
+                $row['id_direccion'],
+                $row['id_cliente'],
+                $row['direccion'],
+                $row['codigo_postal']
             );
             $direcciones[] = $direccion;
         }
-    
+
         $stmt->close();
-        $con->close();
-    
+        $conn->close();
         return $direcciones;
     }
-    
+
+    // Otros métodos según sea necesario (e.g., agregarDireccion, eliminarDireccion)
 }
+?>

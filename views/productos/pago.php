@@ -1,47 +1,14 @@
-<?php include_once "views/TopNav.php"; ?>
-
 <?php
-// Iniciar sesión si no está iniciada
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+// views/productos/pago.php
+include_once "views/TopNav.php";
 
-// Verificar que el carrito no esté vacío
-if (empty($_SESSION['carrito'])) {
-    $_SESSION['error'] = 'Tu carrito está vacío. Agrega productos antes de proceder al pago.';
+// Asegurarse de que las variables están definidas
+if (!isset($usuario) || !isset($direcciones)) {
+    $_SESSION['error'] = 'Información del usuario o direcciones no disponibles.';
     header('Location: index.php?controller=carrito&action=index');
     exit();
 }
-
-// Obtener los datos necesarios del carrito y descuentos
-$subtotal = isset($_SESSION['subtotal']) ? $_SESSION['subtotal'] : 0;
-$descuento = isset($_SESSION['descuento']) ? $_SESSION['descuento'] : 0;
-$gastos_envio = isset($gastos_envio) ? $gastos_envio : 0;
-$total = $subtotal - $descuento + $gastos_envio;
-
-// Manejar mensajes de éxito o error
-if (isset($_SESSION['mensaje'])) {
-    echo '<div class="alert alert-success alert-dismissible fade show text-start" role="alert">';
-    echo htmlspecialchars($_SESSION['mensaje']);
-    echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-    echo '</div>';
-    unset($_SESSION['mensaje']);
-}
-
-if (isset($_SESSION['error'])) {
-    echo '<div class="alert alert-danger alert-dismissible fade show text-start" role="alert">';
-    echo htmlspecialchars($_SESSION['error']);
-    echo '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
-    echo '</div>';
-    unset($_SESSION['error']);
-}
-
-// Generar un token CSRF si no existe
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-}
 ?>
-
 <link rel="stylesheet" href="css/Carrito.css">
 
 <div class="container my-5 page-pago">
@@ -56,25 +23,35 @@ if (empty($_SESSION['csrf_token'])) {
                         <!-- Campo de Nombre Completo -->
                         <div class="col-12 mb-3">
                             <label for="nombre_completo" class="form-label text-start d-block">Nombre Completo</label>
-                            <input type="text" class="form-control" id="nombre_completo" name="nombre_completo" placeholder="Juan Pérez" required>
+                            <input type="text" class="form-control" id="nombre_completo" name="nombre_completo" placeholder="Juan Pérez" required 
+                            value="<?= htmlspecialchars($usuario->getNombre_completo()); ?>">
                         </div>
                         
-                        <!-- Campo de Dirección -->
+                        <!-- Selector de Dirección -->
                         <div class="col-12 mb-3">
                             <label for="direccion" class="form-label text-start d-block">Dirección</label>
-                            <input type="text" class="form-control" id="direccion" name="direccion" placeholder="Calle Falsa 123, Ciudad, País" required>
+                            <select class="form-select" id="direccion" name="direccion" required>
+                                <option value="" disabled selected>Selecciona una dirección</option>
+                                <?php foreach ($direcciones as $direccion): ?>
+                                    <option value="<?= htmlspecialchars($direccion->getDireccion()); ?>">
+                                        <?= htmlspecialchars($direccion->getDireccion()) . ", " . htmlspecialchars($direccion->getCodigoPostal()); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         
                         <!-- Campo de Teléfono -->
                         <div class="col-md-6 mb-3">
                             <label for="telefono" class="form-label text-start d-block">Teléfono</label>
-                            <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="1234567890" pattern="\d{10}" required>
+                            <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="1234567890" pattern="\d{10}" required
+                            value="<?= htmlspecialchars($usuario->getTelefono()); ?>">
                         </div>
                         
                         <!-- Campo de Correo Electrónico -->
                         <div class="col-md-6 mb-3">
                             <label for="correo" class="form-label text-start d-block">Correo Electrónico</label>
-                            <input type="email" class="form-control" id="correo" name="correo" placeholder="juan.perez@example.com" required>
+                            <input type="email" class="form-control" id="correo" name="correo" placeholder="juan.perez@example.com" required
+                            value="<?= htmlspecialchars($usuario->getEmail()); ?>">
                         </div>
                         
                         <!-- Método de Pago -->
@@ -146,7 +123,7 @@ if (empty($_SESSION['csrf_token'])) {
                 detallesPagoDiv.innerHTML = `
                     <div class="mb-3">
                         <label for="numero_tarjeta" class="form-label text-start d-block">Número de Tarjeta</label>
-                        <input type="text" class="form-control" id="numero_tarjeta" name="numero_tarjeta" placeholder="1234 5678 9012 3456" pattern="\\d{16}" required>
+                        <input type="text" class="form-control" id="numero_tarjeta" name="numero_tarjeta" placeholder="1234567812345678" pattern="\\d{16}" required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -180,7 +157,7 @@ if (empty($_SESSION['csrf_token'])) {
                 detallesPagoDiv.innerHTML = `
                     <div class="mb-3">
                         <label for="numero_cuenta" class="form-label text-start d-block">Número de Cuenta</label>
-                        <input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" placeholder="ES00 0000 0000 0000 0000 0000" pattern="[A-Z]{2}\\d{22}" required>
+                        <input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" placeholder="ES0000000000000000000000" pattern="[A-Z]{2}\\d{22}" required>
                     </div>
                 `;
             }
