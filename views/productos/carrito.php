@@ -39,7 +39,9 @@ if (isset($_SESSION['error'])) {
                                     <!-- Nombre y Precio del producto -->
                                     <div class="ms-3 product-info">
                                         <h5 class="product-name text-start mb-2"><?= htmlspecialchars($producto['nombre']) ?></h5>
-                                        <p class="product-price text-start mb-2"><?= number_format($producto['precio_base'], 2) ?>€</p>
+                                        <p class="product-price text-start mb-2">
+                                            <?= number_format($producto['precio_base'], 2) ?>€
+                                        </p>
                                         <!-- Mostrar propiedades específicas según el tipo -->
                                         <?php if ($producto['tipo'] == 'Bebidas' && !empty($producto['volumen'])): ?>
                                             <p>Volumen: <?= htmlspecialchars($producto['volumen']) ?> ml</p>
@@ -64,7 +66,7 @@ if (isset($_SESSION['error'])) {
                                         <!-- Botón para disminuir cantidad -->
                                         <form action="index.php?controller=carrito&action=actualizar" method="post" class="me-2">
                                             <input type="hidden" name="producto_id" value="<?= $producto['id_producto'] ?>">
-                                            <input type="hidden" name="cantidad" value="<?= $producto['cantidad'] - 1 ?>">
+                                            <input type="hidden" name="cantidad" value="<?= max(0, $producto['cantidad'] - 1) ?>">
                                             <button type="submit" class="btn btn-sm btn-cantidad" title="Disminuir cantidad" aria-label="Disminuir cantidad">
                                                 <img src="/DAW2/Proyecto1/img/Iconos/minus.svg" alt="Disminuir" class="icono-cantidad">
                                             </button>
@@ -107,35 +109,47 @@ if (isset($_SESSION['error'])) {
                     </h5>
                 <?php endif; ?>
 
+                <!-- Mostrar el código aplicado y permitir eliminarlo con una "X" -->
+                <?php if (isset($_SESSION['codigo_aplicado'])): ?>
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        Has aplicado el código promocional: <strong><?= htmlspecialchars($_SESSION['codigo_aplicado']) ?></strong>.
+                        <button type="button" class="btn-close" aria-label="Close" onclick="window.location.href='index.php?controller=carrito&action=eliminarDescuento'"></button>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Título que funciona como toggle para el código promocional -->
-                <h5 class="my-4 d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#codigo-promocional" role="button" aria-expanded="false" aria-controls="codigo-promocional" style="cursor: pointer;">
-                    <span>Código promocional</span>
-                    <!-- Contenedor de los iconos de flecha -->
-                    <span class="arrow-icon">
-                        <img src="/DAW2/Proyecto1/img/Iconos/down-arrow.svg" alt="Flecha hacia abajo" class="icono-flecha abajo">
-                        <img src="/DAW2/Proyecto1/img/Iconos/arrow-up.svg" alt="Flecha hacia arriba" class="icono-flecha arriba">
-                    </span>
-                </h5>
+                <?php if (!isset($_SESSION['codigo_aplicado'])): ?>
+                    <h5 class="my-4 d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#codigo-promocional" role="button" aria-expanded="false" aria-controls="codigo-promocional" style="cursor: pointer;">
+                        <span>Código promocional</span>
+                        <!-- Contenedor de los iconos de flecha -->
+                        <span class="arrow-icon">
+                            <img src="/DAW2/Proyecto1/img/Iconos/down-arrow.svg" alt="Flecha hacia abajo" class="icono-flecha abajo">
+                            <img src="/DAW2/Proyecto1/img/Iconos/arrow-up.svg" alt="Flecha hacia arriba" class="icono-flecha arriba">
+                        </span>
+                    </h5>
+                <?php endif; ?>
 
                 <!-- Campo de código promocional colapsable -->
-                <div class="collapse" id="codigo-promocional">
-                    <form action="index.php?controller=carrito&action=aplicarCodigo" method="post">
-                        <input type="text" name="codigo" class="form-control my-2" placeholder="Introduce el código">
-                        <button type="submit" class="btn-hover w-100 mt-2">Aplicar</button>
-                    </form>
-                    <?php if (isset($_SESSION['error_codigo'])): ?>
-                        <div class="alert alert-danger mt-2">
-                            <?= htmlspecialchars($_SESSION['error_codigo']) ?>
-                        </div>
-                        <?php unset($_SESSION['error_codigo']); ?>
-                    <?php endif; ?>
-                    <?php if (isset($_SESSION['mensaje'])): ?>
-                        <div class="alert alert-success mt-2">
-                            <?= htmlspecialchars($_SESSION['mensaje']) ?>
-                        </div>
-                        <?php unset($_SESSION['mensaje']); ?>
-                    <?php endif; ?>
-                </div>
+                <?php if (!isset($_SESSION['codigo_aplicado'])): ?>
+                    <div class="collapse" id="codigo-promocional">
+                        <form action="index.php?controller=carrito&action=aplicarCodigo" method="post">
+                            <input type="text" name="codigo" class="form-control my-2" placeholder="Introduce el código" required pattern="[A-Za-z0-9]{5,255}" title="El código debe tener entre 5 y 255 caracteres alfanuméricos.">
+                            <button type="submit" class="btn-hover w-100 mt-2">Aplicar</button>
+                        </form>
+                        <?php if (isset($_SESSION['error_codigo'])): ?>
+                            <div class="alert alert-danger mt-2">
+                                <?= htmlspecialchars($_SESSION['error_codigo']) ?>
+                            </div>
+                            <?php unset($_SESSION['error_codigo']); ?>
+                        <?php endif; ?>
+                        <?php if (isset($_SESSION['mensaje'])): ?>
+                            <div class="alert alert-success mt-2">
+                                <?= htmlspecialchars($_SESSION['mensaje']) ?>
+                            </div>
+                            <?php unset($_SESSION['mensaje']); ?>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
 
                 <!-- Resto del resumen del carrito -->
                 <h5 class="my-4 d-flex justify-content-between align-items-center">
@@ -146,9 +160,38 @@ if (isset($_SESSION['error'])) {
                     <span class="text-success fw-bold">TOTAL:</span>
                     <span class="text-success fw-bold" id="total"><?= number_format($total, 2) ?>€</span>
                 </h5>
-                <button class="btn-hover w-100 mt-5">Pagar Ahora</button>
+                <!-- Botón de Pagar Ahora en el resumen del carrito -->
+                <button class="btn-hover w-100 mt-5" onclick="window.location.href='index.php?controller=carrito&action=mostrarPago'">Pagar Ahora</button>
             </div>
         </div>
     </div>
 </div>
 <?php include_once "views/Footer.php"; ?>
+
+<!-- Script para manejar el toggle de las flechas en el formulario de código promocional -->
+<script>
+    $(document).ready(function() {
+        // Toggle arrows on collapse (utilizando Bootstrap)
+        const codigoPromocional = $('#codigo-promocional');
+        if (codigoPromocional.length) {
+            const arrowDown = $('.icono-flecha.abajo');
+            const arrowUp = $('.icono-flecha.arriba');
+
+            codigoPromocional.on('show.bs.collapse', function () {
+                arrowDown.hide();
+                arrowUp.show();
+            });
+
+            codigoPromocional.on('hide.bs.collapse', function () {
+                arrowDown.show();
+                arrowUp.hide();
+            });
+        }
+    });
+
+    // Menú hamburguesa
+    function toggleMenu() {
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        dropdownMenu.classList.toggle("show");
+    }
+</script>

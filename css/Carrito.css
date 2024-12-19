@@ -15,13 +15,15 @@ header {
   background-color: var(--secondary-color) !important;
 }
 
-/* Estilos específicos para la página del carrito */
-.page-cart {
+/* Estilos específicos para la página del carrito y perfil */
+.page-cart,
+.page-profile {
   background-color: var(--secondary-color); /* Fondo del contenedor */
 }
 
 /* Contenedor de productos */
-.cart-item {
+.cart-item,
+.pedido-item {
   border: 1px solid var(--border-color); /* Bordes negros */
   border-radius: 10px; /* Bordes redondeados */
   background-color: var(--secondary-color); /* Fondo del producto */
@@ -31,15 +33,17 @@ header {
   justify-content: space-between;
 }
 
-/* Contenedor principal del producto: imagen y detalles */
-.product-container {
+/* Contenedor principal del producto o pedido: imagen y detalles */
+.product-container,
+.pedido-container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 }
 
-/* Contenedor de la imagen del producto */
-.product-image-container {
+/* Contenedor de la imagen del producto (en pedidos, podrías tener iconos) */
+.product-image-container,
+.pedido-image-container {
   flex-shrink: 0; /* Evita que la imagen se encoja */
 }
 
@@ -51,42 +55,47 @@ header {
   border-radius: 8px;
 }
 
-/* Información del producto */
-.product-info {
+/* Información del producto o pedido */
+.product-info,
+.pedido-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.product-info.text-start {
+.product-info.text-start,
+.pedido-info.text-start {
   text-align: left;
 }
 
-.product-name {
+.product-name,
+.pedido-name {
   font-size: 1.2rem;
   margin-bottom: 5px;
 }
 
-.product-price {
+.product-price,
+.pedido-price {
   font-size: 1rem;
   color: #555;
 }
 
 /* Contenedor del botón de eliminar */
-.action-button-container {
+.action-button-container,
+.pedido-action-button-container {
   flex-shrink: 0; /* Evita que el botón de eliminar se encoja */
 }
 
 /* Controles de cantidad */
 .quantity-controls-container {
   display: flex;
-  align-items: center; /* Asegura la alineación vertical */
+  align-items: center; /* Alineación vertical */
   justify-content: center;
   margin-top: 20px;
   border: 1px solid #000000 !important;
   border-radius: 25px;
-  padding-left: 5px; /* Añadido para mejor apariencia */
-  padding-right: 5px; /* Añadido para mejor apariencia */
+  padding-left: 5px; /* Mejor apariencia */
+  padding-right: 5px; /* Mejor apariencia */
 }
 
 /* Controles de cantidad */
@@ -95,35 +104,33 @@ header {
   align-items: center;
 }
 
-/* Asegurar que los botones de cantidad estén centrados */
+/* Botones de cantidad */
 .btn-cantidad {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2px; /* Reducido para que sean más pequeños */
+  padding: 2px; /* Reducido para más pequeños */
 }
 
-/* Reducir tamaño de los iconos de cantidad */
 .btn-cantidad img.icono-cantidad {
-  width: 10px; /* Reducido de var(--btn-cantidad-size) */
-  height: 10px; /* Reducido de var(--btn-cantidad-size) */
+  width: 10px; /* Reducido */
+  height: 10px; /* Reducido */
   transition: transform 0.2s;
 }
 
-/* Efecto al hacer clic */
 .btn-cantidad:active img.icono-cantidad {
   transform: scale(0.9);
 }
 
-/* Reducir tamaño del número de cantidad */
+/* Número de cantidad */
 .quantity-number {
-  font-size: 1.1rem; /* Reducido de 1.5rem */
-  min-width: 20px; /* Reducido de 30px */
+  font-size: 1.1rem; /* Reducido */
+  min-width: 20px; /* Reducido */
   text-align: center;
-  margin: 0 4px; /* Reducido de 8px */
+  margin: 0 4px; /* Reducido */
 }
 
-/* Botón para eliminar producto */
+/* Botón para eliminar producto o pedido */
 .icono-basura {
   width: var(--icono-basura-size);
   height: var(--icono-basura-size);
@@ -136,7 +143,9 @@ header {
 
 /* Botones */
 .cart-item button,
-.cart-summary button {
+.cart-summary button,
+.pedido-item button,
+.pedido-summary button {
   border-radius: 5px;
   font-size: 0.9rem;
   background-color: transparent; /* Botones transparentes */
@@ -146,34 +155,39 @@ header {
   cursor: pointer;
 }
 
-/* Restaurar el borde de cart-summary */
-.cart-summary {
+/* Restaurar el borde de cart-summary y pedido-summary */
+.cart-summary,
+.pedido-summary {
   border: 1px solid var(--border-color); /* Bordes negros */
   border-radius: 10px; /* Bordes redondeados */
   background-color: var(--secondary-color); /* Fondo del resumen */
   padding: 20px; /* Añadir padding para mejor apariencia */
 }
 
-/* Botón "Pagar Ahora" */
-.cart-summary .btn-hover {
+/* Botón "Pagar Ahora" y similares */
+.cart-summary .btn-hover,
+.pedido-summary .btn-hover {
   padding: 10px;
 }
 
-.cart-summary .btn-hover:hover {
-  background-color: #218838; /* Color ligeramente más oscuro */
-  border-color: #000000; /* Borde ligeramente más oscuro */
+.cart-summary .btn-hover:hover,
+.pedido-summary .btn-hover:hover {
+  background-color: #218838; /* Color más oscuro */
+  border-color: #000000; /* Borde más oscuro */
 }
 
 /* Subtítulos */
-.cart-summary h5 {
+.cart-summary h5,
+.pedido-summary h5 {
   color: black; /* Texto negro */
   font-size: 1rem;
 }
 
 /* Título principal */
-.page-cart h1 {
+.page-cart h1,
+.page-profile h1 {
   color: black; /* Texto negro */
-  font-size: 2.5rem; /* Ajusta tamaño del título */
+  font-size: 2.5rem; /* Tamaño del título */
 }
 
 /* Texto total */
@@ -183,23 +197,27 @@ header {
 
 /* Responsivo */
 @media (max-width: 768px) {
-  .cart-item {
+  .cart-item,
+  .pedido-item {
     flex-direction: column;
     text-align: center;
   }
 
-  .product-container {
+  .product-container,
+  .pedido-container {
     flex-direction: column;
     align-items: center;
     text-align: center;
   }
 
-  .product-info {
+  .product-info,
+  .pedido-info {
     align-items: center;
     text-align: center;
   }
 
-  .delete-button-container {
+  .delete-button-container,
+  .pedido-action-button-container {
     margin-left: 0;
     margin-top: 10px;
   }
@@ -240,6 +258,7 @@ header {
 
 /* Asegurar que las imágenes se muestren */
 .cart-item img,
+.pedido-item img,
 .icono-cantidad,
 .icono-basura {
   display: inline-block;
@@ -253,4 +272,163 @@ header {
 /* Feedback Visual en Botones */
 .btn-cantidad:active img.icono-cantidad {
   transform: scale(0.9);
+}
+
+/* Ajusta la posición del botón de cierre en las alertas */
+.alert-dismissible .btn-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.btn-close:focus {
+  box-shadow: none !important;
+}
+
+/* Asegura que la alerta tenga posición relativa para que el botón se posicione correctamente */
+.alert {
+  position: relative;
+}
+
+/* Estilos para la sección de pedidos en el perfil */
+.pedido-summary {
+  margin-top: 20px;
+}
+
+.pedido-summary table th,
+.pedido-summary table td {
+  text-align: center;
+}
+
+.pedido-summary table th {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Estilos exclusivos para la página de pago */
+.page-pago {
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+/* Encabezado principal */
+.page-pago h1 {
+  font-size: 2.5rem;
+  font-family: var(--primary-font);
+  color: black;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* Resumen de pago */
+.pago-summary {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: var(--secondary-color);
+  padding: 20px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.pago-summary h5 {
+  font-size: 1.2rem;
+  font-family: var(--secondary-font);
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.pago-summary p {
+  font-size: var(--font-size-medium);
+  font-family: var(--secondary-font);
+  color: #555;
+}
+
+/* Formulario de pago */
+.pago-summary input,
+.pago-summary select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--secondary-color);
+  font-size: var(--font-size-medium);
+  font-family: var(--secondary-font);
+}
+
+.pago-summary input:focus,
+.pago-summary select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 168, 45, 0.5);
+}
+
+/* Botón de confirmar pago */
+.pago-summary button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.pago-summary button:hover {
+  background-color: #007a20;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .page-pago {
+    padding: 10px;
+  }
+
+  .pago-summary {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .pago-summary input,
+  .pago-summary textarea {
+    font-size: var(--font-size-small);
+  }
+
+  .pago-summary button {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+  }
+}
+.cart-summary ul.list-group li.list-group-item {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  font-size: var(--font-size-medium);
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cart-summary ul.list-group li.list-group-item span {
+  font-weight: 500;
+}
+
+.cart-summary ul.list-group li.list-group-item strong {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.list-group-item {
+  background-color: var(--secondary-color);
+}
+
+.list-group-item.text-success {
+  color: var(--secondary-color);
+}
+
+.btn-hover {
+  margin: 0px;
 }

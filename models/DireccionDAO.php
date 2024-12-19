@@ -39,32 +39,34 @@ class DireccionDAO {
             error_log("Error al preparar la consulta: " . $con->error);
             return [];
         }
-
+    
         if (!$stmt->bind_param("i", $id_usuario)) {
             error_log("Error al enlazar parámetros: " . $stmt->error);
             return [];
         }
-
+    
         if (!$stmt->execute()) {
             error_log("Error al ejecutar la consulta: " . $stmt->error);
             return [];
         }
-
+    
         $result = $stmt->get_result();
         $direcciones = [];
-
+    
         while ($data = $result->fetch_assoc()) {
-            $direccion = new Direccion();
-            $direccion->setId_direccion($data['id_direccion']);
-            $direccion->setId_cliente($data['id_cliente']);
-            $direccion->setDireccion($data['direccion']);
-            $direccion->setCodigo_postal($data['codigo_postal']);
+            $direccion = new Direccion(
+                $data['id_direccion'],
+                $data['id_cliente'],
+                $data['direccion'],
+                $data['codigo_postal']
+            );
             $direcciones[] = $direccion;
         }
-
+    
         $stmt->close();
         $con->close();
-
+    
         return $direcciones;
     }
+    
 }

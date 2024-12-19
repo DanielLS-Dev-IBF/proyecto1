@@ -85,4 +85,5 @@ function toggleMenu() {
     const dropdownMenu = document.getElementById("dropdown-menu");
     dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
 }
+
 </script>
