@@ -436,3 +436,7 @@ input.form-control:focus {
   transform: translateY(-3px);
   box-shadow: 5px 5px 0px 0px black;
 }
+
+.text-success {
+  color: var(--primary-color) !important;
+}

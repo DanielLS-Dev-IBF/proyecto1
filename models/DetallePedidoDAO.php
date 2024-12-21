@@ -23,14 +23,23 @@ class DetallePedidoDAO {
             return false;
         }
 
+        // **Asignar los valores a variables temporales**
+        $id_pedido = $detalle->getIdPedido();           // int
+        $id_producto = $detalle->getIdProducto();       // int
+        $nombre_producto = $detalle->getNombreProducto(); // string
+        $precio_unitario = $detalle->getPrecioUnitario(); // double
+        $cantidad = $detalle->getCantidad();             // int
+        $total_producto = $detalle->getTotalProducto();   // double
+
+        // **Corregir la cadena de tipos: "iisdid"**
         $stmt->bind_param(
-            "iisdii",
-            $detalle->getIdPedido(),
-            $detalle->getIdProducto(),
-            $detalle->getNombreProducto(),
-            $detalle->getPrecioUnitario(),
-            $detalle->getCantidad(),
-            $detalle->getTotalProducto()
+            "iisdid",
+            $id_pedido,
+            $id_producto,
+            $nombre_producto,
+            $precio_unitario,
+            $cantidad,
+            $total_producto
         );
 
         if ($stmt->execute()) {

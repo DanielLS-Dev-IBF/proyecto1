@@ -90,11 +90,11 @@ include_once "views/TopNav.php";
                     foreach ($pedidos as $pedido) {
                         ?>
                         <div class="card mb-4">
-                            <div class="card-header">
+                            <div class="card-header fw-semibold">
                                 Pedido #<?= htmlspecialchars($pedido['id_pedido']) ?> - <?= htmlspecialchars($pedido['fecha_pedido']) ?>
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title">Total: <?= number_format($pedido['total'], 2) ?>€</h5>
+                                <h5 class="card-title text-success fw-bold">TOTAL: <?= number_format($pedido['total'], 2) ?>€</h5>
                                 <p class="card-text"><strong>Dirección:</strong> <?= htmlspecialchars($pedido['direccion']) ?></p>
                                 <p class="card-text"><strong>Método de Pago:</strong> <?= htmlspecialchars($pedido['metodo_pago']) ?></p>
                                 <p class="card-text"><strong>Detalles de Pago:</strong> <?= htmlspecialchars($pedido['detalles_pago']) ?></p>
@@ -208,9 +208,8 @@ include_once "views/TopNav.php";
                         <h2 class="mb-0 text-start header-title">Direcciones</h2>
                         <!-- Botón para añadir una nueva dirección -->
                         <button class="btn btn-sm edit-icon" type="button" data-bs-toggle="collapse" data-bs-target="#addDireccionForm" aria-expanded="false" aria-controls="addDireccionForm">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                              <path d="M12 20h9"/>
-                              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
                             </svg>
                         </button>
                     </div>
@@ -227,8 +226,8 @@ include_once "views/TopNav.php";
                                         <label for="codigo_postal" class="form-label">Código Postal</label>
                                         <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" pattern="\d{5}" title="Debe tener 5 dígitos" required>
                                     </div>
-                                    <button type="submit" id="boton_guardar">Guardar</button>
-                                    <button type="button" id="boton_cancelar" data-bs-toggle="collapse" data-bs-target="#addDireccionForm">Cancelar</button>
+                                    <button type="submit" id="boton_guardar" class="btn btn-success me-2">Guardar</button>
+                                    <button type="button" id="boton_cancelar" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#addDireccionForm">Cancelar</button>
                                 </form>
                             </div>
                         </div>
@@ -277,6 +276,7 @@ include_once "views/TopNav.php";
 <!-- Script para manejar el toggle de edición de perfil y las flechas en pedidos -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        // Manejar la edición del perfil
         const editButton = document.getElementById("editButton");
         const cancelButton = document.getElementById("cancelButton");
         const saveCancelButtons = document.getElementById("saveCancelButtons");
@@ -284,24 +284,28 @@ include_once "views/TopNav.php";
         const inputFields = document.querySelectorAll("input[id$='_input']");
         const fechaRegistro = document.getElementById("fecha_registro");
 
-        editButton.addEventListener("click", () => {
-            textFields.forEach(text => text.classList.add("d-none"));
-            inputFields.forEach(input => {
-                input.classList.remove("d-none");
-                input.style.width = "100%"; // Asegurar que el input ocupe todo el espacio disponible
+        if (editButton) {
+            editButton.addEventListener("click", () => {
+                textFields.forEach(text => text.classList.add("d-none"));
+                inputFields.forEach(input => {
+                    input.classList.remove("d-none");
+                    input.style.width = "100%"; // Asegurar que el input ocupe todo el espacio disponible
+                });
+                saveCancelButtons.classList.remove("d-none");
+                editButton.classList.add("d-none");
+                if (fechaRegistro) fechaRegistro.classList.add("d-none"); // Ocultar fecha de registro
             });
-            saveCancelButtons.classList.remove("d-none");
-            editButton.classList.add("d-none");
-            if (fechaRegistro) fechaRegistro.classList.add("d-none"); // Ocultar fecha de registro
-        });
+        }
 
-        cancelButton.addEventListener("click", () => {
-            textFields.forEach(text => text.classList.remove("d-none"));
-            inputFields.forEach(input => input.classList.add("d-none"));
-            saveCancelButtons.classList.add("d-none");
-            editButton.classList.remove("d-none");
-            if (fechaRegistro) fechaRegistro.classList.remove("d-none"); // Mostrar fecha de registro
-        });
+        if (cancelButton) {
+            cancelButton.addEventListener("click", () => {
+                textFields.forEach(text => text.classList.remove("d-none"));
+                inputFields.forEach(input => input.classList.add("d-none"));
+                saveCancelButtons.classList.add("d-none");
+                editButton.classList.remove("d-none");
+                if (fechaRegistro) fechaRegistro.classList.remove("d-none"); // Mostrar fecha de registro
+            });
+        }
 
         // Manejar la alternancia de los íconos de flecha en pedidos
         const buttons = document.querySelectorAll('button[data-bs-toggle="collapse"]');
