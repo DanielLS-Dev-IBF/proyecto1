@@ -336,5 +336,103 @@ class UsuarioController {
             exit();
         }
     }
+    /**
+     * Acción para agregar una nueva dirección
+     */
+    public function addDireccion() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['id_usuario'])) {
+            header('Location: index.php?controller=usuario&action=login');
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $direccion = trim($_POST['direccion'] ?? '');
+            $codigo_postal = trim($_POST['codigo_postal'] ?? '');
+
+            $errores = [];
+
+            // Validaciones
+            if (empty($direccion)) {
+                $errores[] = 'La dirección es obligatoria.';
+            }
+
+            if (empty($codigo_postal)) {
+                $errores[] = 'El código postal es obligatorio.';
+            } elseif (!ctype_digit($codigo_postal) || strlen($codigo_postal) !== 5) {
+                $errores[] = 'El código postal no es válido. Debe tener 5 dígitos.';
+            }
+
+            if (empty($errores)) {
+                $direccionObj = new Direccion(null, $_SESSION['id_usuario'], $direccion, $codigo_postal);
+                $resultado = DireccionDAO::agregarDireccion($direccionObj);
+                if ($resultado) {
+                    $_SESSION['success'] = 'Dirección agregada exitosamente.';
+                } else {
+                    $_SESSION['error'] = 'Hubo un error al agregar la dirección. Por favor, intenta nuevamente.';
+                }
+            } else {
+                $_SESSION['error'] = implode('<br>', $errores);
+            }
+
+            header('Location: index.php?controller=usuario&action=show');
+            exit();
+        } else {
+            header('Location: index.php?controller=usuario&action=show');
+            exit();
+        }
+    }
+
+    /**
+     * Acción para eliminar una dirección
+     */
+    public function deleteDireccion() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION['id_usuario'])) {
+            header('Location: index.php?controller=usuario&action=login');
+            exit();
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_direccion = intval($_POST['id_direccion'] ?? 0);
+
+            if ($id_direccion > 0) {
+                // Verificar que la dirección pertenece al usuario
+                $direcciones = DireccionDAO::getDireccionesByUsuario($_SESSION['id_usuario']);
+                $direccionValida = false;
+                foreach ($direcciones as $dir) {
+                    if ($dir->getIdDireccion() == $id_direccion) {
+                        $direccionValida = true;
+                        break;
+                    }
+                }
+
+                if ($direccionValida) {
+                    $resultado = DireccionDAO::eliminarDireccion($id_direccion);
+                    if ($resultado) {
+                        $_SESSION['success'] = 'Dirección eliminada exitosamente.';
+                    } else {
+                        $_SESSION['error'] = 'Hubo un error al eliminar la dirección. Por favor, intenta nuevamente.';
+                    }
+                } else {
+                    $_SESSION['error'] = 'Dirección no encontrada o no autorizada.';
+                }
+            } else {
+                $_SESSION['error'] = 'ID de dirección inválido.';
+            }
+
+            header('Location: index.php?controller=usuario&action=show');
+            exit();
+        } else {
+            header('Location: index.php?controller=usuario&action=show');
+            exit();
+        }
+    }
 }
 ?>

@@ -45,6 +45,64 @@ class DireccionDAO {
         return $direcciones;
     }
 
-    // Otros métodos según sea necesario (e.g., agregarDireccion, eliminarDireccion)
+    /**
+     * Agregar una nueva dirección para un usuario
+     *
+     * @param Direccion $direccion
+     * @return bool
+     */
+    public static function agregarDireccion($direccion) {
+        $conn = DataBase::connect();
+        $sql = "INSERT INTO Direccion (id_cliente, direccion, codigo_postal) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            error_log("Error preparando la consulta: " . $conn->error);
+            return false;
+        }
+
+        $id_cliente = $direccion->getIdUsuario();
+        $direccion_text = $direccion->getDireccion();
+        $codigo_postal = $direccion->getCodigoPostal();
+
+        $stmt->bind_param("isi", $id_cliente, $direccion_text, $codigo_postal);
+        if (!$stmt->execute()) {
+            error_log("Error ejecutando la consulta: " . $stmt->error);
+            $stmt->close();
+            $conn->close();
+            return false;
+        }
+
+        $stmt->close();
+        $conn->close();
+        return true;
+    }
+
+    /**
+     * Eliminar una dirección por su ID
+     *
+     * @param int $id_direccion
+     * @return bool
+     */
+    public static function eliminarDireccion($id_direccion) {
+        $conn = DataBase::connect();
+        $sql = "DELETE FROM Direccion WHERE id_direccion = ?";
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            error_log("Error preparando la consulta: " . $conn->error);
+            return false;
+        }
+
+        $stmt->bind_param("i", $id_direccion);
+        if (!$stmt->execute()) {
+            error_log("Error ejecutando la consulta: " . $stmt->error);
+            $stmt->close();
+            $conn->close();
+            return false;
+        }
+
+        $stmt->close();
+        $conn->close();
+        return true;
+    }
 }
 ?>

@@ -204,31 +204,63 @@ include_once "views/TopNav.php";
 
                 <!-- Card de direcciones del usuario -->
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h2 class="mb-0 text-start header-title">Direcciones</h2>
+                        <!-- Botón para añadir una nueva dirección -->
+                        <button class="btn btn-sm edit-icon" type="button" data-bs-toggle="collapse" data-bs-target="#addDireccionForm" aria-expanded="false" aria-controls="addDireccionForm">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M12 20h9"/>
+                              <path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+                            </svg>
+                        </button>
                     </div>
                     <div class="card-body">
+                        <!-- Formulario para añadir una nueva dirección (colapsable) -->
+                        <div class="collapse mb-4" id="addDireccionForm">
+                            <div class="card card-body">
+                                <form action="?controller=usuario&action=addDireccion" method="POST">
+                                    <div class="mb-3">
+                                        <label for="direccion" class="form-label">Dirección</label>
+                                        <input type="text" class="form-control" id="direccion" name="direccion" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="codigo_postal" class="form-label">Código Postal</label>
+                                        <input type="text" class="form-control" id="codigo_postal" name="codigo_postal" pattern="\d{5}" title="Debe tener 5 dígitos" required>
+                                    </div>
+                                    <button type="submit" id="boton_guardar">Guardar</button>
+                                    <button type="button" id="boton_cancelar" data-bs-toggle="collapse" data-bs-target="#addDireccionForm">Cancelar</button>
+                                </form>
+                            </div>
+                        </div>
+
                         <?php if (empty($direcciones)): ?>
                             <p class="text-start">No tienes direcciones registradas.</p>
                         <?php else: ?>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <?php foreach ($direcciones as $index => $dir): ?>
-                                        <div class="mb-4">
-                                            <div class="row mb-2">
-                                                <div class="col-sm-6 text-start"><strong>Dirección:</strong></div>
-                                                <div class="col-sm-6 text-start"><?= htmlspecialchars($dir->getDireccion()); ?></div>
-                                            </div>
-                                            <div class="row mb-2">
-                                                <div class="col-sm-6 text-start"><strong>Código Postal:</strong></div>
-                                                <div class="col-sm-6 text-start"><?= htmlspecialchars($dir->getCodigoPostal()); ?></div>
-                                            </div>
-                                            <?php if ($index < count($direcciones) - 1): ?>
-                                                <hr>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-start">Dirección</th>
+                                            <th class="text-start">Código Postal</th>
+                                            <th class="text-start"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($direcciones as $dir): ?>
+                                            <tr>
+                                                <td class="text-start"><?= htmlspecialchars($dir->getDireccion()); ?></td>
+                                                <td class="text-start"><?= htmlspecialchars($dir->getCodigoPostal()); ?></td>
+                                                <td class="text-start">
+                                                    <!-- Formulario para eliminar dirección -->
+                                                    <form action="?controller=usuario&action=deleteDireccion" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta dirección?');">
+                                                        <input type="hidden" name="id_direccion" value="<?= $dir->getIdDireccion(); ?>">
+                                                        <button type="submit" class="btn-close btn-sm" aria-label="Eliminar"></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             </div>
                         <?php endif; ?>
                     </div>
