@@ -9,7 +9,7 @@ include_once "views/TopNav.php";
         <!-- Menú lateral -->
         <div class="col-md-3 mb-4">
             <div class="list-group">
-                <a href="?controller=usuario&action=show" class="list-group-item list-group-item-action <?php echo (!isset($_GET['action']) || $_GET['action'] === 'show') ? 'active' : ''; ?>" aria-current="true">
+                <a href="?controller=usuario&action=show" class="mb-2 list-group-item list-group-item-action <?php echo (!isset($_GET['action']) || $_GET['action'] === 'show') ? 'active' : ''; ?>" aria-current="true">
                     Perfil
                 </a>
                 <a href="?controller=usuario&action=pedidos" class="list-group-item list-group-item-action <?php echo (isset($_GET['action']) && $_GET['action'] === 'pedidos') ? 'active' : ''; ?>">
