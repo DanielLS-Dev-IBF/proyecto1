@@ -42,12 +42,6 @@ if (isset($_SESSION['error'])) {
                                         <p class="product-price text-start mb-2">
                                             <?= number_format($producto['precio_base'], 2) ?>€
                                         </p>
-                                        <!-- Mostrar propiedades específicas según el tipo -->
-                                        <?php if ($producto['tipo'] == 'Bebidas' && !empty($producto['volumen'])): ?>
-                                            <p>Volumen: <?= htmlspecialchars($producto['volumen']) ?> ml</p>
-                                        <?php elseif ($producto['tipo'] == 'Postres' && !empty($producto['calorias'])): ?>
-                                            <p>Calorías: <?= htmlspecialchars($producto['calorias']) ?> kcal</p>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
 

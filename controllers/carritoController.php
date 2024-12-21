@@ -6,12 +6,14 @@ include_once("models/PedidoDAO.php");
 include_once("models/DetallePedidoDAO.php");
 include_once("models/Pedido.php");
 include_once("models/DetallePedido.php");
+include_once("models/UsuarioDAO.php"); // Asegúrate de tener este archivo
+include_once("models/DireccionDAO.php"); // Asegúrate de tener este archivo
 
 class carritoController {
     public function __construct() {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
-        }    
+        }
     }
 
     // Mostrar el carrito
@@ -66,7 +68,7 @@ class carritoController {
                 $cantidad = 1;
             }
 
-            require_once 'models/ProductoDAO.php';
+            include_once 'models/ProductoDAO.php'; // Asegúrate de tener este archivo
             $producto = ProductoDAO::getProducto($producto_id);
 
             if ($producto) {
@@ -104,10 +106,28 @@ class carritoController {
 
     // Actualizar cantidad de producto
     public function actualizar() {
-        if (isset($_POST['cantidad']) && is_array($_POST['cantidad'])) {
+        if (isset($_POST['producto_id']) && isset($_POST['cantidad'])) {
+            // Manejar actualizaciones individuales
+            $producto_id = (int)$_POST['producto_id'];
+            $cantidad = (int)$_POST['cantidad'];
+
+            if (isset($_SESSION['carrito'][$producto_id])) {
+                if ($cantidad > 0) {
+                    $_SESSION['carrito'][$producto_id]['cantidad'] = $cantidad;
+                    $_SESSION['mensaje'] = 'Cantidad actualizada correctamente.';
+                } else {
+                    // Eliminar el producto si la cantidad es 0
+                    unset($_SESSION['carrito'][$producto_id]);
+                    $_SESSION['mensaje'] = 'Producto eliminado del carrito.';
+                }
+            } else {
+                $_SESSION['error'] = 'El producto no está en el carrito.';
+            }
+        } elseif (isset($_POST['cantidad']) && is_array($_POST['cantidad'])) {
+            // Manejar actualizaciones masivas
             foreach ($_POST['cantidad'] as $producto_id => $cantidad) {
-                $producto_id = (int) $producto_id;
-                $cantidad = (int) $cantidad;
+                $producto_id = (int)$producto_id;
+                $cantidad = (int)$cantidad;
 
                 if (isset($_SESSION['carrito'][$producto_id])) {
                     if ($cantidad > 0) {
@@ -230,8 +250,8 @@ class carritoController {
         exit();
     }
 
-     // Mostrar la página de pago
-     public function mostrarPago() {
+    // Mostrar la página de pago
+    public function mostrarPago() {
         // Verificar que el carrito no esté vacío
         if (empty($_SESSION['carrito'])) {
             $_SESSION['error'] = 'Tu carrito está vacío. Agrega productos antes de proceder al pago.';
@@ -278,10 +298,10 @@ class carritoController {
 
         $total = $subtotal - $descuento + $gastos_envio;
 
-        // Generar un token CSRF si no existe
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Guardar en sesión para uso posterior
+        $_SESSION['subtotal'] = $subtotal;
+        $_SESSION['gastos_envio'] = $gastos_envio;
+        $_SESSION['total'] = $total; // Asegúrate de que esto esté presente
 
         // Pasar variables a la vista
         $view = 'views/productos/pago.php';
@@ -317,8 +337,11 @@ class carritoController {
                 $errors[] = 'La dirección es obligatoria.';
             }
 
-            if (!preg_match('/^\d{10}$/', $telefono)) {
-                $errors[] = 'El teléfono debe tener 10 dígitos.';
+            // **Validación del Teléfono a 9 Dígitos**
+            if (empty($telefono)) {
+                $errors[] = 'El teléfono es obligatorio.';
+            } elseif (!preg_match('/^\d{9}$/', $telefono)) { // Cambiado de 10 a 9 dígitos
+                $errors[] = 'El teléfono debe tener exactamente 9 dígitos.';
             }
 
             if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
@@ -329,7 +352,7 @@ class carritoController {
                 $errors[] = 'El método de pago es obligatorio.';
             }
 
-            // Validar detalles de pago según el método seleccionado
+            // **Validar detalles de pago según el método seleccionado**
             $detalles_pago = '';
             if ($metodo_pago === 'Tarjeta de Crédito') {
                 $numero_tarjeta = trim($_POST['numero_tarjeta'] ?? '');
@@ -337,43 +360,65 @@ class carritoController {
                 $ano_expiracion = trim($_POST['ano_expiracion'] ?? '');
                 $cvv = trim($_POST['cvv'] ?? '');
 
-                if (!preg_match('/^\d{16}$/', $numero_tarjeta)) {
-                    $errors[] = 'El número de tarjeta debe tener 16 dígitos.';
+                // **Validación del Número de Tarjeta a 16 Dígitos**
+                if (empty($numero_tarjeta)) {
+                    $errors[] = 'El número de tarjeta es obligatorio.';
+                } elseif (!preg_match('/^\d{16}$/', $numero_tarjeta)) {
+                    $errors[] = 'El número de tarjeta debe tener exactamente 16 dígitos.';
                 }
 
-                if (!preg_match('/^\d{1,2}$/', $mes_expiracion) || (int)$mes_expiracion < 1 || (int)$mes_expiracion > 12) {
+                // **Validación del Mes de Expiración**
+                if (empty($mes_expiracion)) {
+                    $errors[] = 'El mes de expiración es obligatorio.';
+                } elseif (!preg_match('/^\d{1,2}$/', $mes_expiracion) || (int)$mes_expiracion < 1 || (int)$mes_expiracion > 12) {
                     $errors[] = 'El mes de expiración es inválido.';
                 }
 
-                if (!preg_match('/^\d{4}$/', $ano_expiracion)) {
+                // **Validación del Año de Expiración**
+                if (empty($ano_expiracion)) {
+                    $errors[] = 'El año de expiración es obligatorio.';
+                } elseif (!preg_match('/^\d{4}$/', $ano_expiracion)) {
                     $errors[] = 'El año de expiración es inválido.';
                 }
 
-                if (!preg_match('/^\d{3}$/', $cvv)) {
-                    $errors[] = 'El CVV debe tener 3 dígitos.';
+                // **Validación del CVV a 3 Dígitos**
+                if (empty($cvv)) {
+                    $errors[] = 'El CVV es obligatorio.';
+                } elseif (!preg_match('/^\d{3}$/', $cvv)) {
+                    $errors[] = 'El CVV debe tener exactamente 3 dígitos.';
                 }
 
-                // Enmascarar el número de tarjeta para almacenarlo de forma segura
+                // **Detalles de Pago (Enmascarados)**
                 $detalles_pago = "Número de Tarjeta: **** **** **** " . substr($numero_tarjeta, -4) . ", Exp: {$mes_expiracion}/{$ano_expiracion}, CVV: ***";
             } elseif ($metodo_pago === 'PayPal') {
                 $paypal_email = trim($_POST['paypal_email'] ?? '');
-                if (!filter_var($paypal_email, FILTER_VALIDATE_EMAIL)) {
+                if (empty($paypal_email)) {
+                    $errors[] = 'La cuenta de PayPal es obligatoria.';
+                } elseif (!filter_var($paypal_email, FILTER_VALIDATE_EMAIL)) {
                     $errors[] = 'El correo electrónico de PayPal no es válido.';
                 }
                 $detalles_pago = "Cuenta de PayPal: {$paypal_email}";
             } elseif ($metodo_pago === 'Transferencia Bancaria') {
                 $numero_cuenta = trim($_POST['numero_cuenta'] ?? '');
-                if (!preg_match('/^[A-Z]{2}\d{22}$/', $numero_cuenta)) {
-                    $errors[] = 'El número de cuenta debe seguir el formato IBAN.';
+                if (empty($numero_cuenta)) {
+                    $errors[] = 'El número de cuenta es obligatorio.';
+                } elseif (!preg_match('/^[A-Z]{2}\d{22}$/', $numero_cuenta)) {
+                    $errors[] = 'El número de cuenta debe seguir el formato IBAN (ej. ES0000000000000000000000).';
                 }
                 $detalles_pago = "Número de Cuenta: {$numero_cuenta}";
             }
 
             if (!empty($errors)) {
-                $_SESSION['error'] = implode('<br>', $errors);
+                $_SESSION['error'] = $errors;
                 header('Location: index.php?controller=carrito&action=mostrarPago');
                 exit();
             }
+
+            // **Obtener 'subtotal', 'descuento' y 'gastos_envio' de la sesión**
+            $subtotal = $_SESSION['subtotal'] ?? 0;
+            $descuento = $_SESSION['descuento'] ?? 0;
+            $gastos_envio = $_SESSION['gastos_envio'] ?? 0;
+            $total = $_SESSION['total'] ?? 0; // Ahora $total está definido
 
             // **Procesar la confirmación del pedido**
             // Iniciar una transacción para asegurar la integridad de los datos
@@ -392,10 +437,10 @@ class carritoController {
                     $correo,
                     $metodo_pago,
                     $detalles_pago,
-                    $_SESSION['subtotal'],
-                    $_SESSION['descuento'] ?? 0,
-                    $_SESSION['gastos_envio'],
-                    $_SESSION['total']
+                    $subtotal,
+                    $descuento,
+                    $gastos_envio,
+                    $total
                 );
 
                 $pedido_creado = PedidoDAO::crearPedido($pedido);
@@ -404,6 +449,8 @@ class carritoController {
                 }
 
                 // Crear los detalles del pedido
+                $detalles_pedido = []; // Array para almacenar los detalles
+
                 foreach ($_SESSION['carrito'] as $producto) {
                     $detalle = new DetallePedido(
                         $pedido_creado->getIdPedido(),
@@ -418,6 +465,14 @@ class carritoController {
                     if (!$resultado_detalle) {
                         throw new Exception('Error al crear el detalle del pedido.');
                     }
+
+                    // Almacenar los detalles en el array
+                    $detalles_pedido[] = [
+                        'nombre_producto' => $producto['nombre'],
+                        'precio_unitario' => $producto['precio_base'],
+                        'cantidad' => $producto['cantidad'],
+                        'total_producto' => $producto['precio_base'] * $producto['cantidad']
+                    ];
                 }
 
                 // Confirmar la transacción
@@ -448,6 +503,15 @@ class carritoController {
                 }
             }
 
+            // **Almacenar los detalles del pedido en la sesión para la confirmación**
+            $_SESSION['detalles_pedido'] = $detalles_pedido;
+
+            // **Almacenar otros detalles en la sesión para la confirmación**
+            $_SESSION['nombre_completo'] = $nombre_completo;
+            $_SESSION['metodo_pago'] = $metodo_pago;
+            $_SESSION['total'] = $total;
+            $_SESSION['fecha_pedido'] = $pedido_creado->getFechaPedido();
+
             // **Limpiar el carrito y las sesiones relacionadas**
             unset($_SESSION['carrito']);
             unset($_SESSION['subtotal']);
@@ -455,11 +519,25 @@ class carritoController {
             unset($_SESSION['codigo_aplicado']);
             unset($_SESSION['csrf_token']); // Eliminar el token CSRF después de usarlo
 
-            // **Mensaje de éxito**
-            $_SESSION['mensaje'] = 'Pedido confirmado exitosamente. ¡Gracias por tu compra!';
+            // **Mensaje de éxito y redirección a la confirmación**
+            $_SESSION['success'] = 'Pedido confirmado exitosamente. ¡Gracias por tu compra!';
+            header('Location: index.php?controller=carrito&action=confirmacion');
+            exit();
+        }
+    }
+
+    // Mostrar la página de confirmación
+    public function confirmacion() {
+        // Verificar que el pedido fue creado exitosamente
+        if (!isset($_SESSION['success'])) {
+            $_SESSION['error'] = 'No se ha realizado ningún pedido.';
             header('Location: index.php?controller=carrito&action=index');
             exit();
         }
+
+        // Incluir la vista de confirmación
+        $view = 'views/productos/confirmacion.php';
+        include_once 'views/main.php';
     }
 }
 ?>

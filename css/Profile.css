@@ -352,3 +352,24 @@ input.form-control:focus {
   transform: translateY(-3px);
   box-shadow: 5px 5px 0px 0px black;
 }
+
+/* Paginación */
+.page-item.active .page-link {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+  border: 1px solid #ccc !important;
+}
+.page-link {
+  background-color: var(--secondary-color) !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+  transition: background-color 0.3s, color 0.3s;
+}
+.page-link:hover {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+.page-link:focus {
+  box-shadow: none;
+}

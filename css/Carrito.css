@@ -432,3 +432,61 @@ header {
 .btn-hover {
   margin: 0px;
 }
+
+/* Botón Cuenta */
+#boton_cuenta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--secondary-color) !important; /* Fondo secundario */
+  color: #000 !important; /* Texto negro */
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: var(--font-size-medium);
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  position: relative; /* Aislar estilos */
+  z-index: 10;
+  cursor: pointer;
+}
+
+#boton_cuenta:hover,
+#boton_cuenta:focus {
+  background-color: var(
+    --secondary-color
+  ) !important; /* Forzar el color secundario */
+  color: #000 !important; /* Texto negro */
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 0px 0px black;
+  cursor: pointer;
+}
+
+/* Botón Carrito */
+#boton_carrito {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-color) !important; /* Fondo primario */
+  color: #ffffff !important; /* Texto blanco */
+  border: 1px solid black;
+  border-radius: 5px;
+  font-size: var(--font-size-medium);
+  padding: 6px 12px;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
+  position: relative; /* Aislar estilos */
+  z-index: 10;
+}
+
+#boton_carrito:hover,
+#boton_carrito:focus {
+  background-color: var(
+    --primary-color
+  ) !important; /* Forzar el color primario */
+  color: #ffffff !important; /* Texto blanco */
+  transform: translateY(-3px);
+  box-shadow: 5px 5px 0px 0px black;
+}

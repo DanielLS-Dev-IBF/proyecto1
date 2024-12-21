@@ -8,11 +8,31 @@ if (!isset($usuario) || !isset($direcciones)) {
     header('Location: index.php?controller=carrito&action=index');
     exit();
 }
+
+// Generar el token CSRF si no está generado
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 ?>
 <link rel="stylesheet" href="css/Carrito.css">
 
 <div class="container my-5 page-pago">
     <h1 class="mb-4 text-center">Confirmar Pedido</h1>
+    
+    <!-- Mostrar Mensajes de Error (Solo) -->
+    <?php
+    if (isset($_SESSION['error'])) {
+        echo '<div class="alert alert-danger">';
+        if (is_array($_SESSION['error'])) {
+            echo implode('<br>', array_map('htmlspecialchars', $_SESSION['error']));
+        } else {
+            echo htmlspecialchars($_SESSION['error']);
+        }
+        echo '</div>';
+        unset($_SESSION['error']);
+    }
+    ?>
+    
     <div class="row">
         <!-- Información del Perfil y Método de Pago -->
         <div class="col-lg-6">
@@ -43,8 +63,13 @@ if (!isset($usuario) || !isset($direcciones)) {
                         <!-- Campo de Teléfono -->
                         <div class="col-md-6 mb-3">
                             <label for="telefono" class="form-label text-start d-block">Teléfono</label>
-                            <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="1234567890" pattern="\d{10}" required
-                            value="<?= htmlspecialchars($usuario->getTelefono()); ?>">
+                            <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="123456789" 
+                                   pattern="\d{9}" 
+                                   minlength="9" 
+                                   maxlength="9" 
+                                   title="Por favor, ingresa un número de teléfono de 9 dígitos." 
+                                   required 
+                                   value="<?= htmlspecialchars($usuario->getTelefono()); ?>">
                         </div>
                         
                         <!-- Campo de Correo Electrónico -->
@@ -123,27 +148,40 @@ if (!isset($usuario) || !isset($direcciones)) {
                 detallesPagoDiv.innerHTML = `
                     <div class="mb-3">
                         <label for="numero_tarjeta" class="form-label text-start d-block">Número de Tarjeta</label>
-                        <input type="text" class="form-control" id="numero_tarjeta" name="numero_tarjeta" placeholder="1234567812345678" pattern="\\d{16}" required>
+                        <input type="text" class="form-control" id="numero_tarjeta" name="numero_tarjeta" placeholder="1234567812345678" 
+                               pattern="\\d{16}" 
+                               minlength="16" 
+                               maxlength="16" 
+                               title="Por favor, ingresa un número de tarjeta de 16 dígitos." 
+                               required>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="mes_expiracion" class="form-label text-start d-block">Mes de Expiración</label>
                             <select class="form-select" id="mes_expiracion" name="mes_expiracion" required>
                                 <option value="" disabled selected>Mes</option>
-                                ${Array.from({length: 12}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
+                                ${Array.from({length: 12}, (_, i) => `<option value="${String(i + 1).padStart(2, '0')}">${String(i + 1).padStart(2, '0')}</option>`).join('')}
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="ano_expiracion" class="form-label text-start d-block">Año de Expiración</label>
                             <select class="form-select" id="ano_expiracion" name="ano_expiracion" required>
                                 <option value="" disabled selected>Año</option>
-                                ${Array.from({length: 10}, (_, i) => `<option value="${new Date().getFullYear() + i}">${new Date().getFullYear() + i}</option>`).join('')}
+                                ${Array.from({length: 10}, (_, i) => {
+                                    const year = new Date().getFullYear() + i;
+                                    return `<option value="${year}">${year}</option>`;
+                                }).join('')}
                             </select>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="cvv" class="form-label text-start d-block">CVV</label>
-                        <input type="text" class="form-control" id="cvv" name="cvv" placeholder="123" pattern="\\d{3}" required>
+                        <input type="text" class="form-control" id="cvv" name="cvv" placeholder="123" 
+                               pattern="\\d{3}" 
+                               minlength="3" 
+                               maxlength="3" 
+                               title="Por favor, ingresa el CVV de 3 dígitos." 
+                               required>
                     </div>
                 `;
             } else if (metodo === 'PayPal') {
@@ -157,7 +195,10 @@ if (!isset($usuario) || !isset($direcciones)) {
                 detallesPagoDiv.innerHTML = `
                     <div class="mb-3">
                         <label for="numero_cuenta" class="form-label text-start d-block">Número de Cuenta</label>
-                        <input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" placeholder="ES0000000000000000000000" pattern="[A-Z]{2}\\d{22}" required>
+                        <input type="text" class="form-control" id="numero_cuenta" name="numero_cuenta" placeholder="ES0000000000000000000000" 
+                               pattern="[A-Z]{2}\\d{22}" 
+                               title="Por favor, ingresa un número de cuenta válido (ej. ES0000000000000000000000)." 
+                               required>
                     </div>
                 `;
             }

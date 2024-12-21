@@ -62,7 +62,7 @@ class UsuarioDAO {
      */
     public static function obtenerUsuarioPorEmail($email) {
         $conn = self::getConnection();
-        $sql = "SELECT * FROM usuarios WHERE email = ?";
+        $sql = "SELECT * FROM Usuario WHERE email = ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             error_log("Error preparando la consulta: " . $conn->error);
@@ -102,7 +102,7 @@ class UsuarioDAO {
      */
     public static function newUser(Usuario $usuario) {
         $conn = self::getConnection();
-        $sql = "INSERT INTO usuarios (nombre_completo, email, password, telefono, fecha_registro)
+        $sql = "INSERT INTO Usuario (nombre_completo, email, password, telefono, fecha_registro)
                 VALUES (?, ?, ?, ?, NOW())";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
@@ -139,7 +139,7 @@ class UsuarioDAO {
      */
     public static function updateUser(Usuario $usuario) {
         $conn = self::getConnection();
-        $sql = "UPDATE usuarios SET nombre_completo = ?, email = ?, telefono = ? WHERE id_usuario = ?";
+        $sql = "UPDATE Usuario SET nombre_completo = ?, email = ?, telefono = ? WHERE id_usuario = ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             error_log("Error preparando la consulta: " . $conn->error);

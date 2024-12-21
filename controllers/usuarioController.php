@@ -223,10 +223,31 @@ class UsuarioController {
             // Obtener direcciones del usuario
             $direcciones = DireccionDAO::getDireccionesByUsuario($usuario_id);
 
-            // Obtener los pedidos del usuario con sus detalles
-            $pedidos = PedidoDAO::getPedidosConDetallesByUsuario($usuario_id);
+            // Implementación de Paginación
+            // Parámetros de Paginación
+            $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = 2; // Pedidos por página
+            $offset = ($currentPage - 1) * $limit;
 
-            // Incluir la vista y pasar los datos
+            // Obtener el total de pedidos
+            $totalPedidos = PedidoDAO::contarPedidosPorUsuario($usuario_id);
+            $totalPaginas = ceil($totalPedidos / $limit);
+            if ($totalPaginas < 1) $totalPaginas = 1;
+
+            // Asegurarse de que la página actual está dentro de los límites
+            if ($currentPage > $totalPaginas) {
+                $currentPage = $totalPaginas;
+                $offset = ($currentPage - 1) * $limit;
+            }
+            if ($currentPage < 1) {
+                $currentPage = 1;
+                $offset = 0;
+            }
+
+            // Obtener los pedidos paginados
+            $pedidos = PedidoDAO::obtenerPedidosPorUsuarioPaginados($usuario_id, $limit, $offset);
+
+            // Pasar variables a la vista
             $view = 'views/user/profile.php';
             include_once 'views/main.php';
         } else {

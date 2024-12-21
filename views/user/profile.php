@@ -39,8 +39,53 @@ include_once "views/TopNav.php";
             // Verificar qué sección mostrar: Perfil o Pedidos
             $action = $_GET['action'] ?? 'show';
 
+            // Funciones de Paginación
+            function buildUrl($page, $action) {
+                $params = array(
+                    'controller' => 'usuario',
+                    'action' => $action,
+                    'page' => $page
+                );
+                return '?' . http_build_query($params);
+            }
+
+            function paginationLinks($currentPage, $totalPages, $action) {
+                $links = '';
+                $range = 2;
+
+                // Enlace para "Anterior"
+                if ($currentPage > 1) {
+                    $prevPage = $currentPage - 1;
+                    $links .= '<li class="page-item"><a class="page-link" href="' . buildUrl($prevPage, $action) . '">Anterior</a></li>';
+                } else {
+                    $links .= '<li class="page-item disabled"><span class="page-link">Anterior</span></li>';
+                }
+
+                // Rango de páginas alrededor de la página actual
+                $start = max(1, $currentPage - $range);
+                $end = min($currentPage + $range, $totalPages);
+
+                for ($i = $start; $i <= $end; $i++) {
+                    if ($i == $currentPage) {
+                        $links .= '<li class="page-item active"><span class="page-link">' . $i . '</span></li>';
+                    } else {
+                        $links .= '<li class="page-item"><a class="page-link" href="' . buildUrl($i, $action) . '">' . $i . '</a></li>';
+                    }
+                }
+
+                // Enlace para "Siguiente"
+                if ($currentPage < $totalPages) {
+                    $nextPage = $currentPage + 1;
+                    $links .= '<li class="page-item"><a class="page-link" href="' . buildUrl($nextPage, $action) . '">Siguiente</a></li>';
+                } else {
+                    $links .= '<li class="page-item disabled"><span class="page-link">Siguiente</span></li>';
+                }
+
+                return $links;
+            }
+
             if ($action === 'pedidos') {
-                // Mostrar la lista de pedidos
+                // Mostrar la lista de pedidos con paginación
                 if (isset($pedidos) && !empty($pedidos)) {
                     foreach ($pedidos as $pedido) {
                         ?>
@@ -55,7 +100,7 @@ include_once "views/TopNav.php";
                                 <p class="card-text"><strong>Detalles de Pago:</strong> <?= htmlspecialchars($pedido['detalles_pago']) ?></p>
                                 <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detallePedido<?= $pedido['id_pedido'] ?>" aria-expanded="false" aria-controls="detallePedido<?= $pedido['id_pedido'] ?>">
                                     Ver Detalles
-                                    <!-- Usar íconos de Bootstrap para las flechas -->
+                                    <!-- Íconos de flecha -->
                                     <svg class="icono-flecha abajo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
                                       <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                                     </svg>
@@ -93,6 +138,17 @@ include_once "views/TopNav.php";
                         </div>
                         <?php
                     }
+
+                    // Implementar la paginación
+                    if (isset($totalPaginas) && $totalPaginas > 1):
+                        ?>
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center">
+                                <?= paginationLinks($currentPage, $totalPaginas, 'pedidos') ?>
+                            </ul>
+                        </nav>
+                        <?php
+                    endif;
                 } else {
                     echo '<p>No tienes pedidos realizados.</p>';
                 }
@@ -165,7 +221,7 @@ include_once "views/TopNav.php";
                                             </div>
                                             <div class="row mb-2">
                                                 <div class="col-sm-6 text-start"><strong>Código Postal:</strong></div>
-                                                <div class="col-sm-6 text-start"><?= htmlspecialchars($dir->getCodigo_postal()); ?></div>
+                                                <div class="col-sm-6 text-start"><?= htmlspecialchars($dir->getCodigoPostal()); ?></div>
                                             </div>
                                             <?php if ($index < count($direcciones) - 1): ?>
                                                 <hr>
@@ -186,6 +242,7 @@ include_once "views/TopNav.php";
 
 <?php include_once "views/Footer.php"; ?>
 
+<!-- Script para manejar el toggle de edición de perfil y las flechas en pedidos -->
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const editButton = document.getElementById("editButton");
@@ -214,15 +271,17 @@ include_once "views/TopNav.php";
             if (fechaRegistro) fechaRegistro.classList.remove("d-none"); // Mostrar fecha de registro
         });
 
-        // Opcional: Manejar la alternancia de los íconos de flecha
+        // Manejar la alternancia de los íconos de flecha en pedidos
         const buttons = document.querySelectorAll('button[data-bs-toggle="collapse"]');
         buttons.forEach(button => {
             button.addEventListener('click', () => {
                 const iconoAbajo = button.querySelector('.icono-flecha.abajo');
                 const iconoArriba = button.querySelector('.icono-flecha.arriba');
 
-                iconoAbajo.classList.toggle('d-none');
-                iconoArriba.classList.toggle('d-none');
+                if (iconoAbajo && iconoArriba) {
+                    iconoAbajo.classList.toggle('d-none');
+                    iconoArriba.classList.toggle('d-none');
+                }
             });
         });
     });

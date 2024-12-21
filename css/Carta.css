@@ -64,6 +64,9 @@ header {
   background-color: var(--primary-color) !important;
   color: #fff !important;
 }
+.page-link:focus {
+  box-shadow: none;
+}
 
 /* Buscador */
 .search-input {

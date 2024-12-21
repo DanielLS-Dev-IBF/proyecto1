@@ -703,6 +703,7 @@ a#logo:hover {
   display: flex;
   flex-direction: column; /* Asegura que el contenido se alinee verticalmente */
   justify-content: center; /* Centra el contenido verticalmente */
+  background-color: var(--secondary-color);
 }
 
 /* Footer de la tarjeta */

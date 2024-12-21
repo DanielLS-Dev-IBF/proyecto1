@@ -23,7 +23,11 @@
         }
     
         // Incluye la vista específica
-        include_once $view;
+        if (isset($view)) {
+            include_once($view);
+        } else {
+            echo "Vista no encontrada.";
+        }
 
         // Puedes incluir el footer aquí si lo deseas
         // include_once "Footer.php"; 
