@@ -13,8 +13,15 @@ if (isset($_SESSION['mensaje'])) {
 }
 
 if (isset($_SESSION['error'])) {
+     // Mostrar errores generales
     echo '<div class="alert alert-danger">' . htmlspecialchars($_SESSION['error']) . '</div>';
     unset($_SESSION['error']);
+}
+
+// Mostrar errores específicos del código de descuento
+if (isset($_SESSION['error_codigo'])) {
+    echo '<div class="alert alert-warning">' . htmlspecialchars($_SESSION['error_codigo']) . '</div>';
+    unset($_SESSION['error_codigo']);
 }
 ?>
 <link rel="stylesheet" href="css/Carrito.css">

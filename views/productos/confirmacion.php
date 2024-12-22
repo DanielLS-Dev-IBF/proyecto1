@@ -62,7 +62,7 @@
                     
                     <!-- Botones de Navegación -->
                     <a href="index.php?controller=carrito&action=index" id="boton_carrito" class="mt-3">Volver al Carrito</a>
-                    <a href="index.php?controller=usuario&action=historialPedidos" id="boton_cuenta" class="mt-3">Ver Historial de Pedidos</a>
+                    <a href="index.php?controller=usuario&action=pedidos" id="boton_cuenta" class="mt-3">Ver Historial de Pedidos</a>
                 </div>
             </div>
         </div>

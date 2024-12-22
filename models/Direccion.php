@@ -7,12 +7,12 @@ class Direccion {
     private $direccion;
     private $codigo_postal;
 
-    public function __construct($id_direccion, $id_usuario, $direccion, $codigo_postal) {
+     // Constructor con valores por defecto
+     public function __construct($id_direccion = null, $id_usuario = null, $direccion = '', $codigo_postal = 0) {
         $this->id_direccion = $id_direccion;
         $this->id_usuario = $id_usuario;
         $this->direccion = $direccion;
         $this->codigo_postal = $codigo_postal;
-
     }
 
     // Getters y Setters

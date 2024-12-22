@@ -19,36 +19,57 @@ class carritoController {
     // Mostrar el carrito
     public function index() {
         $productos = isset($_SESSION['carrito']) ? $_SESSION['carrito'] : array();
-
+    
         // Calcular el subtotal
         $subtotal = 0;
         foreach ($productos as $producto) {
             $subtotal += $producto['precio_base'] * $producto['cantidad'];
         }
-
+    
+        // Validar y desaplicar el descuento si es necesario
+        if (isset($_SESSION['codigo_aplicado']) && isset($_SESSION['descuento'])) {
+            $codigo = $_SESSION['codigo_aplicado'];
+            $descuento_info = CodigoDescuentoDAO::obtenerDescuentoPorCodigo($codigo);
+    
+            if ($descuento_info) {
+                $minimo_compra = $descuento_info['minimo_compra'];
+                if ($subtotal < $minimo_compra) {
+                    // Desaplicar el descuento
+                    unset($_SESSION['descuento']);
+                    unset($_SESSION['codigo_aplicado']);
+                    $_SESSION['error_codigo'] = 'El subtotal ha caído por debajo del mínimo requerido para aplicar el código de descuento. El descuento ha sido eliminado.';
+                }
+            } else {
+                // Desaplicar el descuento si el código ya no es válido
+                unset($_SESSION['descuento']);
+                unset($_SESSION['codigo_aplicado']);
+                $_SESSION['error_codigo'] = 'El código de descuento aplicado ya no es válido y ha sido eliminado.';
+            }
+        }
+    
         // Aplicar descuento si existe
         $descuento = isset($_SESSION['descuento']) ? $_SESSION['descuento'] : 0;
         $subtotal_con_descuento = $subtotal - $descuento;
-
+    
         // Asegurarse de que el subtotal_con_descuento no sea negativo
         if ($subtotal_con_descuento < 0) {
             $subtotal_con_descuento = 0;
         }
-
+    
         // Definir los gastos de envío
         if ($subtotal >= 50.00) {
             $gastos_envio = 0.00; // Envío gratuito para compras >= 50€
         } else {
             $gastos_envio = 5.00; // Costo fijo de envío
         }
-
+    
         $total = $subtotal_con_descuento + $gastos_envio;
-
+    
         // Guardar en sesión para uso posterior
         $_SESSION['subtotal'] = $subtotal;
         $_SESSION['gastos_envio'] = $gastos_envio;
         $_SESSION['total'] = $total;
-
+    
         // Incluir la vista del carrito
         $view = 'views/productos/carrito.php';
         include_once 'views/main.php';

@@ -12,76 +12,68 @@ class UsuarioController {
         exit();
     }
 
-    public function register() {
-        // Variables por si quieres mostrarlas en la vista, aunque el JS ya las gestiona
-        $nombre_completo = $email = $direccion = $codigo_postal = $telefono = '';
-        $errores = [];
-
-        $view = 'views/user/register.php';
-        include_once 'views/main.php';
-    }
-
     public function store() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            session_start(); // Iniciar la sesión para manejar errores y datos
+
+            // Obtener y limpiar los datos del formulario
             $nombre_completo = trim($_POST['nombre_completo'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
             $confirmar_password = $_POST['confirm_password'] ?? '';
             $telefono = trim($_POST['telefono'] ?? '');
-    
-            // Datos de dirección opcional (sin ciudad)
             $direccion = trim($_POST['direccion'] ?? '');
             $codigo_postal = trim($_POST['codigo_postal'] ?? '');
-    
+
             $errores = [];
-    
+
             // Validaciones usuario
             if (empty($nombre_completo)) {
-                $errores[] = 'El nombre completo es obligatorio.';
+                $errores['nombre_completo'] = 'El nombre completo es obligatorio.';
             }
-    
+
             if (empty($email)) {
-                $errores[] = 'El correo electrónico es obligatorio.';
+                $errores['email'] = 'El correo electrónico es obligatorio.';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $errores[] = 'El correo electrónico no es válido.';
+                $errores['email'] = 'El correo electrónico no es válido.';
             }
-    
+
             if (empty($password)) {
-                $errores[] = 'La contraseña es obligatoria.';
+                $errores['password'] = 'La contraseña es obligatoria.';
             } elseif (strlen($password) < 6) {
-                $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
+                $errores['password'] = 'La contraseña debe tener al menos 6 caracteres.';
             }
-    
+
             if (empty($confirmar_password)) {
-                $errores[] = 'Debes confirmar la contraseña.';
+                $errores['confirm_password'] = 'Debes confirmar la contraseña.';
             } elseif ($password !== $confirmar_password) {
-                $errores[] = 'Las contraseñas no coinciden.';
+                $errores['confirm_password'] = 'Las contraseñas no coinciden.';
             }
-    
+
             if (empty($telefono)) {
-                $errores[] = 'El teléfono es obligatorio.';
+                $errores['telefono'] = 'El teléfono es obligatorio.';
             } elseif (!ctype_digit($telefono) || strlen($telefono) < 7 || strlen($telefono) > 15) {
-                $errores[] = 'El teléfono no es válido. Debe tener entre 7 y 15 dígitos.';
+                $errores['telefono'] = 'El teléfono no es válido. Debe tener entre 7 y 15 dígitos.';
             }
-    
+
             // Validación opcional de dirección
             if (!empty($direccion) || !empty($codigo_postal)) {
                 if (empty($direccion)) {
-                    $errores[] = 'La dirección no puede estar vacía si va a registrar una dirección.';
+                    $errores['direccion'] = 'La dirección no puede estar vacía si vas a registrar una dirección.';
                 }
                 if (empty($codigo_postal) || !ctype_digit($codigo_postal) || strlen($codigo_postal) !== 5) {
-                    $errores[] = 'El código postal no es válido. Debe tener 5 dígitos.';
+                    $errores['codigo_postal'] = 'El código postal no es válido. Debe tener 5 dígitos.';
                 }
             }
-    
+
             // Verificar que el email no esté ya en uso
             if (empty($errores)) {
                 $usuarioExistente = UsuarioDAO::obtenerUsuarioPorEmail($email);
                 if ($usuarioExistente) {
-                    $errores[] = 'El correo electrónico ya está en uso.';
+                    $errores['email'] = 'El correo electrónico ya está en uso.';
                 }
             }
-    
+
             if (empty($errores)) {
                 // Crear usuario
                 $usuario = new Usuario();
@@ -89,34 +81,53 @@ class UsuarioController {
                 $usuario->setEmail($email);
                 $usuario->setPassword(password_hash($password, PASSWORD_DEFAULT));
                 $usuario->setTelefono((int)$telefono);
-    
+
                 $idUsuario = UsuarioDAO::newUser($usuario);
-    
+
                 if ($idUsuario) {
                     // Si el usuario ingresó una dirección, la guardamos
                     if (!empty($direccion) && !empty($codigo_postal)) {
-                        $dirObj = new Direccion();
-                        $dirObj->setIdUsuario($idUsuario);
-                        $dirObj->setDireccion($direccion);
-                        $dirObj->setCodigoPostal((int)$codigo_postal);
-    
+                        $dirObj = new Direccion(null, $idUsuario, $direccion, (int)$codigo_postal);
                         DireccionDAO::agregarDireccion($dirObj);
                     }
-    
+
                     // Redirigir al login con mensaje de éxito
+                    $_SESSION['success'] = 'Registro exitoso. Puedes iniciar sesión ahora.';
                     header('Location: index.php?controller=usuario&action=login&registro=success');
                     exit();
                 } else {
-                    $errores[] = 'Hubo un error al registrar el usuario. Por favor, intenta nuevamente.';
+                    $errores['general'] = 'Hubo un error al registrar el usuario. Por favor, intenta nuevamente.';
                 }
             }
-    
-            // Si hay errores, volver a mostrar el formulario
-            $view = 'views/user/register.php';
-            include_once 'views/main.php';
-        } else {
+
+            // Si hay errores, almacenarlos en la sesión y redirigir al formulario
+            if (!empty($errores)) {
+                $_SESSION['errors'] = $errores;
+                $_SESSION['old'] = [
+                    'nombre_completo' => $nombre_completo,
+                    'email' => $email,
+                    'telefono' => $telefono,
+                    'direccion' => $direccion,
+                    'codigo_postal' => $codigo_postal
+                ];
+                header('Location: index.php?controller=usuario&action=register');
+                exit();
+            }
+
+            // Incluir la vista del formulario en caso de método no POST
             $this->register();
         }
+    }
+
+    public function register() {
+        // Obtener errores y datos antiguos si existen
+        $errores = $_SESSION['errors'] ?? [];
+        $old = $_SESSION['old'] ?? [];
+        // Limpiar las variables de sesión
+        unset($_SESSION['errors'], $_SESSION['old']);
+
+        $view = 'views/user/register.php';
+        include_once 'views/main.php';
     }
 
     public function login() {

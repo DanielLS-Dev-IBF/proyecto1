@@ -91,7 +91,7 @@ include_once "views/TopNav.php";
                         ?>
                         <div class="card mb-4">
                             <div class="card-header fw-semibold">
-                                Pedido #<?= htmlspecialchars($pedido['id_pedido']) ?> - <?= htmlspecialchars($pedido['fecha_pedido']) ?>
+                                Pedido del <?= htmlspecialchars($pedido['fecha_pedido']) ?>
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title text-success fw-bold">TOTAL: <?= number_format($pedido['total'], 2) ?>€</h5>

@@ -109,15 +109,21 @@ class UsuarioDAO {
             error_log("Error preparando la consulta: " . $conn->error);
             return false;
         }
-
+    
+        // Asignar los valores a variables temporales
+        $nombre_completo = $usuario->getNombre_completo();
+        $email = $usuario->getEmail();
+        $password = $usuario->getPassword();
+        $telefono = $usuario->getTelefono();
+    
         $stmt->bind_param(
             "sssi",
-            $usuario->getNombre_completo(),
-            $usuario->getEmail(),
-            $usuario->getPassword(),
-            $usuario->getTelefono()
+            $nombre_completo,
+            $email,
+            $password,
+            $telefono
         );
-
+    
         if ($stmt->execute()) {
             $id_usuario = $stmt->insert_id;
             $stmt->close();
@@ -130,6 +136,7 @@ class UsuarioDAO {
             return false;
         }
     }
+    
 
     /**
      * Actualizar la información de un usuario
@@ -145,23 +152,30 @@ class UsuarioDAO {
             error_log("Error preparando la consulta: " . $conn->error);
             return false;
         }
-
+    
+        // Asignar los valores a variables temporales
+        $nombre_completo = $usuario->getNombre_completo();
+        $email = $usuario->getEmail();
+        $telefono = $usuario->getTelefono();
+        $id_usuario = $usuario->getId_usuario();
+    
         $stmt->bind_param(
             "sssi",
-            $usuario->getNombre_completo(),
-            $usuario->getEmail(),
-            $usuario->getTelefono(),
-            $usuario->getId_usuario()
+            $nombre_completo,
+            $email,
+            $telefono,
+            $id_usuario
         );
-
+    
         $resultado = $stmt->execute();
         if (!$resultado) {
             error_log("Error ejecutando la consulta: " . $stmt->error);
         }
-
+    
         $stmt->close();
         $conn->close();
         return $resultado;
     }
+    
 }
 ?>
