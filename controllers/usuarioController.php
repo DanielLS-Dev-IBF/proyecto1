@@ -139,6 +139,52 @@ class UsuarioController {
         include_once 'views/main.php';
     }
 
+    /**
+     * Acción para verificar si un correo electrónico ya está en uso.
+     * Esta acción está diseñada para ser llamada vía AJAX.
+     */
+    public function checkEmail() {
+        // Solo permitir solicitudes POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405); // Método No Permitido
+            echo json_encode(['status' => 'error', 'message' => 'Método de solicitud no permitido.']);
+            exit();
+        }
+
+        // Verificar si es una solicitud AJAX
+        if (!isset($_SERVER['HTTP_X_REQUESTED_WITH']) || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest') {
+            http_response_code(400); // Solicitud Incorrecta
+            echo json_encode(['status' => 'error', 'message' => 'Solicitud no válida.']);
+            exit();
+        }
+
+        // Obtener y sanitizar el correo electrónico del POST
+        $email = trim($_POST['email'] ?? '');
+
+        // Validar que el correo electrónico no esté vacío
+        if (empty($email)) {
+            echo json_encode(['status' => 'error', 'message' => 'El correo electrónico está vacío.']);
+            exit();
+        }
+
+        // Validar el formato del correo electrónico
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['status' => 'error', 'message' => 'Formato de correo electrónico inválido.']);
+            exit();
+        }
+
+        // Verificar si el correo electrónico ya está en uso
+        $usuarioExistente = UsuarioDAO::obtenerUsuarioPorEmail($email);
+
+        if ($usuarioExistente) {
+            echo json_encode(['status' => 'exists', 'message' => 'El correo electrónico ya está en uso.']);
+        } else {
+            echo json_encode(['status' => 'available', 'message' => 'El correo electrónico está disponible.']);
+        }
+
+        exit();
+    }
+
     public function authenticate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');
@@ -445,5 +491,6 @@ class UsuarioController {
             exit();
         }
     }
+    
 }
 ?>
