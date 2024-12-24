@@ -12,11 +12,11 @@ class DireccionDAO {
      * @return array
      */
     public static function getDireccionesByUsuario($id_cliente) {
-        $conn = DataBase::connect();
+        $con = DataBase::connect();
         $sql = "SELECT * FROM Direccion WHERE id_cliente = ?";
-        $stmt = $conn->prepare($sql);
+        $stmt = $con->prepare($sql);
         if (!$stmt) {
-            error_log("Error preparando la consulta: " . $conn->error);
+            error_log("Error preparando la consulta: " . $con->error);
             return [];
         }
 
@@ -24,7 +24,7 @@ class DireccionDAO {
         if (!$stmt->execute()) {
             error_log("Error ejecutando la consulta: " . $stmt->error);
             $stmt->close();
-            $conn->close();
+            $con->close();
             return [];
         }
 
@@ -41,7 +41,7 @@ class DireccionDAO {
         }
 
         $stmt->close();
-        $conn->close();
+        $con->close();
         return $direcciones;
     }
 
@@ -52,11 +52,11 @@ class DireccionDAO {
      * @return bool
      */
     public static function agregarDireccion($direccion) {
-        $conn = DataBase::connect();
+        $con = DataBase::connect();
         $sql = "INSERT INTO Direccion (id_cliente, direccion, codigo_postal) VALUES (?, ?, ?)";
-        $stmt = $conn->prepare($sql);
+        $stmt = $con->prepare($sql);
         if (!$stmt) {
-            error_log("Error preparando la consulta: " . $conn->error);
+            error_log("Error preparando la consulta: " . $con->error);
             return false;
         }
 
@@ -68,12 +68,12 @@ class DireccionDAO {
         if (!$stmt->execute()) {
             error_log("Error ejecutando la consulta: " . $stmt->error);
             $stmt->close();
-            $conn->close();
+            $con->close();
             return false;
         }
 
         $stmt->close();
-        $conn->close();
+        $con->close();
         return true;
     }
 
@@ -84,11 +84,11 @@ class DireccionDAO {
      * @return bool
      */
     public static function eliminarDireccion($id_direccion) {
-        $conn = DataBase::connect();
+        $con = DataBase::connect();
         $sql = "DELETE FROM Direccion WHERE id_direccion = ?";
-        $stmt = $conn->prepare($sql);
+        $stmt = $con->prepare($sql);
         if (!$stmt) {
-            error_log("Error preparando la consulta: " . $conn->error);
+            error_log("Error preparando la consulta: " . $con->error);
             return false;
         }
 
@@ -96,12 +96,12 @@ class DireccionDAO {
         if (!$stmt->execute()) {
             error_log("Error ejecutando la consulta: " . $stmt->error);
             $stmt->close();
-            $conn->close();
+            $con->close();
             return false;
         }
 
         $stmt->close();
-        $conn->close();
+        $con->close();
         return true;
     }
 }

@@ -8,6 +8,7 @@ class Usuario {
     private $password;
     private $telefono;
     private $fecha_registro;
+    private $rol; // <--- NUEVO ATRIBUTO
 
     // Constructor vacío
     public function __construct() {
@@ -39,6 +40,10 @@ class Usuario {
         return $this->fecha_registro;
     }
 
+    public function getRol() {
+        return $this->rol; // <--- GETTER PARA ROL
+    }
+
     // Setters
     public function setId_usuario($id_usuario) {
         $this->id_usuario = $id_usuario;
@@ -62,6 +67,10 @@ class Usuario {
 
     public function setFecha_registro($fecha_registro) {
         $this->fecha_registro = $fecha_registro;
+    }
+
+    public function setRol($rol) {
+        $this->rol = $rol; // <--- SETTER PARA ROL
     }
 }
 ?>

@@ -12,14 +12,14 @@ class DetallePedidoDAO {
      * @return bool
      */
     public static function agregarDetallePedido(DetallePedido $detalle) {
-        $conn = DataBase::connect();
+        $con = DataBase::connect();
 
         $sql = "INSERT INTO Detalles_pedidos (id_pedido, id_producto, nombre_producto, precio_unitario, cantidad, total_producto)
                 VALUES (?, ?, ?, ?, ?, ?)";
 
-        $stmt = $conn->prepare($sql);
+        $stmt = $con->prepare($sql);
         if (!$stmt) {
-            error_log("Error preparando la consulta: " . $conn->error);
+            error_log("Error preparando la consulta: " . $con->error);
             return false;
         }
 
@@ -44,12 +44,12 @@ class DetallePedidoDAO {
 
         if ($stmt->execute()) {
             $stmt->close();
-            $conn->close();
+            $con->close();
             return true;
         } else {
             error_log("Error ejecutando la consulta: " . $stmt->error);
             $stmt->close();
-            $conn->close();
+            $con->close();
             return false;
         }
     }
@@ -61,11 +61,11 @@ class DetallePedidoDAO {
      * @return array
      */
     public static function obtenerDetallesPorPedido($id_pedido) {
-        $conn = DataBase::connect();
+        $con = DataBase::connect();
         $sql = "SELECT * FROM Detalles_pedidos WHERE id_pedido = ?";
-        $stmt = $conn->prepare($sql);
+        $stmt = $con->prepare($sql);
         if (!$stmt) {
-            error_log("Error preparando la consulta: " . $conn->error);
+            error_log("Error preparando la consulta: " . $con->error);
             return [];
         }
 
@@ -73,7 +73,7 @@ class DetallePedidoDAO {
         if (!$stmt->execute()) {
             error_log("Error ejecutando la consulta: " . $stmt->error);
             $stmt->close();
-            $conn->close();
+            $con->close();
             return [];
         }
 
@@ -92,7 +92,7 @@ class DetallePedidoDAO {
         }
 
         $stmt->close();
-        $conn->close();
+        $con->close();
         return $detalles;
     }
 

@@ -10,10 +10,17 @@
         
     <!-- Enlace a Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <!-- Tus estilos propios -->
     <link rel="stylesheet" href="css/Greeny.css">
     
     <!-- Incluir jQuery desde CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- (NUEVO) DataTables CSS y JS (con Bootstrap 5) -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 </head>
 <body>
     <?php
@@ -22,11 +29,11 @@
             session_start();
         }
     
-        // Incluye la vista específica
-        if (isset($view)) {
+        // Incluir la vista específica
+        if (isset($view) && file_exists($view)) {
             include_once($view);
         } else {
-            echo "Vista no encontrada.";
+            echo "<div class='alert alert-danger'>Vista no encontrada.</div>";
         }
 
         // Puedes incluir el footer aquí si lo deseas
@@ -34,8 +41,11 @@
     ?>
     
     <!-- Scripts de Bootstrap JS (después de incluir jQuery) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous">
+    </script>
 
 </body>
-
-</html> 
+</html>

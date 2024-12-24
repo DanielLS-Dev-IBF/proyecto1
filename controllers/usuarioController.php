@@ -81,7 +81,7 @@ class UsuarioController {
                 $usuario->setEmail($email);
                 $usuario->setPassword(password_hash($password, PASSWORD_DEFAULT));
                 $usuario->setTelefono((int)$telefono);
-
+                $usuario->setRol('usuario');
                 $idUsuario = UsuarioDAO::newUser($usuario);
 
                 if ($idUsuario) {
@@ -210,6 +210,8 @@ class UsuarioController {
                     session_regenerate_id(true);
                     $_SESSION['id_usuario'] = $usuario->getId_usuario();
                     $_SESSION['nombre_completo'] = $usuario->getNombre_completo();
+                    $_SESSION['rol'] = $usuario->getRol();
+
 
                     // Redirigir a una página principal o dashboard
                     header('Location: index.php?controller=Producto&action=index');

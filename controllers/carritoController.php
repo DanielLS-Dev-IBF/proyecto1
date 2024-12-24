@@ -103,9 +103,7 @@ class carritoController {
                         'precio_base' => $producto->getPrecio_base(),
                         'img' => $producto->getImg(),
                         'cantidad' => $cantidad,
-                        'tipo' => $producto->getTipo(),
-                        'volumen' => $producto->getVolumen(),
-                        'calorias' => $producto->getCalorias()
+                        'tipo' => $producto->getTipo()
                     );
                 }
 

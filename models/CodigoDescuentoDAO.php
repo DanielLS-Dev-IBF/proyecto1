@@ -4,21 +4,13 @@
 include_once("config/db.php");
 
 class CodigoDescuentoDAO {
-    private static $conexion;
-
-    // Método para establecer la conexión utilizando la clase DataBase
-    private static function conectar() {
-        if (!self::$conexion) {
-            self::$conexion = DataBase::connect();
-        }
-    }
 
     // Obtener descuento por código
     public static function obtenerDescuentoPorCodigo($codigo) {
-        self::conectar();
-        $stmt = self::$conexion->prepare("SELECT * FROM Codigo_Descuento WHERE codigo = ?");
+        $con = DataBase::connect();
+        $stmt = $con->prepare("SELECT * FROM Codigo_Descuento WHERE codigo = ?");
         if (!$stmt) {
-            die("Preparación de consulta fallida: " . self::$conexion->error);
+            die("Preparación de consulta fallida: " . $con->error);
         }
         $stmt->bind_param("s", $codigo);
         $stmt->execute();
@@ -30,10 +22,10 @@ class CodigoDescuentoDAO {
 
     // Obtener uso por usuario
     public static function obtenerUsoPorUsuario($id_usuario, $id_codigo_descuento) {
-        self::conectar();
-        $stmt = self::$conexion->prepare("SELECT veces_usado FROM Usuario_Descuento WHERE id_usuario = ? AND id_codigo_descuento = ?");
+        $con = DataBase::connect();
+        $stmt = $con->prepare("SELECT veces_usado FROM Usuario_Descuento WHERE id_usuario = ? AND id_codigo_descuento = ?");
         if (!$stmt) {
-            die("Preparación de consulta fallida: " . self::$conexion->error);
+            die("Preparación de consulta fallida: " . $con->error);
         }
         $stmt->bind_param("ii", $id_usuario, $id_codigo_descuento);
         $stmt->execute();
@@ -45,10 +37,10 @@ class CodigoDescuentoDAO {
 
     // Incrementar usos totales
     public static function incrementarUsosTotales($id_codigo_descuento) {
-        self::conectar();
-        $stmt = self::$conexion->prepare("UPDATE Codigo_Descuento SET usado = usado + 1 WHERE id_codigo_descuento = ?");
+        $con = DataBase::connect();
+        $stmt = $con->prepare("UPDATE Codigo_Descuento SET usado = usado + 1 WHERE id_codigo_descuento = ?");
         if (!$stmt) {
-            die("Preparación de consulta fallida: " . self::$conexion->error);
+            die("Preparación de consulta fallida: " . $con->error);
         }
         $stmt->bind_param("i", $id_codigo_descuento);
         if (!$stmt->execute()) {
@@ -59,11 +51,11 @@ class CodigoDescuentoDAO {
 
     // Incrementar usos por usuario
     public static function incrementarUsosPorUsuario($id_usuario, $id_codigo_descuento) {
-        self::conectar();
+        $con = DataBase::connect();
         // Verificar si ya existe un registro para este usuario y código
-        $stmt = self::$conexion->prepare("SELECT veces_usado FROM Usuario_Descuento WHERE id_usuario = ? AND id_codigo_descuento = ?");
+        $stmt = $con->prepare("SELECT veces_usado FROM Usuario_Descuento WHERE id_usuario = ? AND id_codigo_descuento = ?");
         if (!$stmt) {
-            die("Preparación de consulta fallida: " . self::$conexion->error);
+            die("Preparación de consulta fallida: " . $con->error);
         }
         $stmt->bind_param("ii", $id_usuario, $id_codigo_descuento);
         $stmt->execute();
@@ -73,9 +65,9 @@ class CodigoDescuentoDAO {
 
         if ($uso) {
             // Actualizar el contador existente
-            $stmt = self::$conexion->prepare("UPDATE Usuario_Descuento SET veces_usado = veces_usado + 1 WHERE id_usuario = ? AND id_codigo_descuento = ?");
+            $stmt = $con->prepare("UPDATE Usuario_Descuento SET veces_usado = veces_usado + 1 WHERE id_usuario = ? AND id_codigo_descuento = ?");
             if (!$stmt) {
-                die("Preparación de consulta fallida: " . self::$conexion->error);
+                die("Preparación de consulta fallida: " . $con->error);
             }
             $stmt->bind_param("ii", $id_usuario, $id_codigo_descuento);
             if (!$stmt->execute()) {
@@ -84,9 +76,9 @@ class CodigoDescuentoDAO {
             $stmt->close();
         } else {
             // Insertar un nuevo registro
-            $stmt = self::$conexion->prepare("INSERT INTO Usuario_Descuento (id_usuario, id_codigo_descuento, veces_usado) VALUES (?, ?, 1)");
+            $stmt = $con->prepare("INSERT INTO Usuario_Descuento (id_usuario, id_codigo_descuento, veces_usado) VALUES (?, ?, 1)");
             if (!$stmt) {
-                die("Preparación de consulta fallida: " . self::$conexion->error);
+                die("Preparación de consulta fallida: " . $con->error);
             }
             $stmt->bind_param("ii", $id_usuario, $id_codigo_descuento);
             if (!$stmt->execute()) {

@@ -2,7 +2,7 @@
 
 :root {
   --primary-color: #00a82d;
-  --secondary-color: #f8f9fa;
+  --secondary-color: #f9f6f2;
   --gray-text: #6c757d;
 }
 
@@ -10,7 +10,8 @@
 body,
 main,
 footer,
-header {
+header,
+.card {
   background-color: var(--secondary-color) !important;
 }
 

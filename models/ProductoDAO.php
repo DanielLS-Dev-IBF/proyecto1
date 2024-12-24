@@ -32,9 +32,7 @@ class ProductoDAO {
                 $row['descripcion'],
                 $row['precio_base'],
                 $row['img'],
-                $row['tipo'],
-                isset($row['volumen']) ? $row['volumen'] : null,
-                isset($row['calorias']) ? $row['calorias'] : null
+                $row['tipo']
             );
             $productos[] = $producto;
         }
@@ -69,9 +67,7 @@ class ProductoDAO {
                 $row['descripcion'],
                 $row['precio_base'],
                 $row['img'],
-                $row['tipo'],
-                isset($row['volumen']) ? $row['volumen'] : null,
-                isset($row['calorias']) ? $row['calorias'] : null
+                $row['tipo']
             );
             $stmt->close();
             $con->close();
@@ -84,51 +80,55 @@ class ProductoDAO {
     }
 
     // Insertar un nuevo producto
-    public static function store($producto){
+    public static function store(Producto $producto): bool
+    {
         $con = DataBase::connect();
-        $stmt = $con->prepare("INSERT INTO Proyecto1.Producto (nombre, descripcion, precio_base, img, tipo, volumen, calorias) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $con->prepare("INSERT INTO Proyecto1.Producto
+            (nombre, descripcion, precio_base, img, tipo)
+            VALUES (?, ?, ?, ?, ?)");
+
         if (!$stmt) {
-            error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
-            return;
+            error_log("Prepare failed in store: (" . $con->errno . ") " . $con->error);
+            return false;
         }
 
-        $nombre = $producto->getNombre();
-        $descripcion = $producto->getDescripcion();
-        $precio_base = $producto->getPrecio_base();
-        $img = $producto->getImg();
-        $tipo = $producto->getTipo();
-        $volumen = $producto->getVolumen();
-        $calorias = $producto->getCalorias();
+        $nombre       = $producto->getNombre();
+        $descripcion  = $producto->getDescripcion();
+        $precio_base  = $producto->getPrecio_base();
+        $img          = $producto->getImg();
+        $tipo         = $producto->getTipo();
 
-        // Ajusta los tipos según los datos reales
-        // 's' para string, 'd' para double, 'i' para integer
-        // Suponiendo que 'volumen' e 'calorias' son enteros, ajusta si es necesario
-        $stmt->bind_param("ssdsssi", $nombre, $descripcion, $precio_base, $img, $tipo, $volumen, $calorias);
+        // Ajusta los tipos (s=string, d=double) según lo que tengas en la BD
+        $stmt->bind_param("ssdss", $nombre, $descripcion, $precio_base, $img, $tipo);
 
-        if (!$stmt->execute()) {
-            error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+        $res = $stmt->execute();
+        if (!$res) {
+            error_log("Execute failed in store: " . $stmt->error);
         }
 
         $stmt->close();
         $con->close();
+        return $res;
     }
 
+
     // Eliminar un producto por ID
-    public static function destroy($id){
+    public static function destroy($id): bool
+    {
         $con = DataBase::connect();
         $stmt = $con->prepare("DELETE FROM Proyecto1.Producto WHERE id_producto = ?");
         if (!$stmt) {
-            error_log("Prepare failed: (" . $con->errno . ") " . $con->error);
-            return;
+            error_log("Prepare failed in destroy: (" . $con->errno . ") " . $con->error);
+            return false;
         }
         $stmt->bind_param("i", $id);
-
-        if (!$stmt->execute()) {
-            error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+        $res = $stmt->execute();
+        if (!$res) {
+            error_log("Execute failed in destroy: (" . $stmt->errno . ") " . $stmt->error);
         }
-
         $stmt->close();
         $con->close();
+        return $res;
     }
 
     // Obtener productos por tipo con paginación y orden alfabético
@@ -162,9 +162,7 @@ class ProductoDAO {
                 $row['descripcion'],
                 $row['precio_base'],
                 $row['img'],
-                $row['tipo'],
-                isset($row['volumen']) ? $row['volumen'] : null,
-                isset($row['calorias']) ? $row['calorias'] : null
+                $row['tipo']
             );
             $productos[] = $producto;
         }
@@ -273,9 +271,7 @@ class ProductoDAO {
                 $row['descripcion'],
                 $row['precio_base'],
                 $row['img'],
-                $row['tipo'],
-                isset($row['volumen']) ? $row['volumen'] : null,
-                isset($row['calorias']) ? $row['calorias'] : null
+                $row['tipo']
             );
             $productos[] = $producto;
         }
@@ -351,9 +347,7 @@ class ProductoDAO {
                 $row['descripcion'],
                 $row['precio_base'],
                 $row['img'],
-                $row['tipo'],
-                isset($row['volumen']) ? $row['volumen'] : null,
-                isset($row['calorias']) ? $row['calorias'] : null
+                $row['tipo']
             );
             $productos[] = $producto;
         }

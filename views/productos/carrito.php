@@ -189,10 +189,4 @@ if (isset($_SESSION['error_codigo'])) {
             });
         }
     });
-
-    // Menú hamburguesa
-    function toggleMenu() {
-        const dropdownMenu = document.getElementById("dropdown-menu");
-        dropdownMenu.classList.toggle("show");
-    }
 </script>

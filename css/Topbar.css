@@ -1,12 +1,62 @@
-/* Sobrescribir el fondo global para los botones específicos */
+/* Estilos Generales */
+header {
+  z-index: 1000; /* Barra superior */
+  background-color: var(--secondary-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  top: 0;
+  left: 0;
+  /* Elimina cualquier posición previa */
+  position: static;
+  transition: position 0.3s ease; /* Transición suave al cambiar la posición */
+}
+
+/* Clase para fijar el header */
+header.fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+/* Flex Container */
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+/* Flex Items */
+.flex-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo */
+#logo img {
+  height: 40px; /* Ajusta según el tamaño deseado */
+}
+
+/* Enlaces de Navegación (Desktop) */
+.nav-links a {
+  margin-left: 20px;
+  color: #000;
+  text-decoration: none;
+  font-size: var(--font-size-medium);
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--primary-color);
+}
 
 /* Botón Cuenta */
 #boton_cuenta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--secondary-color) !important; /* Fondo secundario */
-  color: #000 !important; /* Texto negro */
+  background-color: var(--secondary-color); /* Fondo secundario */
+  color: #000; /* Texto negro */
   border: 1px solid black;
   border-radius: 5px;
   font-size: var(--font-size-medium);
@@ -21,20 +71,17 @@
 
 #boton_cuenta:hover,
 #boton_cuenta:focus {
-  background-color: var(
-    --secondary-color
-  ) !important; /* Forzar el color secundario */
-  color: #000 !important; /* Texto negro */
+  background-color: var(--secondary-color); /* Forzar el color secundario */
+  color: #000; /* Texto negro */
   transform: translateY(-3px);
   box-shadow: 5px 5px 0px 0px black;
-  cursor: pointer;
 }
 
 #boton_cuenta img {
   width: 18px;
   height: 18px;
   margin-left: 5px;
-  fill: currentColor !important; /* Asegurar que el icono tome el color del texto */
+  fill: currentColor; /* Asegurar que el icono tome el color del texto */
 }
 
 /* Botón Carrito */
@@ -42,7 +89,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--primary-color) !important; /* Fondo primario */
+  background-color: var(--primary-color); /* Fondo primario */
   color: #ffffff !important; /* Texto blanco */
   border: 1px solid black;
   border-radius: 5px;
@@ -53,6 +100,8 @@
     box-shadow 0.2s ease;
   position: relative; /* Aislar estilos */
   z-index: 10;
+  cursor: pointer;
+  margin-left: 10px;
 }
 
 #boton_carrito:hover,
@@ -69,31 +118,231 @@
   width: 18px;
   height: 18px;
   margin-left: 5px;
-  fill: #ffffff !important; /* Asegurar que el icono permanezca blanco */
+  fill: #ffffff; /* Asegurar que el icono permanezca blanco */
 }
 
-#menu_cuenta {
-  border: 1px solid black;
+/* Dropdown (Desktop) */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  color: #000;
+  font-size: var(--font-size-medium);
+  text-decoration: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover,
+.dropdown-toggle:focus {
+  background-color: #f8f8f8;
+  border-radius: 5px;
+}
+
+.dropdown-toggle::after {
+  content: none; /* Eliminar flecha predeterminada */
+}
+
+/* Menú desplegable de cuenta (Desktop) */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px); /* Aumenta el margen de 10px */
+  right: 0;
+  background-color: var(--secondary-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  z-index: 1001;
+  width: 150px;
+}
+
+.dropdown-menu.active {
+  display: block;
+}
+
+.dropdown-menu li {
+  list-style: none;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 10px;
+  color: #000;
+  text-decoration: none;
+  font-size: var(--font-size-medium);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Menú hamburguesa */
+.menu-icon {
+  display: none;
+  font-size: 30px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1003; /* Por encima de todo */
+  width: 30px;
+  height: 30px;
+}
+
+/* Icono de menú hamburguesa y cruz */
+.menu-icon::before {
+  content: "\2630"; /* Unicode para el menú hamburguesa ☰ */
+  font-size: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.menu-icon.active::before {
+  content: "\00D7"; /* Unicode para la cruz × */
+  font-size: 30px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 /* Media Query para pantallas con un ancho máximo de 768px */
 @media (max-width: 768px) {
-  /* Ocultar el botón "Cuenta" en la barra superior */
-  #boton_cuenta {
+  /* Ocultar los botones "Cuenta" y "Carrito" en la barra superior */
+  #boton_cuenta,
+  #boton_carrito,
+  .nav-links {
     display: none;
   }
 
-  /* Opcional: Ajustar el botón "Carrito" si también deseas ocultarlo */
-  #boton_carrito {
-    display: none;
-  }
-
-  /* Asegurar que el icono de menú hamburguesa sea visible */
+  /* Mostrar el icono de menú hamburguesa */
   .menu-icon {
     display: block;
   }
 
-  /* Opcional: Si el menú hamburguesa no está visible por defecto */
-  /* Asegúrate de que esté visible en pantallas pequeñas */
-  /* Por defecto, podrías tener display: none; */
+  /* Asegurar que el menú móvil esté por encima de otros elementos excepto el header */
+  .mobile-dropdown-menu {
+    z-index: 1002;
+  }
+}
+
+/* Menú móvil */
+.mobile-dropdown-menu {
+  display: none; /* Oculto por defecto */
+  position: fixed; /* Fijo respecto a la ventana */
+  top: 108px; /* Debajo del header; ajusta según la altura de tu header */
+  left: 0;
+  width: 100%; /* Ocupa todo el ancho */
+  height: calc(100% - 60px); /* Ocupa todo el alto menos el header */
+  background-color: var(--secondary-color); /* Fondo secundario */
+  padding: 20px; /* Añade padding para espacio interno */
+  padding-top: 40px; /* Padding adicional para separar del header */
+  z-index: 1002;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  opacity: 0; /* Invisible por defecto */
+  visibility: hidden; /* No visible */
+}
+
+.mobile-dropdown-menu.active {
+  display: block; /* Cambia a block para mostrar el menú */
+  opacity: 1; /* Totalmente visible */
+  visibility: visible; /* Visible */
+}
+
+/* Estilos para la lista dentro del menú móvil */
+.mobile-dropdown-menu nav ul {
+  list-style: none; /* Elimina los puntos de la lista */
+  padding: 0; /* Elimina padding predeterminado */
+  margin: 0; /* Elimina margen predeterminado */
+  width: 100%; /* Ocupa todo el ancho disponible */
+}
+
+/* Estilos para cada elemento de la lista */
+.mobile-dropdown-menu ul li {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  margin-bottom: 10px; /* Espacio entre elementos */
+}
+
+/* Separador */
+.mobile-dropdown-menu ul li.separator {
+  border-top: 1px solid #ccc; /* Línea divisoria */
+  margin: 20px 0; /* Espacio alrededor del separador */
+}
+
+/* Enlaces y botones del menú móvil alineados al centro */
+.mobile-dropdown-menu ul li a,
+.mobile-dropdown-menu ul li button.submenu-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centra horizontalmente */
+  padding: 15px 20px; /* Ajusta el padding para alineación al centro */
+  font-size: 1.2em;
+  text-align: center; /* Centra el texto */
+  color: #000; /* Asegura el color del texto */
+  text-decoration: none;
+  width: 100%; /* Ocupa todo el ancho disponible */
+  border-bottom: 1px solid #ccc; /* Línea divisoria entre enlaces */
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 5px; /* Bordes redondeados */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--secondary-font); /* Asegura la consistencia de la fuente */
+}
+
+.mobile-dropdown-menu ul li a:hover,
+.mobile-dropdown-menu ul li button.submenu-toggle:hover {
+  background-color: var(--primary-color); /* Efecto al pasar el ratón */
+  color: #fff; /* Cambia el color del texto al pasar el ratón */
+}
+
+/* Estilos para el submenú */
+.mobile-dropdown-menu ul li .submenu {
+  display: none; /* Oculto por defecto */
+  list-style: none;
+  padding-left: 20px; /* Indentación para el submenú */
+  margin-top: 10px;
+}
+
+.mobile-dropdown-menu ul li .submenu.active {
+  display: block; /* Mostrar submenú cuando está activo */
+}
+
+.mobile-dropdown-menu ul li .submenu li {
+  margin-bottom: 5px; /* Espacio entre elementos del submenú */
+}
+
+.mobile-dropdown-menu ul li .submenu li a {
+  display: block;
+  padding: 10px 20px; /* Padding para los enlaces del submenú */
+  font-size: 1em; /* Tamaño de fuente más pequeño para el submenú */
+  border: none; /* Sin bordes */
+  border-bottom: 1px solid #ccc; /* Línea divisoria entre enlaces del submenú */
+  border-radius: 5px; /* Bordes redondeados */
+}
+
+.mobile-dropdown-menu ul li .submenu li a:hover {
+  background-color: var(--primary-color); /* Efecto al pasar el ratón */
+  color: #fff; /* Cambia el color del texto al pasar el ratón */
+}
+
+/* Estilos para la flecha dentro del botón */
+.arrow-icon {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.submenu-toggle[aria-expanded="true"] .arrow-icon {
+  transform: rotate(180deg); /* Gira la flecha hacia arriba */
+}
+
+/* Ajuste para la flecha dentro del botón centrado */
+.submenu-toggle .arrow-icon {
+  margin-left: 0; /* Elimina margen izquierdo */
 }
