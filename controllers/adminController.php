@@ -28,6 +28,12 @@ class AdminController
     {
         $usuarios = UsuarioDAO::getAllUsers();
         $data = [];
+
+        if (empty($usuarios)) {
+            echo json_encode([]);
+            return;
+        }
+
         foreach ($usuarios as $u) {
             $data[] = [
                 'id_usuario'     => $u->getId_usuario(),
@@ -45,8 +51,14 @@ class AdminController
     // JSON para Pedidos
     public function getPedidosJSON()
     {
-        $pedidos = PedidoDAO::getAllPedidos(); // array de arrays
+        $pedidos = PedidoDAO::getAllPedidos();
         $data = [];
+
+        if (empty($pedidos)) {
+            echo json_encode([]);
+            return;
+        }
+
         foreach ($pedidos as $p) {
             $data[] = [
                 'id_pedido'   => $p['id_pedido'],
@@ -66,6 +78,12 @@ class AdminController
     {
         $productos = ProductoDAO::getAll();
         $data = [];
+
+        if (empty($productos)) {
+            echo json_encode([]);
+            return;
+        }
+
         foreach ($productos as $prod) {
             $data[] = [
                 'id_producto' => $prod->getId_producto(),
@@ -87,7 +105,6 @@ class AdminController
             $email  = $_POST['email'] ?? '';
             $rol    = $_POST['rol'] ?? 'usuario';
             $telefono = $_POST['telefono'] ?? '';
-            // Podrías manejar password si deseas
 
             // Validar
             if (empty($nombre) || empty($email)) {
@@ -156,7 +173,6 @@ class AdminController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_usuario'] ?? null;
             if ($id) {
-                // Implementar en UsuarioDAO: deleteUser($id)
                 $ok = UsuarioDAO::deleteUser($id);
                 if ($ok) {
                     echo json_encode(['status' => 'ok', 'message' => 'Usuario eliminado con éxito']);
@@ -178,14 +194,15 @@ class AdminController
             $direccion  = $_POST['direccion'] ?? '';
             $telefono   = $_POST['telefono'] ?? '';
             $correo     = $_POST['correo'] ?? '';
-            // etc.
 
-            // Validar y construir un objeto Pedido
-            $pedido = new Pedido($id_usuario, /* nombre_completo */ $_POST['nombre_completo'] ?? '', 
-                                $direccion, $telefono, $correo, 
-                                $_POST['metodo_pago'] ?? '', $_POST['detalles_pago'] ?? '',
-                                $_POST['subtotal'] ?? 0, $_POST['descuento'] ?? 0, 
-                                $_POST['gastos_envio'] ?? 0, $_POST['total'] ?? 0);
+            $pedido = new Pedido(
+                $id_usuario,
+                $_POST['nombre_completo'] ?? '',
+                $direccion, $telefono, $correo, 
+                $_POST['metodo_pago'] ?? '', $_POST['detalles_pago'] ?? '',
+                $_POST['subtotal'] ?? 0, $_POST['descuento'] ?? 0, 
+                $_POST['gastos_envio'] ?? 0, $_POST['total'] ?? 0
+            );
             
             $res = PedidoDAO::crearPedido($pedido);
             if ($res) {
@@ -207,11 +224,6 @@ class AdminController
                 return;
             }
 
-            // 1. Obtener pedido actual (si tienes un "PedidoDAO::obtenerPedidoPorId($id)")
-            //   O podrías no necesitarlo y simplemente hacer un new Pedido con la data
-            //   e ID existente.
-
-            // 2. Crear un objeto Pedido con los nuevos valores
             $pedido = new Pedido(
                 $_POST['id_usuario'] ?? 0,
                 $_POST['nombre_completo'] ?? '',
@@ -227,7 +239,6 @@ class AdminController
             );
             $pedido->setIdPedido($id_pedido);
 
-            // 3. Llamar a updatePedido($pedido) en PedidoDAO
             $ok = PedidoDAO::updatePedido($pedido);
             if ($ok) {
                 echo json_encode(['status'=>'ok','message'=>'Pedido actualizado']);
@@ -239,13 +250,12 @@ class AdminController
         }
     }
 
-
     public function deletePedido()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = $_POST['id_pedido'] ?? null;
             if ($id) {
-                $ok = PedidoDAO::deletePedido($id); // a implementar
+                $ok = PedidoDAO::deletePedido($id);
                 if ($ok) {
                     echo json_encode(['status'=>'ok','message'=>'Pedido eliminado']);
                 } else {
@@ -266,9 +276,7 @@ class AdminController
             $descripcion = $_POST['descripcion'] ?? '';
             $precio_base = $_POST['precio_base'] ?? 0;
             $tipo = $_POST['tipo'] ?? '';
-            // etc.
 
-            // Crear objeto Producto
             $p = new Producto(
                 null, // id_producto autoincrement
                 $nombre,
@@ -278,7 +286,6 @@ class AdminController
                 $tipo
             );
 
-            // Insertar
             $ok = ProductoDAO::store($p);
             if ($ok !== false) {
                 echo json_encode(['status'=>'ok','message'=>'Producto creado']);
@@ -328,7 +335,6 @@ class AdminController
         return $res; 
     }
 
-
     public function deleteProducto()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -347,8 +353,4 @@ class AdminController
             header("HTTP/1.1 405 Method Not Allowed");
         }
     }
-
-
-
-
 }

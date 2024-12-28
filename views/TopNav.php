@@ -167,12 +167,10 @@
                 menuIcon.setAttribute('aria-expanded', 'true');
                 mobileMenu.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden'; // Previene el scroll
-                console.log("Menú móvil abierto");
             } else {
                 menuIcon.setAttribute('aria-expanded', 'false');
                 mobileMenu.setAttribute('aria-hidden', 'true');
                 document.body.style.overflow = ''; // Restaura el scroll
-                console.log("Menú móvil cerrado");
             }
         }
 
@@ -184,7 +182,6 @@
             menuIcon.setAttribute('aria-expanded', 'false');
             mobileMenu.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = ''; // Restaura el scroll
-            console.log("Menú móvil cerrado mediante enlace o clic fuera");
         }
     });
 </script>
