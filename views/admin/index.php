@@ -541,123 +541,427 @@ $(document).ready(function() {
   //        PRODUCTOS
   // ==========================
   function loadProductos() {
-    if (currentDataTable) {
-      currentDataTable.destroy();
-      $('#admin-content').empty();
-    }
+  if (currentDataTable) {
+    currentDataTable.destroy();
+    $('#admin-content').empty();
+  }
 
-    let cardHtml = `
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h4 class="mb-0">Gestión de Productos</h4>
-          <button class="btn btn-success btn-sm" id="btn-crear-producto">
-            <i class="bi bi-plus-circle"></i> Crear Producto
-          </button>
+  let cardHtml = `
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Gestión de Productos</h4>
+        <button class="btn btn-success btn-sm" id="btn-crear-producto">
+          <i class="bi bi-plus-circle"></i> Crear Producto
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla-productos">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio Base</th>
+                <th>Tipo</th>
+                <th>Imagen</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+          </table>
         </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <!-- Aquí tenemos la columna Acciones en el thead -->
-            <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla-productos">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Nombre</th>
-                  <th>Descripción</th>
-                  <th>Precio Base</th>
-                  <th>Tipo</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-            </table>
-          </div>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
 
-    $('#admin-content').html(cardHtml);
+  $('#admin-content').html(cardHtml);
 
-    currentDataTable = $('#tabla-productos').DataTable({
-      ...dtConfig,
-      ajax: {
-        url: 'index.php?controller=admin&action=getProductosJSON',
-        type: 'GET',
-        dataSrc: ''
+  currentDataTable = $('#tabla-productos').DataTable({
+    ...dtConfig,
+    responsive: true, // Activar la funcionalidad responsiva
+    ajax: {
+      url: 'index.php?controller=admin&action=getProductosJSON',
+      type: 'GET',
+      dataSrc: ''
+    },
+    columns: [
+      { 
+        data: 'id_producto',
+        responsivePriority: 1,
+        width: '5%'
       },
-      columns: [
-        { data: 'id_producto' },
-        { data: 'nombre' },
-        { data: 'descripcion' },
-        { data: 'precio_base' },
-        { data: 'tipo' },
-        {
-          data: null,
-          className: 'all',
-          render: function(data, type, row) {
-            return `
-              <button class="btn btn-warning btn-sm btn-editar-producto" data-id="${row.id_producto}">Editar</button>
-              <button class="btn btn-danger btn-sm btn-borrar-producto" data-id="${row.id_producto}">Borrar</button>
-            `;
+      { 
+        data: 'nombre',
+        responsivePriority: 2,
+        width: '15%'
+      },
+      { 
+        data: 'descripcion',
+        responsivePriority: 3, // Baja prioridad
+        width: '30%',
+        render: function(data, type, row) {
+          const maxLength = 100;
+          if (data.length > maxLength) {
+            return data.substr(0, maxLength) + '...';
           }
+          return data;
         }
-      ]
-    });
-
-    // Botón Crear Producto
-    $('#btn-crear-producto').click(function() {
-      const modal = createModal(
-        'modalCrearProducto',
-        'Crear Producto',
-        `
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
-          </div>
-          <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <input type="text" class="form-control" id="descripcion" name="descripcion">
-          </div>
-          <div class="mb-3">
-            <label for="precio_base" class="form-label">Precio Base</label>
-            <input type="number" step="0.01" class="form-control" id="precio_base" name="precio_base" required>
-          </div>
-          <div class="mb-3">
-            <label for="tipo" class="form-label">Tipo</label>
-            <input type="text" class="form-control" id="tipo" name="tipo">
-          </div>
-        `,
-        `
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        `,
-        true // Indica que este modal contiene un formulario
-      );
-      modal.show();
-
-      // Manejar el envío del formulario de creación
-      $('#form-modalCrearProducto').on('submit', function(e) {
-        e.preventDefault();
-        // Aquí puedes agregar la lógica para enviar los datos al servidor vía AJAX
-        // Por ejemplo:
-        /*
-        $.ajax({
-          url: 'index.php?controller=admin&action=crearProducto',
-          type: 'POST',
-          data: $(this).serialize(),
-          success: function(response) {
-            // Manejar la respuesta del servidor
-            modal.hide();
-            currentDataTable.ajax.reload();
-          },
-          error: function(error) {
-            // Manejar errores
+      },
+      { 
+        data: 'precio_base',
+        responsivePriority: 2,
+        width: '10%',
+      },
+      { 
+        data: 'tipo',
+        responsivePriority: 2,
+        width: '10%'
+      },
+      { 
+        data: 'img',
+        responsivePriority: 1,
+        width: '10%',
+        render: function(data, type, row) {
+          if (data) {
+            return `<img src="${data}" alt="Imagen" class="img-thumbnail" width="50">`;
+          } else {
+            return 'No disponible';
           }
+        },
+        orderable: false,
+        searchable: false
+      },
+      {
+        data: null,
+        responsivePriority: 1,
+        className: 'all',
+        width: '15%',
+        render: function(data, type, row) {
+          return `
+            <button class="btn btn-warning btn-sm btn-editar-producto" data-id="${row.id_producto}">Editar</button>
+            <button class="btn btn-danger btn-sm btn-borrar-producto" data-id="${row.id_producto}">Borrar</button>
+          `;
+        },
+        orderable: false,
+        searchable: false
+      }
+    ]
+  });
+
+  // Botón Crear Producto
+  $('#btn-crear-producto').click(function() {
+    const modal = createModal(
+      'modalCrearProducto',
+      'Crear Producto',
+      `
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <input type="text" class="form-control" id="descripcion" name="descripcion">
+        </div>
+        <div class="mb-3">
+          <label for="precio_base" class="form-label">Precio Base <span class="text-danger">*</span></label>
+          <input type="number" step="0.01" class="form-control" id="precio_base" name="precio_base" required>
+        </div>
+        <div class="mb-3">
+          <label for="tipo" class="form-label">Tipo <span class="text-danger">*</span></label>
+          <select class="form-select" id="tipo" name="tipo" required>
+            <option value="">Selecciona un tipo</option>
+            <option value="Bowl">Bowl</option>
+            <option value="Postre">Postre</option>
+            <option value="Bebida">Bebida</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="img" class="form-label">Ruta de la Imagen del Producto <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="img" name="img" placeholder="img/Productos/imagen1.jpg" required>
+        </div>
+      `,
+      `
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-primary" id="save-producto">Guardar</button>
+      `,
+      true // Indica que este modal contiene un formulario
+    );
+    modal.show();
+
+    // Manejar el envío del formulario de creación
+    $('#form-modalCrearProducto').off('submit').on('submit', function(e) {
+      e.preventDefault();
+
+      // Validaciones adicionales
+      const nombre = $('#nombre').val().trim();
+      const precio_base = $('#precio_base').val();
+      const tipo = $('#tipo').val();
+
+      if (!nombre) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'El nombre del producto es obligatorio.'
         });
-        */
-        // Por ahora, simplemente cerramos el modal
-        modal.hide();
-        currentDataTable.ajax.reload();
+        return;
+      }
+
+      if (!precio_base || isNaN(precio_base) || precio_base <= 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'El precio base debe ser un número positivo.'
+        });
+        return;
+      }
+
+      if (!tipo) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debes seleccionar un tipo de producto.'
+        });
+        return;
+      }
+
+      // Deshabilitar el botón de guardar para prevenir múltiples clics
+      const $submitButton = $('#save-producto');
+      $submitButton.prop('disabled', true).text('Guardando...');
+
+      // Enviar los datos al servidor vía AJAX serializados
+      $.ajax({
+        url: 'index.php?controller=admin&action=createProducto',
+        type: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'ok') {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: response.message,
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+              modal.hide();
+              currentDataTable.ajax.reload(null, false);
+            });
+          } else if (response.status === 'error') {
+            if (response.errors) {
+              const errorMessages = Object.values(response.errors).join('<br>');
+              Swal.fire({
+                icon: 'error',
+                title: 'Errores de Validación',
+                html: errorMessages
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message
+              });
+            }
+            $submitButton.prop('disabled', false).text('Guardar');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error AJAX:', status, error);
+          console.error('Respuesta del servidor:', xhr.responseText);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error inesperado.'
+          });
+          $submitButton.prop('disabled', false).text('Guardar');
+        }
       });
     });
-  }
+  });
+
+  // Delegación de eventos para botones de editar producto
+  $('#tabla-productos tbody').on('click', '.btn-editar-producto', function() {
+    const productoId = $(this).data('id');
+    
+    // Obtener los datos del producto desde la tabla
+    const rowData = currentDataTable.row($(this).parents('tr')).data();
+
+    const modal = createModal(
+      'modalEditarProducto',
+      'Editar Producto',
+      `
+        <input type="hidden" id="id_producto" name="id_producto" value="${rowData.id_producto}">
+        <div class="mb-3">
+          <label for="nombre_editar" class="form-label">Nombre <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="nombre_editar" name="nombre" value="${rowData.nombre}" required>
+        </div>
+        <div class="mb-3">
+          <label for="descripcion_editar" class="form-label">Descripción</label>
+          <input type="text" class="form-control" id="descripcion_editar" name="descripcion" value="${rowData.descripcion}">
+        </div>
+        <div class="mb-3">
+          <label for="precio_base_editar" class="form-label">Precio Base <span class="text-danger">*</span></label>
+          <input type="number" step="0.01" class="form-control" id="precio_base_editar" name="precio_base" value="${rowData.precio_base}" required>
+        </div>
+        <div class="mb-3">
+          <label for="tipo_editar" class="form-label">Tipo <span class="text-danger">*</span></label>
+          <select class="form-select" id="tipo_editar" name="tipo" required>
+            <option value="">Selecciona un tipo</option>
+            <option value="Bowl" ${rowData.tipo === 'Bowl' ? 'selected' : ''}>Bowl</option>
+            <option value="Postre" ${rowData.tipo === 'Postre' ? 'selected' : ''}>Postre</option>
+            <option value="Bebida" ${rowData.tipo === 'Bebida' ? 'selected' : ''}>Bebida</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="img" class="form-label">Ruta de la Imagen del Producto <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="img" name="img" placeholder="img/Productos/imagen1.jpg">
+        </div>
+      `,
+      `
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-primary" id="update-producto">Actualizar</button>
+      `,
+      true // Indica que este modal contiene un formulario
+    );
+    modal.show();
+
+    // Manejar el envío del formulario de edición
+    $('#form-modalEditarProducto').off('submit').on('submit', function(e) {
+      e.preventDefault();
+
+      const nombre = $('#nombre_editar').val().trim();
+      const precio_base = $('#precio_base_editar').val();
+      const tipo = $('#tipo_editar').val();
+
+      if (!nombre) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'El nombre del producto es obligatorio.'
+        });
+        return;
+      }
+
+      if (!precio_base || isNaN(precio_base) || precio_base <= 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'El precio base debe ser un número positivo.'
+        });
+        return;
+      }
+
+      if (!tipo) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debes seleccionar un tipo de producto.'
+        });
+        return;
+      }
+
+      // Deshabilitar el botón de actualizar para prevenir múltiples envíos
+      const $submitButton = $('#update-producto');
+      $submitButton.prop('disabled', true).text('Actualizando...');
+
+      // Enviar los datos al servidor vía AJAX serializados
+      $.ajax({
+        url: 'index.php?controller=admin&action=updateProducto',
+        type: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'ok') {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: response.message,
+              timer: 1500,
+              showConfirmButton: false
+            }).then(() => {
+              modal.hide();
+              currentDataTable.ajax.reload(null, false);
+            });
+          } else if (response.status === 'error') {
+            if (response.errors) {
+              const errorMessages = Object.values(response.errors).join('<br>');
+              Swal.fire({
+                icon: 'error',
+                title: 'Errores de Validación',
+                html: errorMessages
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message
+              });
+            }
+            $submitButton.prop('disabled', false).text('Actualizar');
+          }
+        },
+        error: function(xhr, status, error) {
+          console.error('Error AJAX:', status, error);
+          console.error('Respuesta del servidor:', xhr.responseText);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Ocurrió un error inesperado.'
+          });
+          $submitButton.prop('disabled', false).text('Actualizar');
+        }
+      });
+    });
+  });
+
+  // Delegación de eventos para botones de borrar producto
+  $('#tabla-productos tbody').on('click', '.btn-borrar-producto', function() {
+    const productoId = $(this).data('id');
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Deseas borrar el producto con ID: ${productoId}? Esta acción no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Enviar solicitud AJAX para borrar el producto
+        $.ajax({
+          url: 'index.php?controller=admin&action=deleteProducto',
+          type: 'POST',
+          data: { id_producto: productoId },
+          dataType: 'json',
+          success: function(response) {
+            if (response.status === 'ok') {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Borrado!',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+              });
+              currentDataTable.ajax.reload();
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message
+              });
+            }
+          },
+          error: function(error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un error al borrar el producto. Inténtalo de nuevo.'
+            });
+            console.error('Error AJAX:', error);
+          }
+        });
+      }
+    });
+  });
+}
 
   // Listeners para los menús
   $('#btn-usuarios').click(loadUsuarios);

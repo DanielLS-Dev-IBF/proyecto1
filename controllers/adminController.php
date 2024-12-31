@@ -90,7 +90,8 @@ class AdminController
                 'nombre'      => $prod->getNombre(),
                 'descripcion' => $prod->getDescripcion(),
                 'precio_base' => $prod->getPrecio_base(),
-                'tipo'        => $prod->getTipo()
+                'tipo'        => $prod->getTipo(),
+                'img'         => $prod->getImg()
             ];
         }
 
@@ -346,67 +347,164 @@ class AdminController
     public function createProducto()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $_POST['nombre'] ?? '';
-            $descripcion = $_POST['descripcion'] ?? '';
-            $precio_base = $_POST['precio_base'] ?? 0;
-            $tipo = $_POST['tipo'] ?? '';
+            // Recolectar datos de POST
+            $nombre = trim($_POST['nombre'] ?? '');
+            $descripcion = trim($_POST['descripcion'] ?? '');
+            $precio_base = $_POST['precio_base'] ?? '';
+            $tipo = trim($_POST['tipo'] ?? '');
+            $img = trim($_POST['img'] ?? '');
 
-            $p = new Producto(
-                null, // id_producto autoincrement
-                $nombre,
-                $descripcion,
-                $precio_base,
-                $_POST['img'] ?? '',
-                $tipo
-            );
+            $errores = [];
 
-            $ok = ProductoDAO::store($p);
-            if ($ok !== false) {
-                echo json_encode(['status'=>'ok','message'=>'Producto creado']);
+            // Validaciones
+            if (empty($nombre)) {
+                $errores['nombre'] = 'El nombre del producto es obligatorio.';
+            }
+
+            if (empty($precio_base)) {
+                $errores['precio_base'] = 'El precio base es obligatorio.';
+            } elseif (!is_numeric($precio_base) || $precio_base <= 0) {
+                $errores['precio_base'] = 'El precio base debe ser un número positivo.';
+            }
+
+            // Validar tipo
+            $tiposPermitidos = ['Bowl', 'Postre', 'Bebida'];
+            if (!in_array($tipo, $tiposPermitidos)) {
+                $errores['tipo'] = 'El tipo de producto no es válido.';
+            }
+
+            // Validar imagen
+            if (empty($img)) {
+                $errores['img'] = 'La ruta de la imagen es obligatoria.';
             } else {
-                echo json_encode(['status'=>'error','message'=>'Error al crear producto']);
+
+                if (!preg_match('/^img\/Productos\/.+\.(jpg|jpeg|png|gif|webp)$/i', $img)) {
+                    $errores['img'] = 'La ruta de la imagen no tiene un formato válido.';
+                }
+            }
+
+            // Puedes agregar más validaciones según tus necesidades
+
+            // Si no hay errores, guardar el producto
+            if (empty($errores)) {
+                $producto = new Producto(
+                    null, // id_producto autoincrement
+                    $nombre,
+                    $descripcion,
+                    $precio_base,
+                    $img, // Ruta de la imagen
+                    $tipo
+                );
+
+                $resultado = ProductoDAO::store($producto);
+
+                if ($resultado !== false) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'ok', 'message' => 'Producto creado exitosamente.']);
+                    exit();
+                } else {
+                    $errores['general'] = 'Error al guardar el producto. Inténtalo nuevamente.';
+                }
+            }
+
+            // Devolver errores si los hay
+            if (!empty($errores)) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'errors' => $errores]);
+                exit();
             }
         } else {
+            // Método no permitido
             header("HTTP/1.1 405 Method Not Allowed");
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Método no permitido.']);
+            exit();
         }
     }
 
-    public static function updateProducto(Producto $producto): bool
+
+    public function updateProducto()
     {
-        $con = DataBase::connect();
-        $stmt = $con->prepare("UPDATE Proyecto1.Producto
-            SET nombre = ?, descripcion = ?, precio_base = ?, img = ?, tipo = ?
-            WHERE id_producto = ?");
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Recolectar datos de POST
+            $id_producto = $_POST['id_producto'] ?? null;
+            $nombre = trim($_POST['nombre'] ?? '');
+            $descripcion = trim($_POST['descripcion'] ?? '');
+            $precio_base = $_POST['precio_base'] ?? '';
+            $tipo = trim($_POST['tipo'] ?? '');
+            $img = trim($_POST['img'] ?? '');
 
-        if (!$stmt) {
-            error_log("Prepare failed in updateProducto: (" . $con->errno . ") " . $con->error);
-            return false;
+            $errores = [];
+
+            if (!$id_producto) {
+                $errores['id_producto'] = 'ID del producto no válido.';
+            }
+
+            // Validaciones
+            if (empty($nombre)) {
+                $errores['nombre'] = 'El nombre del producto es obligatorio.';
+            }
+
+            if (empty($precio_base)) {
+                $errores['precio_base'] = 'El precio base es obligatorio.';
+            } elseif (!is_numeric($precio_base) || $precio_base <= 0) {
+                $errores['precio_base'] = 'El precio base debe ser un número positivo.';
+            }
+
+            // Validar tipo
+            $tiposPermitidos = ['Bowl', 'Postre', 'Bebida'];
+            if (!in_array($tipo, $tiposPermitidos)) {
+                $errores['tipo'] = 'El tipo de producto no es válido.';
+            }
+
+            // Validar imagen
+            if (empty($img)) {
+                $errores['img'] = 'La ruta de la imagen es obligatoria.';
+            } else {
+                if (!preg_match('/^img\/Productos\/.+\.(jpg|jpeg|png|gif|webp)$/i', $img)) {
+                    $errores['img'] = 'La ruta de la imagen no tiene un formato válido.';
+                }
+            }
+
+            // Puedes agregar más validaciones según tus necesidades
+
+            // Si no hay errores, actualizar el producto
+            if (empty($errores)) {
+                $producto = ProductoDAO::getProducto($id_producto);
+                if (!$producto) {
+                    $errores['producto'] = 'Producto no encontrado.';
+                } else {
+                    $producto->setNombre($nombre);
+                    $producto->setDescripcion($descripcion);
+                    $producto->setPrecio_base($precio_base);
+                    $producto->setTipo($tipo);
+                    $producto->setImg($img);
+
+                    $resultado = ProductoDAO::updateProducto($producto);
+
+                    if ($resultado !== false) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'ok', 'message' => 'Producto actualizado exitosamente.']);
+                        exit();
+                    } else {
+                        $errores['general'] = 'Error al actualizar el producto. Inténtalo nuevamente.';
+                    }
+                }
+            }
+
+            // Devolver errores si los hay
+            if (!empty($errores)) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'error', 'errors' => $errores]);
+                exit();
+            }
+        } else {
+            // Método no permitido
+            header("HTTP/1.1 405 Method Not Allowed");
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Método no permitido.']);
+            exit();
         }
-
-        $nombre       = $producto->getNombre();
-        $descripcion  = $producto->getDescripcion();
-        $precio_base  = $producto->getPrecio_base();
-        $img          = $producto->getImg();
-        $tipo         = $producto->getTipo();
-        $id_producto  = $producto->getId_producto();
-
-        $stmt->bind_param("ssdssi", 
-            $nombre,
-            $descripcion,
-            $precio_base,
-            $img,
-            $tipo,
-            $id_producto
-        );
-
-        $res = $stmt->execute();
-        if (!$res) {
-            error_log("Execute failed in updateProducto: (" . $stmt->errno . ") " . $stmt->error);
-        }
-
-        $stmt->close();
-        $con->close();
-        return $res; 
     }
 
     public function deleteProducto()

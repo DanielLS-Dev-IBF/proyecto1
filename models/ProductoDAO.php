@@ -111,6 +111,43 @@ class ProductoDAO {
         return $res;
     }
 
+    public static function updateProducto(Producto $producto): bool
+    {
+        $con = DataBase::connect();
+        $stmt = $con->prepare("UPDATE Proyecto1.Producto
+            SET nombre = ?, descripcion = ?, precio_base = ?, img = ?, tipo = ?
+            WHERE id_producto = ?");
+
+        if (!$stmt) {
+            error_log("Prepare failed in updateProducto: (" . $con->errno . ") " . $con->error);
+            return false;
+        }
+
+        $nombre       = $producto->getNombre();
+        $descripcion  = $producto->getDescripcion();
+        $precio_base  = $producto->getPrecio_base();
+        $img          = $producto->getImg();
+        $tipo         = $producto->getTipo();
+        $id_producto  = $producto->getId_producto();
+
+        $stmt->bind_param("ssdssi", 
+            $nombre,
+            $descripcion,
+            $precio_base,
+            $img,
+            $tipo,
+            $id_producto
+        );
+
+        $res = $stmt->execute();
+        if (!$res) {
+            error_log("Execute failed in updateProducto: (" . $stmt->errno . ") " . $stmt->error);
+        }
+
+        $stmt->close();
+        $con->close();
+        return $res; 
+    }
 
     // Eliminar un producto por ID
     public static function destroy($id): bool
