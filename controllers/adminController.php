@@ -99,37 +99,88 @@ class AdminController
     }
 
     public function createUsuario()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $nombre = $_POST['nombre_completo'] ?? '';
-            $email  = $_POST['email'] ?? '';
-            $rol    = $_POST['rol'] ?? 'usuario';
-            $telefono = $_POST['telefono'] ?? '';
+{
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Ya no es necesario llamar a session_start() aquí
 
-            // Validar
-            if (empty($nombre) || empty($email)) {
-                echo json_encode(['status'=>'error','message'=>'Faltan campos']);
-                return;
-            }
+        // Recolectar datos de POST
+        $nombre_completo = trim($_POST['nombre_completo'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+        $telefono = trim($_POST['telefono'] ?? '');
+        $rol = trim($_POST['rol'] ?? 'usuario'); // Rol por defecto "usuario"
 
-            // Crear objeto Usuario
-            $u = new Usuario();
-            $u->setNombre_completo($nombre);
-            $u->setEmail($email);
-            $u->setTelefono($telefono);
-            $u->setRol($rol);
+        $errores = [];
 
-            // Llamar DAO
-            $idNuevo = UsuarioDAO::newUser($u);
-            if ($idNuevo) {
-                echo json_encode(['status'=>'ok','message'=>'Usuario creado']);
-            } else {
-                echo json_encode(['status'=>'error','message'=>'Error al crear usuario']);
-            }
-        } else {
-            header("HTTP/1.1 405 Method Not Allowed");
+        // Validaciones
+        if (empty($nombre_completo)) {
+            $errores['nombre_completo'] = 'El nombre completo es obligatorio.';
         }
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errores['email'] = 'El correo electrónico no es válido.';
+        }
+        if (empty($password) || strlen($password) < 6) {
+            $errores['password'] = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+        if ($password !== $confirm_password) {
+            $errores['confirm_password'] = 'Las contraseñas no coinciden.';
+        }
+        if (empty($telefono) || !ctype_digit($telefono)) {
+            $errores['telefono'] = 'El teléfono no es válido.';
+        }
+
+        // Verificar si el email ya existe
+        if (empty($errores)) {
+            if (UsuarioDAO::obtenerUsuarioPorEmail($email)) {
+                $errores['email'] = 'El correo electrónico ya está en uso.';
+            }
+        }
+
+        // Si no hay errores, guardar el usuario
+        if (empty($errores)) {
+            $usuario = new Usuario();
+            $usuario->setNombre_completo($nombre_completo);
+            $usuario->setEmail($email);
+            $usuario->setPassword(password_hash($password, PASSWORD_DEFAULT));
+            $usuario->setTelefono((int)$telefono);
+            $usuario->setRol($rol);
+
+            $resultado = UsuarioDAO::newUser($usuario);
+
+            if ($resultado) {
+                header('Content-Type: application/json');
+                echo json_encode(['status' => 'ok', 'message' => 'Usuario creado exitosamente.']);
+                exit();
+            } else {
+                $errores['general'] = 'Error al guardar el usuario. Inténtalo nuevamente.';
+            }
+        }
+
+        // Devolver errores si los hay
+        if (!empty($errores)) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'errors' => $errores]);
+            exit();
+        }
+    } else {
+        // Método no permitido
+        header("HTTP/1.1 405 Method Not Allowed");
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'error', 'message' => 'Método no permitido.']);
+        exit();
     }
+}
+
+
+
+    private function sendJsonResponse($data)
+    {
+        header('Content-Type: application/json');
+        echo json_encode($data);
+        exit();
+    }
+
 
     public function updateUsuario()
     {
@@ -138,6 +189,8 @@ class AdminController
             $nombre = $_POST['nombre_completo'] ?? '';
             $email  = $_POST['email'] ?? '';
             $telefono = $_POST['telefono'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $confirm_password = $_POST['confirm_password'] ?? '';
 
             if (!$id_usuario) {
                 echo json_encode(['status'=>'error','message'=>'ID de usuario no válido']);
@@ -155,6 +208,27 @@ class AdminController
             $u->setNombre_completo($nombre);
             $u->setEmail($email);
             $u->setTelefono($telefono);
+
+            // Si se ha ingresado una nueva contraseña, encriptarla y actualizar
+            if (!empty($password) || !empty($confirm_password)) {
+                if ($password !== $confirm_password) {
+                    echo json_encode(['status'=>'error','message'=>'Las contraseñas no coinciden']);
+                    return;
+                }
+
+                if (strlen($password) < 6) {
+                    echo json_encode(['status'=>'error','message'=>'La contraseña debe tener al menos 6 caracteres']);
+                    return;
+                }
+
+                $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+                if ($hashedPassword === false) {
+                    echo json_encode(['status'=>'error','message'=>'Error al encriptar la contraseña']);
+                    return;
+                }
+
+                $u->setPassword($hashedPassword);
+            }
 
             // Llamar DAO
             $ok = UsuarioDAO::updateUser($u);
@@ -353,4 +427,5 @@ class AdminController
             header("HTTP/1.1 405 Method Not Allowed");
         }
     }
+
 }

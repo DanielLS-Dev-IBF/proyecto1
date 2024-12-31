@@ -1,9 +1,10 @@
+<!-- views/main.php -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Greeny: Inicio</title>
+    <title>Greeny: Panel de Administración</title>
     
     <!-- Enlace a Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +18,7 @@
     <!-- Incluir jQuery desde CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
-    <!-- (NUEVO) DataTables CSS y JS (con Bootstrap 5) -->
+    <!-- DataTables CSS y JS (con Bootstrap 5) -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
@@ -25,6 +26,9 @@
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
 
+    <!-- SweetAlert2 CSS y JS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
 </head>
 <body>
     <?php
@@ -32,7 +36,7 @@
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-    
+
         // Incluir la vista específica
         if (isset($view) && file_exists($view)) {
             include_once($view);
@@ -40,7 +44,7 @@
             echo "<div class='alert alert-danger'>Vista no encontrada.</div>";
         }
 
-        // Puedes incluir el footer aquí si lo deseas
+        // Incluir el footer si lo tienes
         // include_once "Footer.php"; 
     ?>
     
@@ -50,6 +54,6 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous">
     </script>
-
+    
 </body>
 </html>

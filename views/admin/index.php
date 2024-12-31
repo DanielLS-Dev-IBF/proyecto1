@@ -34,22 +34,26 @@ $(document).ready(function() {
       "<'row'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>"
   };
 
-  function createModal(modalId, title, bodyContent, footerButtons) {
+  function createModal(modalId, title, bodyContent, footerButtons, isForm = false) {
     $('.modal-backdrop').remove();
+    const formStart = isForm ? '<form id="form-' + modalId + '">' : '';
+    const formEnd = isForm ? '</form>' : '';
     const modalHtml = `
       <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="${modalId}Label">${title}</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-              ${bodyContent}
-            </div>
-            <div class="modal-footer">
-              ${footerButtons}
-            </div>
+            ${formStart}
+              <div class="modal-header">
+                <h5 class="modal-title" id="${modalId}Label">${title}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                ${bodyContent}
+              </div>
+              <div class="modal-footer">
+                ${footerButtons}
+              </div>
+            ${formEnd}
           </div>
         </div>
       </div>`;
@@ -131,60 +135,114 @@ $(document).ready(function() {
         'modalCrearUsuario',
         'Crear Usuario',
         `
-          <form id="form-crear-usuario">
-            <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre Completo</label>
-              <input type="text" class="form-control" id="nombre" name="nombre_completo" required>
-            </div>
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3">
-              <label for="rol" class="form-label">Rol</label>
-              <select class="form-select" id="rol" name="rol" required>
-                <option value="admin">Admin</option>
-                <option value="usuario">Usuario</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="telefono" class="form-label">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" name="telefono">
-            </div>
-          </form>
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre Completo</label>
+            <input type="text" class="form-control" id="nombre" name="nombre_completo" required>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label for="rol" class="form-label">Rol</label>
+            <select class="form-select" id="rol" name="rol" required>
+              <option value="admin">Admin</option>
+              <option value="usuario">Usuario</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" class="form-control" id="telefono" name="telefono">
+          </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password" name="password" required minlength="6">
+          </div>
+          <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirmar Contraseña</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required minlength="6">
+          </div>
         `,
         `
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Guardar</button>
-        `
+          <button type="submit" class="btn btn-primary" id="save-user">Guardar</button>
+        `,
+        true // Indica que este modal contiene un formulario
       );
       modal.show();
 
       // Manejar el envío del formulario de creación
-      $('#form-crear-usuario').on('submit', function(e) {
+      $('#form-modalCrearUsuario').off('submit').on('submit', function (e) {
         e.preventDefault();
-        // Aquí puedes agregar la lógica para enviar los datos al servidor vía AJAX
-        // Por ejemplo:
-        /*
+
+        const password = $('#password').val();
+        const confirmPassword = $('#confirm_password').val();
+
+        // Validar que las contraseñas coincidan
+        if (password !== confirmPassword) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Las contraseñas no coinciden.'
+          });
+          return;
+        }
+
+        // Deshabilitar el botón de guardar para prevenir múltiples clics
+        const $submitButton = $('#save-user');
+        $submitButton.prop('disabled', true).text('Guardando...');
+
+        // Solicitud AJAX para crear el usuario
         $.ajax({
-          url: 'index.php?controller=admin&action=crearUsuario',
-          type: 'POST',
-          data: $(this).serialize(),
-          success: function(response) {
-            // Manejar la respuesta del servidor
-            modal.hide();
-            currentDataTable.ajax.reload();
-          },
-          error: function(error) {
-            // Manejar errores
+            url: 'index.php?controller=admin&action=createUsuario',
+            type: 'POST',
+            data: $(this).serialize(),
+            dataType: 'json',
+            success: function (response) {
+              if (response.status === 'ok') {
+                  // Mostrar un mensaje de éxito con SweetAlert2
+                  Swal.fire({
+                      icon: 'success',
+                      title: '¡Éxito!',
+                      text: response.message,
+                      timer: 1500,
+                      showConfirmButton: false
+                  }).then(() => {
+                      modal.hide();
+                      currentDataTable.ajax.reload(null, false);
+                  });
+              } else if (response.status === 'error') {
+                  if (response.errors) {
+                      const errorMessages = Object.values(response.errors).join('<br>');
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Errores de Validación',
+                          html: errorMessages
+                      });
+                  } else {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: response.message
+                      });
+                  }
+                  $submitButton.prop('disabled', false).text('Guardar');
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('Error AJAX:', status, error);
+              console.error('Respuesta del servidor:', xhr.responseText);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Ocurrió un error inesperado.'
+              });
+              $submitButton.prop('disabled', false).text('Guardar');
           }
         });
-        */
-        // Por ahora, simplemente cerramos el modal
-        modal.hide();
-        currentDataTable.ajax.reload();
       });
     });
+
 
     // Delegación de eventos para botones de editar usuario
     $('#tabla-usuarios tbody').on('click', '.btn-editar-usuario', function() {
@@ -195,59 +253,111 @@ $(document).ready(function() {
         'modalEditarUsuario',
         'Editar Usuario',
         `
-          <form id="form-editar-usuario">
-            <input type="hidden" id="id_usuario" name="id_usuario" value="${rowData.id_usuario}">
-            <div class="mb-3">
-              <label for="nombre_editar" class="form-label">Nombre Completo</label>
-              <input type="text" class="form-control" id="nombre_editar" name="nombre_completo" value="${rowData.nombre_completo}" required>
-            </div>
-            <div class="mb-3">
-              <label for="email_editar" class="form-label">Email</label>
-              <input type="email" class="form-control" id="email_editar" name="email" value="${rowData.email}" required>
-            </div>
-            <div class="mb-3">
-              <label for="rol_editar" class="form-label">Rol</label>
-              <select class="form-select" id="rol_editar" name="rol" required>
-                <option value="admin" ${rowData.rol === 'admin' ? 'selected' : ''}>Admin</option>
-                <option value="usuario" ${rowData.rol === 'usuario' ? 'selected' : ''}>Usuario</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="telefono_editar" class="form-label">Teléfono</label>
-              <input type="text" class="form-control" id="telefono_editar" name="telefono" value="${rowData.telefono}">
-            </div>
-          </form>
+          <input type="hidden" id="id_usuario" name="id_usuario" value="${rowData.id_usuario}">
+          <div class="mb-3">
+            <label for="nombre_editar" class="form-label">Nombre Completo</label>
+            <input type="text" class="form-control" id="nombre_editar" name="nombre_completo" value="${rowData.nombre_completo}" required>
+          </div>
+          <div class="mb-3">
+            <label for="email_editar" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email_editar" name="email" value="${rowData.email}" required>
+          </div>
+          <div class="mb-3">
+            <label for="rol_editar" class="form-label">Rol</label>
+            <select class="form-select" id="rol_editar" name="rol" required>
+              <option value="admin" ${rowData.rol === 'admin' ? 'selected' : ''}>Admin</option>
+              <option value="usuario" ${rowData.rol === 'usuario' ? 'selected' : ''}>Usuario</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="telefono_editar" class="form-label">Teléfono</label>
+            <input type="text" class="form-control" id="telefono_editar" name="telefono" value="${rowData.telefono}">
+          </div>
+          <!-- Opcional: Añadir campos para cambiar la contraseña -->
+          <div class="mb-3">
+            <label for="password_editar" class="form-label">Nueva Contraseña</label>
+            <input type="password" class="form-control" id="password_editar" name="password" minlength="6">
+          </div>
+          <div class="mb-3">
+            <label for="confirm_password_editar" class="form-label">Confirmar Nueva Contraseña</label>
+            <input type="password" class="form-control" id="confirm_password_editar" name="confirm_password" minlength="6">
+          </div>
         `,
         `
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Actualizar</button>
-        `
+        `,
+        true // Indica que este modal contiene un formulario
       );
       modal.show();
 
       // Manejar el envío del formulario de edición
-      $('#form-editar-usuario').on('submit', function(e) {
+      $('#form-modalEditarUsuario').on('submit', function(e) {
         e.preventDefault();
-        // Aquí puedes agregar la lógica para enviar los datos actualizados al servidor vía AJAX
-        // Por ejemplo:
-        /*
+
+        // Validar que las contraseñas coincidan si se han ingresado
+        const password = $('#password_editar').val();
+        const confirmPassword = $('#confirm_password_editar').val();
+        if (password !== confirmPassword) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Las contraseñas no coinciden.'
+          });
+          return;
+        }
+
+        // Deshabilitar el botón de actualizar para prevenir múltiples envíos
+        const $submitButton = $(this).find('button[type="submit"]');
+        $submitButton.prop('disabled', true).text('Actualizando...');
+
+        // Enviar los datos al servidor vía AJAX
         $.ajax({
-          url: 'index.php?controller=admin&action=editarUsuario',
+          url: 'index.php?controller=admin&action=updateUsuario',
           type: 'POST',
           data: $(this).serialize(),
+          dataType: 'json',
           success: function(response) {
-            // Manejar la respuesta del servidor
-            modal.hide();
-            currentDataTable.ajax.reload();
+            if (response.status === 'ok') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: response.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    modal.hide();
+                    currentDataTable.ajax.reload(null, false); // Recargar sin reiniciar la paginación
+                });
+            } else {
+                if (response.errors) {
+                    const errorMessages = Object.values(response.errors).join('<br>');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errores de Validación',
+                        html: errorMessages
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message
+                    });
+                }
+                $submitButton.prop('disabled', false).text('Actualizar');
+            }
           },
-          error: function(error) {
-            // Manejar errores
+          error: function(xhr, status, error) {
+              console.error('Error AJAX:', status, error);
+              console.error('Respuesta del servidor:', xhr.responseText);
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Ocurrió un error al procesar la solicitud. Inténtalo de nuevo.'
+              });
+              $submitButton.prop('disabled', false).text('Actualizar');
           }
         });
-        */
-        // Por ahora, simplemente cerramos el modal
-        modal.hide();
-        currentDataTable.ajax.reload();
       });
     });
 
@@ -256,39 +366,49 @@ $(document).ready(function() {
       const userId = $(this).data('id');
       const userName = $(this).data('nombre');
 
-      const modal = createModal(
-        'modalBorrarUsuario',
-        'Confirmar Eliminación',
-        `
-          <p>¿Estás seguro de que deseas borrar al usuario <strong>${userName}</strong> (ID: ${userId})?</p>
-        `,
-        `
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger" id="confirmar-borrar-usuario">Borrar</button>
-        `
-      );
-      modal.show();
-
-      // Manejar la confirmación de borrado
-      $('#confirmar-borrar-usuario').on('click', function() {
-        // Enviar solicitud AJAX para borrar el usuario
-        $.ajax({
-          url: 'index.php?controller=admin&action=borrarUsuario', // Asegúrate de tener esta ruta en tu backend
-          type: 'POST',
-          data: { id_usuario: userId },
-          success: function(response) {
-            // Manejar la respuesta del servidor
-            modal.hide();
-            // Puedes agregar validaciones según la respuesta del servidor
-            currentDataTable.ajax.reload();
-            // Opcional: Mostrar un mensaje de éxito
-            alert('Usuario borrado exitosamente.');
-          },
-          error: function(error) {
-            // Manejar errores
-            alert('Hubo un error al borrar el usuario. Inténtalo de nuevo.');
-          }
-        });
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Deseas borrar al usuario "${userName}" (ID: ${userId})? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Enviar solicitud AJAX para borrar el usuario
+          $.ajax({
+            url: 'index.php?controller=admin&action=deleteUsuario',
+            type: 'POST',
+            data: { id_usuario: userId },
+            dataType: 'json',
+            success: function(response) {
+              if (response.status === 'ok') {
+                Swal.fire({
+                  icon: 'success',
+                  title: '¡Borrado!',
+                  text: response.message,
+                  timer: 1500,
+                  showConfirmButton: false
+                });
+                currentDataTable.ajax.reload();
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message
+                });
+              }
+            },
+            error: function(error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al borrar el usuario. Inténtalo de nuevo.'
+              });
+              console.error('Error AJAX:', error);
+            }
+          });
+        }
       });
     });
   }
@@ -361,38 +481,37 @@ $(document).ready(function() {
         'modalCrearPedido',
         'Crear Pedido',
         `
-          <form id="form-crear-pedido">
-            <div class="mb-3">
-              <label for="id_usuario" class="form-label">ID Usuario</label>
-              <input type="number" class="form-control" id="id_usuario" name="id_usuario" required>
-            </div>
-            <div class="mb-3">
-              <label for="direccion" class="form-label">Dirección</label>
-              <input type="text" class="form-control" id="direccion" name="direccion" required>
-            </div>
-            <div class="mb-3">
-              <label for="telefono" class="form-label">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" name="telefono">
-            </div>
-            <div class="mb-3">
-              <label for="correo" class="form-label">Correo</label>
-              <input type="email" class="form-control" id="correo" name="correo">
-            </div>
-            <div class="mb-3">
-              <label for="metodo_pago" class="form-label">Método de Pago</label>
-              <input type="text" class="form-control" id="metodo_pago" name="metodo_pago">
-            </div>
-          </form>
+          <div class="mb-3">
+            <label for="id_usuario" class="form-label">ID Usuario</label>
+            <input type="number" class="form-control" id="id_usuario" name="id_usuario" required>
+          </div>
+          <div class="mb-3">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input type="text" class="form-control" id="direccion" name="direccion" required>
+          </div>
+          <div class="mb-3">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input type="text" class="form-control" id="telefono" name="telefono">
+          </div>
+          <div class="mb-3">
+            <label for="correo" class="form-label">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo">
+          </div>
+          <div class="mb-3">
+            <label for="metodo_pago" class="form-label">Método de Pago</label>
+            <input type="text" class="form-control" id="metodo_pago" name="metodo_pago">
+          </div>
         `,
         `
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Guardar</button>
-        `
+        `,
+        true // Indica que este modal contiene un formulario
       );
       modal.show();
 
       // Manejar el envío del formulario de creación
-      $('#form-crear-pedido').on('submit', function(e) {
+      $('#form-modalCrearPedido').on('submit', function(e) {
         e.preventDefault();
         // Aquí puedes agregar la lógica para enviar los datos al servidor vía AJAX
         // Por ejemplo:
@@ -488,34 +607,33 @@ $(document).ready(function() {
         'modalCrearProducto',
         'Crear Producto',
         `
-          <form id="form-crear-producto">
-            <div class="mb-3">
-              <label for="nombre" class="form-label">Nombre</label>
-              <input type="text" class="form-control" id="nombre" name="nombre" required>
-            </div>
-            <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripción</label>
-              <input type="text" class="form-control" id="descripcion" name="descripcion">
-            </div>
-            <div class="mb-3">
-              <label for="precio_base" class="form-label">Precio Base</label>
-              <input type="number" step="0.01" class="form-control" id="precio_base" name="precio_base" required>
-            </div>
-            <div class="mb-3">
-              <label for="tipo" class="form-label">Tipo</label>
-              <input type="text" class="form-control" id="tipo" name="tipo">
-            </div>
-          </form>
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="descripcion" class="form-label">Descripción</label>
+            <input type="text" class="form-control" id="descripcion" name="descripcion">
+          </div>
+          <div class="mb-3">
+            <label for="precio_base" class="form-label">Precio Base</label>
+            <input type="number" step="0.01" class="form-control" id="precio_base" name="precio_base" required>
+          </div>
+          <div class="mb-3">
+            <label for="tipo" class="form-label">Tipo</label>
+            <input type="text" class="form-control" id="tipo" name="tipo">
+          </div>
         `,
         `
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           <button type="submit" class="btn btn-primary">Guardar</button>
-        `
+        `,
+        true // Indica que este modal contiene un formulario
       );
       modal.show();
 
       // Manejar el envío del formulario de creación
-      $('#form-crear-producto').on('submit', function(e) {
+      $('#form-modalCrearProducto').on('submit', function(e) {
         e.preventDefault();
         // Aquí puedes agregar la lógica para enviar los datos al servidor vía AJAX
         // Por ejemplo:
