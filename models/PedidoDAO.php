@@ -5,7 +5,56 @@ include_once("config/db.php");
 include_once("Pedido.php");
 
 class PedidoDAO {
-
+    public static function getPedidoById($id_pedido, $con = null) {
+        $ownConnection = false;
+        if ($con === null) {
+            $con = DataBase::connect();
+            $ownConnection = true;
+        }
+    
+        $sql = "SELECT * FROM Pedidos WHERE id_pedido = ?";
+        $stmt = $con->prepare($sql);
+        if (!$stmt) {
+            error_log("Error preparando la consulta: " . $con->error);
+            if ($ownConnection) $con->close();
+            return null;
+        }
+    
+        $stmt->bind_param("i", $id_pedido);
+        if (!$stmt->execute()) {
+            error_log("Error ejecutando la consulta: " . $stmt->error);
+            $stmt->close();
+            if ($ownConnection) $con->close();
+            return null;
+        }
+    
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $pedido = new Pedido(
+                $row['id_usuario'],
+                $row['nombre_completo'],
+                $row['direccion'],
+                $row['telefono'],
+                $row['correo'],
+                $row['metodo_pago'],
+                $row['detalles_pago'],
+                $row['subtotal'],
+                $row['descuento'],
+                $row['gastos_envio'],
+                $row['total'],
+            );
+            $pedido->setIdPedido($row['id_pedido']);
+            $stmt->close();
+            if ($ownConnection) $con->close();
+            return $pedido;
+        } else {
+            $stmt->close();
+            if ($ownConnection) $con->close();
+            return null;
+        }
+    }
+    
     public static function getAllPedidos()
     {
         // Si no tienes un método en PedidoDAO, lo implementas de forma simple:
@@ -250,18 +299,54 @@ class PedidoDAO {
         return array_values($pedidos); // Reindexar array
     }
 
-    public static function deletePedido($id)
-        {
+    public static function deletePedido($id, $con = null)
+    {
+        $ownConnection = false;
+        if ($con === null) {
             $con = DataBase::connect();
-            $stmt = $con->prepare("DELETE FROM Pedidos WHERE id_pedido=?");
-            if (!$stmt) return false;
-            $stmt->bind_param("i", $id);
-            $res = $stmt->execute();
-            $stmt->close();
-            $con->close();
-            return $res;
+            $ownConnection = true;
         }
 
+        $con->begin_transaction();
+
+        try {
+            // Eliminar detalles del pedido
+            $sqlDetalles = "DELETE FROM Detalles_pedidos WHERE id_pedido = ?";
+            $stmtDetalles = $con->prepare($sqlDetalles);
+            if (!$stmtDetalles) {
+                throw new Exception("Error preparando la consulta de detalles: " . $con->error);
+            }
+            $stmtDetalles->bind_param("i", $id);
+            if (!$stmtDetalles->execute()) {
+                throw new Exception("Error ejecutando la consulta de detalles: " . $stmtDetalles->error);
+            }
+            $stmtDetalles->close();
+
+            // Eliminar el pedido
+            $sqlPedido = "DELETE FROM Pedidos WHERE id_pedido = ?";
+            $stmtPedido = $con->prepare($sqlPedido);
+            if (!$stmtPedido) {
+                throw new Exception("Error preparando la consulta de pedido: " . $con->error);
+            }
+            $stmtPedido->bind_param("i", $id);
+            if (!$stmtPedido->execute()) {
+                throw new Exception("Error ejecutando la consulta de pedido: " . $stmtPedido->error);
+            }
+            $stmtPedido->close();
+
+            // Confirmar transacción
+            $con->commit();
+
+            if ($ownConnection) $con->close();
+            return true;
+        } catch (Exception $e) {
+            // Revertir transacción
+            $con->rollback();
+            error_log($e->getMessage());
+            if ($ownConnection) $con->close();
+            return false;
+        }
+    }
         public static function updatePedido(Pedido $pedido): bool
     {
         $con = DataBase::connect();
