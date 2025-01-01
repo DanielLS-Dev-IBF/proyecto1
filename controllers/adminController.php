@@ -3,7 +3,9 @@
 
 include_once 'models/UsuarioDAO.php';
 include_once 'models/PedidoDAO.php';
+include_once 'models/DetallePedidoDAO.php';
 include_once 'models/ProductoDAO.php';
+include_once 'models/DireccionDAO.php';
 
 class AdminController
 {
@@ -46,6 +48,51 @@ class AdminController
 
         header('Content-Type: application/json');
         echo json_encode($data);
+    }
+
+    public function getUsuarioDetallesJSON()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $id_usuario = $_GET['id_usuario'] ?? null;
+            if (!$id_usuario) {
+                $this->sendJsonResponse(['status'=>'error','message'=>'ID usuario no válido']);
+                return;
+            }
+
+            // Obtener usuario
+            $usuario = UsuarioDAO::obtenerUsuarioPorId($id_usuario);
+            if (!$usuario) {
+                $this->sendJsonResponse(['status'=>'error','message'=>'Usuario no encontrado']);
+                return;
+            }
+
+            // Obtener direcciones
+            $direcciones = DireccionDAO::getDireccionesByUsuario($id_usuario); 
+            // DireccionDAO::getDireccionesByUsuario => retorna un arreglo de direcciones
+
+            $data = [
+                'status' => 'ok',
+                'usuario' => [
+                    'id_usuario' => $usuario->getId_usuario(),
+                    'nombre_completo' => $usuario->getNombre_completo(),
+                    'telefono' => $usuario->getTelefono(),
+                    'correo' => $usuario->getEmail(),
+                    'direcciones' => []
+                ]
+            ];
+
+            foreach ($direcciones as $dir) {
+                // Ajusta según tu modelo
+                $data['usuario']['direcciones'][] = [
+                    'id_direccion' => $dir->getIdDireccion(), 
+                    'texto' => $dir->getDireccion() 
+                ];
+            }
+
+            $this->sendJsonResponse($data);
+        } else {
+            header("HTTP/1.1 405 Method Not Allowed");
+        }
     }
 
     // JSON para Pedidos
@@ -118,7 +165,7 @@ class AdminController
 
             foreach ($detalles as $detalle) {
                 $response['pedido']['productos'][] = [
-                    'id_detalle_pedido' => $detalle->getIdDetallePedido(),
+                    'id_detalle_pedido' => $detalle->getIdPedido(),
                     'id_producto' => $detalle->getIdProducto(),
                     'nombre_producto' => $detalle->getNombreProducto(),
                     'precio_unitario' => $detalle->getPrecioUnitario(),
@@ -363,6 +410,9 @@ class AdminController
             if (empty($direccion)) {
                 $errores['direccion'] = 'La dirección es obligatoria.';
             }
+            if (empty($metodo_pago)) {
+                $errores['metodo_pago'] = 'El método de pago es obligatorio.';
+            }
             if (empty($productos) || !is_array($productos)) {
                 $errores['productos'] = 'Debe agregar al menos un producto al pedido.';
             } else {
@@ -388,8 +438,8 @@ class AdminController
                 $subtotal += floatval($producto['precio_unitario']) * intval($producto['cantidad']);
             }
 
-            $descuento = 0; // Puedes implementar lógica para descuentos
-            $gastos_envio = 0; // Puedes implementar lógica para gastos de envío
+            $descuento = 0; // Implementar lógica de descuentos si es necesario
+            $gastos_envio = 0; // Implementar lógica de gastos de envío si es necesario
             $total = $subtotal - $descuento + $gastos_envio;
 
             // Crear objeto Pedido
@@ -400,12 +450,11 @@ class AdminController
                 $telefono,
                 $correo,
                 $metodo_pago,
-                '', // detalles_pago si es necesario
+                'Panel de administrador',
                 $subtotal,
                 $descuento,
                 $gastos_envio,
-                $total,
-                date('Y-m-d H:i:s') // fecha_pedido
+                $total
             );
 
             // Insertar pedido y detalles dentro de una transacción
@@ -414,7 +463,7 @@ class AdminController
 
             try {
                 // Insertar pedido
-                $pedidoInsertado = PedidoDAO::crearPedido($pedido, $con); // Modificar para aceptar conexión
+                $pedidoInsertado = PedidoDAO::crearPedido($pedido, $con);
                 if (!$pedidoInsertado) {
                     throw new Exception('Error al crear el pedido.');
                 }
@@ -430,7 +479,7 @@ class AdminController
                         floatval($producto['total_producto'])
                     );
 
-                    $agregado = DetallePedidoDAO::agregarDetallePedido($detalle, $con); // Modificar para aceptar conexión
+                    $agregado = DetallePedidoDAO::agregarDetallePedido($detalle, $con);
                     if (!$agregado) {
                         throw new Exception('Error al agregar los detalles del pedido.');
                     }
@@ -448,10 +497,6 @@ class AdminController
             }
 
             $con->close();
-        } else {
-            // Método no permitido
-            header("HTTP/1.1 405 Method Not Allowed");
-            $this->sendJsonResponse(['status' => 'error', 'message' => 'Método no permitido.']);
         }
     }
 
@@ -550,7 +595,7 @@ class AdminController
                 // Obtener detalles actuales del pedido
                 $detallesActuales = DetallePedidoDAO::obtenerDetallesPorPedido($id_pedido, $con); // Modificar para aceptar conexión
                 $detallesActualesIds = array_map(function($detalle) {
-                    return $detalle->getIdDetallePedido();
+                    return $detalle->getIdPedido();
                 }, $detallesActuales);
 
                 // Procesar los productos enviados
@@ -580,7 +625,7 @@ class AdminController
                         }
 
                         // Eliminar del array de detalles actuales para identificar los que deben eliminarse
-                        $detallesActualesIds = array_diff($detallesActualesIds, [$detalleExistente->getIdDetallePedido()]);
+                        $detallesActualesIds = array_diff($detallesActualesIds, [$detalleExistente->getIdPedido()]);
                     } else {
                         // Agregar nuevo detalle
                         $detalleNuevo = new DetallePedido(

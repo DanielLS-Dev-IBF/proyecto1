@@ -1,0 +1,12 @@
+/* Asegura que el modal se centre en ambos ejes */
+.modal-dialog {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.modal-dialog-centered {
+  display: flex !important;
+  align-items: center !important; /* Para vertical */
+  justify-content: center !important; /* Asegura horizontal */
+  min-height: calc(100% - 1rem) !important; /* Ajuste de bootstrap */
+}

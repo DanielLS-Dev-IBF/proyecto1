@@ -2,7 +2,7 @@
 <?php
     include_once "views/TopNav.php";
 ?>
-
+<link rel="stylesheet" href="css/Admin.css">
 <div class="container my-5">
     <h2 class="text-center">Panel de Administración</h2>
     <hr>
@@ -40,7 +40,7 @@ $(document).ready(function() {
     const formEnd = isForm ? '</form>' : '';
     const modalHtml = `
       <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="${modalId}Label" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
           <div class="modal-content">
             ${formStart}
               <div class="modal-header">
@@ -438,7 +438,7 @@ $(document).ready(function() {
                   <th>ID Pedido</th>
                   <th>ID Usuario</th>
                   <th>Fecha</th>
-                  <th>Total</th>
+                  <th>Total ($)</th>
                   <th>Dirección</th>
                   <th>Acciones</th>
                 </tr>
@@ -451,6 +451,8 @@ $(document).ready(function() {
     $('#admin-content').html(cardHtml);
 
     currentDataTable = $('#tabla-pedidos').DataTable({
+      // Configuración existente de DataTables
+      // Asegúrate de tener una configuración válida en 'dtConfig'
       ...dtConfig,
       ajax: {
         url: 'index.php?controller=admin&action=getPedidosJSON',
@@ -476,646 +478,797 @@ $(document).ready(function() {
     });
 
     // Botón Crear Pedido
-$('#btn-crear-pedido').click(function() {
-  const modal = createModal(
-    'modalCrearPedido',
-    'Crear Pedido',
-    `
-      <form id="form-modalCrearPedido">
-        <div class="mb-3">
-          <label for="id_usuario" class="form-label">ID Usuario <span class="text-danger">*</span></label>
-          <input type="number" class="form-control" id="id_usuario" name="id_usuario" required>
-        </div>
-        <div class="mb-3">
-          <label for="direccion" class="form-label">Dirección <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="direccion" name="direccion" required>
-        </div>
-        <div class="mb-3">
-          <label for="telefono" class="form-label">Teléfono</label>
-          <input type="text" class="form-control" id="telefono" name="telefono">
-        </div>
-        <div class="mb-3">
-          <label for="correo" class="form-label">Correo</label>
-          <input type="email" class="form-control" id="correo" name="correo">
-        </div>
-        <div class="mb-3">
-          <label for="metodo_pago" class="form-label">Método de Pago <span class="text-danger">*</span></label>
-          <select class="form-select" id="metodo_pago" name="metodo_pago" required>
-            <option value="">Selecciona un método de pago</option>
-            <option value="PayPal">PayPal</option>
-            <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
-            <option value="Transferencia Bancaria">Transferencia Bancaria</option>
-          </select>
-        </div>
-        <hr>
-        <h5>Productos</h5>
-        <button type="button" class="btn btn-primary btn-sm mb-2" id="btn-agregar-producto-pedido">Agregar Producto</button>
-        <table class="table table-bordered" id="tabla-productos-pedido">
-          <thead>
-            <tr>
-              <th>Producto</th>
-              <th>Precio Unitario ($)</th>
-              <th>Cantidad</th>
-              <th>Total ($)</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Filas dinámicas de productos -->
-          </tbody>
-        </table>
-        <div class="text-end">
-          <h5>Total Pedido: $<span id="total_pedido">0.00</span></h5>
-        </div>
-      </form>
-    `,
-    `
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-      <button type="submit" class="btn btn-primary">Guardar</button>
-    `,
-    true // Indica que este modal contiene un formulario
-  );
-  modal.show();
-
-  // Manejar la lógica de agregar productos
-  $('#form-modalCrearPedido').on('click', '#btn-agregar-producto-pedido', function() {
-    // Obtener la lista de productos disponibles via AJAX o tenerlos precargados
-    $.ajax({
-      url: 'index.php?controller=admin&action=getProductosJSON',
-      type: 'GET',
-      dataType: 'json',
-      success: function(productos) {
-        let options = '<option value="">Selecciona un producto</option>';
-        productos.forEach(producto => {
-          options += `<option value="${producto.id_producto}" data-precio="${producto.precio_base}">${producto.nombre}</option>`;
-        });
-
-        const fila = `
-          <tr>
-            <td>
-              <select class="form-select producto-select" required>
-                ${options}
+    $('#btn-crear-pedido').click(function() {
+      const modal = createModal(
+        'modalCrearPedido',
+        'Crear Pedido',
+        `
+            <div class="mb-3">
+              <label for="id_usuario_select" class="form-label">Usuario <span class="text-danger">*</span></label>
+              <select class="form-select" id="id_usuario_select" name="id_usuario" required>
+                <!-- Se llenará por AJAX -->
               </select>
-            </td>
-            <td>
-              <input type="number" class="form-control precio-unitario" readonly>
-            </td>
-            <td>
-              <input type="number" class="form-control cantidad" min="1" value="1" required>
-            </td>
-            <td>
-              <input type="number" class="form-control total-producto" readonly value="0.00">
-            </td>
-            <td>
-              <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto">Eliminar</button>
-            </td>
-          </tr>
-        `;
-        $('#tabla-productos-pedido tbody').append(fila);
-      },
-      error: function(error) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo cargar la lista de productos.'
-        });
-      }
-    });
-  });
+            </div>
 
-  // Delegación de eventos para cambios en la selección de productos y cantidades
-  $('#form-modalCrearPedido').on('change', '.producto-select', function() {
-    const precio = parseFloat($(this).find('option:selected').data('precio')) || 0;
-    const fila = $(this).closest('tr');
-    fila.find('.precio-unitario').val(precio.toFixed(2));
-    const cantidad = parseInt(fila.find('.cantidad').val()) || 0;
-    const total = precio * cantidad;
-    fila.find('.total-producto').val(total.toFixed(2));
-    actualizarTotalPedido();
-  });
+            <div class="mb-3">
+              <label for="direccion_select" class="form-label">Dirección <span class="text-danger">*</span></label>
+              <select class="form-select" id="direccion_select" name="direccion" required>
+                <!-- Se llenará al seleccionar un usuario -->
+              </select>
+            </div>
 
-  $('#form-modalCrearPedido').on('input', '.cantidad', function() {
-    const fila = $(this).closest('tr');
-    const precio = parseFloat(fila.find('.precio-unitario').val()) || 0;
-    const cantidad = parseInt($(this).find('.cantidad').val()) || 0;
-    const total = precio * cantidad;
-    fila.find('.total-producto').val(total.toFixed(2));
-    actualizarTotalPedido();
-  });
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono</label>
+              <input type="text" class="form-control" id="telefono" name="telefono">
+            </div>
+            <div class="mb-3">
+              <label for="correo" class="form-label">Correo</label>
+              <input type="email" class="form-control" id="correo" name="correo">
+            </div>
+            <div class="mb-3">
+              <label for="metodo_pago" class="form-label">Método de Pago <span class="text-danger">*</span></label>
+              <select class="form-select" id="metodo_pago" name="metodo_pago" required>
+                <option value="">Selecciona un método de pago</option>
+                <option value="PayPal">PayPal</option>
+                <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+              </select>
+            </div>
+            <hr>
+            <h5>Productos</h5>
+            <button type="button" class="btn btn-primary btn-sm mb-2" id="btn-agregar-producto-pedido">Agregar Producto</button>
+            <table class="table table-bordered" id="tabla-productos-pedido">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Precio Unitario ($)</th>
+                  <th>Cantidad</th>
+                  <th style="width: 120px;">Total ($)</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Filas dinámicas de productos -->
+              </tbody>
+            </table>
+            <div class="text-end">
+              <h5>Total Pedido: $<span id="total_pedido">0.00</span></h5>
+            </div>
+        `,
+        `
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        `,
+        true // Indica que este modal contiene un formulario
+      );
+      modal.show();
 
-  // Delegación de eventos para eliminar productos
-  $('#form-modalCrearPedido').on('click', '.btn-eliminar-producto', function() {
-    $(this).closest('tr').remove();
-    actualizarTotalPedido();
-  });
-
-  // Función para actualizar el total del pedido
-  function actualizarTotalPedido() {
-    let total = 0;
-    $('#tabla-productos-pedido tbody tr').each(function() {
-      const totalProducto = parseFloat($(this).find('.total-producto').val()) || 0;
-      total += totalProducto;
-    });
-    $('#total_pedido').text(total.toFixed(2));
-  }
-
-  // Manejar el envío del formulario de creación
-  $('#form-modalCrearPedido').on('submit', function(e) {
-    e.preventDefault();
-
-    // Validaciones adicionales
-    const id_usuario = $('#id_usuario').val().trim();
-    const direccion = $('#direccion').val().trim();
-    const metodo_pago = $('#metodo_pago').val();
-    const total_pedido = parseFloat($('#total_pedido').text()) || 0;
-
-    if (!id_usuario) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'El ID de usuario es obligatorio.'
-      });
-      return;
-    }
-
-    if (!direccion) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'La dirección es obligatoria.'
-      });
-      return;
-    }
-
-    if (!metodo_pago) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Debes seleccionar un método de pago.'
-      });
-      return;
-    }
-
-    if ($('#tabla-productos-pedido tbody tr').length === 0) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Debes agregar al menos un producto al pedido.'
-      });
-      return;
-    }
-
-    // Construir la lista de productos
-    let productos = [];
-    let valid = true;
-    $('#tabla-productos-pedido tbody tr').each(function(index) {
-      const id_producto = $(this).find('.producto-select').val();
-      const nombre_producto = $(this).find('.producto-select option:selected').text();
-      const precio_unitario = parseFloat($(this).find('.precio-unitario').val()) || 0;
-      const cantidad = parseInt($(this).find('.cantidad').val()) || 0;
-      const total_producto = parseFloat($(this).find('.total-producto').val()) || 0;
-
-      if (!id_producto) {
-        valid = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: `El producto en la fila ${index + 1} no está seleccionado.`
-        });
-        return false; // Break loop
-      }
-
-      if (cantidad <= 0) {
-        valid = false;
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: `La cantidad en la fila ${index + 1} debe ser mayor a cero.`
-        });
-        return false; // Break loop
-      }
-
-      productos.push({
-        id_producto,
-        nombre_producto,
-        precio_unitario,
-        cantidad,
-        total_producto
-      });
-    });
-
-    if (!valid) return;
-
-    // Deshabilitar el botón de guardar para prevenir múltiples clics
-    const $submitButton = $(this).find('button[type="submit"]');
-    $submitButton.prop('disabled', true).text('Guardando...');
-
-    // Construir el objeto de pedido
-    const pedidoData = {
-      id_usuario,
-      direccion,
-      telefono: $('#telefono').val().trim(),
-      correo: $('#correo').val().trim(),
-      metodo_pago,
-      productos
-    };
-
-    // Solicitud AJAX para crear el pedido
-    $.ajax({
-      url: 'index.php?controller=admin&action=createPedido',
-      type: 'POST',
-      data: JSON.stringify(pedidoData),
-      contentType: 'application/json',
-      dataType: 'json',
-      success: function(response) {
-        if (response.status === 'ok') {
-          Swal.fire({
-            icon: 'success',
-            title: '¡Éxito!',
-            text: response.message,
-            timer: 1500,
-            showConfirmButton: false
-          }).then(() => {
-            modal.hide();
-            currentDataTable.ajax.reload(null, false);
-          });
-        } else if (response.status === 'error') {
-          if (response.errors) {
-            const errorMessages = Object.values(response.errors).join('<br>');
-            Swal.fire({
-              icon: 'error',
-              title: 'Errores de Validación',
-              html: errorMessages
-            });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: response.message
-            });
-          }
-          $submitButton.prop('disabled', false).text('Guardar');
-        }
-      },
-      error: function(xhr, status, error) {
-        console.error('Error AJAX:', status, error);
-        console.error('Respuesta del servidor:', xhr.responseText);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Ocurrió un error inesperado.'
-        });
-        $submitButton.prop('disabled', false).text('Guardar');
-      }
-    });
-  });
-});
-
-    // Delegación de eventos para botones de editar pedido
-    $('#tabla-pedidos tbody').on('click', '.btn-editar-pedido', function() {
-      const pedidoId = $(this).data('id');
-
-      // Obtener los datos del pedido via AJAX para prellenar el formulario
       $.ajax({
-        url: 'index.php?controller=admin&action=getPedidoDetallesJSON&id_pedido=' + pedidoId,
-        type: 'GET',
+        url: 'index.php?controller=admin&action=getUsuariosJSON',
+        method: 'GET',
         dataType: 'json',
-        success: function(pedido) {
-          if (!pedido) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Pedido no encontrado.'
-            });
-            return;
+        success: function(usuarios) {
+          // Llenar el <select> con las opciones de usuarios
+          let options = '<option value="">Selecciona un usuario</option>';
+          usuarios.forEach(u => {
+            options += `<option value="${u.id_usuario}">${u.nombre_completo}</option>`;
+          });
+          $('#id_usuario_select').html(options);
+        },
+        error: function(err) {
+          console.error('Error cargando usuarios:', err);
+          Swal.fire('Error', 'No se pudo obtener la lista de usuarios', 'error');
+        }
+      });
+
+
+      $('#id_usuario_select').on('change', function() {
+        const selectedUserId = $(this).val();
+        if (!selectedUserId) {
+          // Si "Selecciona un usuario" -> limpiar
+          $('#direccion_select').html('<option value="">Sin direcciones</option>');
+          $('#telefono').val('');
+          $('#correo').val('');
+          return;
+        }
+
+        // Llamar a getUsuarioDetallesJSON
+        $.ajax({
+          url: 'index.php?controller=admin&action=getUsuarioDetallesJSON',
+          method: 'GET',
+          data: { id_usuario: selectedUserId },
+          dataType: 'json',
+          success: function(response) {
+            if (response.status === 'ok') {
+              const u = response.usuario;
+              // 1) Rellenar teléfono y correo
+              $('#telefono').val(u.telefono);
+              $('#correo').val(u.correo);
+
+              // 2) Rellenar direcciones
+              let dirOptions = '<option value="">Selecciona una dirección</option>';
+              u.direcciones.forEach(d => {
+                dirOptions += `<option value="${d.texto}">${d.texto}</option>`;
+              });
+              $('#direccion_select').html(dirOptions);
+            } else {
+              Swal.fire('Error', response.message, 'error');
+            }
+          },
+          error: function(err) {
+            console.error('Error:', err);
+            Swal.fire('Error', 'No se pudo obtener detalles del usuario', 'error');
           }
+        });
+      });
 
-          const modal = createModal(
-            'modalEditarPedido',
-            'Editar Pedido',
-            `
-              <input type="hidden" id="id_pedido" name="id_pedido" value="${pedido.id_pedido}">
-              <div class="mb-3">
-                <label for="id_usuario_editar" class="form-label">ID Usuario <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="id_usuario_editar" name="id_usuario" value="${pedido.id_usuario}" required>
-              </div>
-              <div class="mb-3">
-                <label for="direccion_editar" class="form-label">Dirección <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" id="direccion_editar" name="direccion" value="${pedido.direccion}" required>
-              </div>
-              <div class="mb-3">
-                <label for="telefono_editar" class="form-label">Teléfono</label>
-                <input type="text" class="form-control" id="telefono_editar" name="telefono" value="${pedido.telefono}">
-              </div>
-              <div class="mb-3">
-                <label for="correo_editar" class="form-label">Correo</label>
-                <input type="email" class="form-control" id="correo_editar" name="correo" value="${pedido.correo}">
-              </div>
-              <div class="mb-3">
-                <label for="metodo_pago_editar" class="form-label">Método de Pago</label>
-                <input type="text" class="form-control" id="metodo_pago_editar" name="metodo_pago" value="${pedido.metodo_pago}">
-              </div>
-              <hr>
-              <h5>Productos</h5>
-              <button type="button" class="btn btn-primary btn-sm mb-2" id="btn-agregar-producto-pedido-editar">Agregar Producto</button>
-              <table class="table table-bordered" id="tabla-productos-pedido-editar">
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th>Precio Unitario</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Filas dinámicas de productos -->
-                </tbody>
-              </table>
-              <div class="text-end">
-                <h5>Total Pedido: $<span id="total_pedido_editar">0.00</span></h5>
-              </div>
-            `,
-            `
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-              <button type="submit" class="btn btn-primary">Actualizar</button>
-            `,
-            true // Indica que este modal contiene un formulario
-          );
-          modal.show();
 
-          // Población de productos existentes
-          pedido.productos.forEach(producto => {
+      // Manejar la lógica de agregar productos
+      $('#form-modalCrearPedido').on('click', '#btn-agregar-producto-pedido', function() {
+        // Obtener la lista de productos disponibles via AJAX o tenerlos precargados
+        $.ajax({
+          url: 'index.php?controller=admin&action=getProductosJSON',
+          type: 'GET',
+          dataType: 'json',
+          success: function(productos) {
+            let options = '<option value="">Selecciona un producto</option>';
+            productos.forEach(producto => {
+              // Asegúrate de que 'precio_base' es un número con punto decimal
+              options += `
+                <option
+                  value="${producto.id_producto}"
+                  data-precio="${parseFloat(producto.precio_base).toFixed(2)}"
+                >
+                  ${producto.nombre}
+                </option>
+              `;
+            });
+
             const fila = `
               <tr>
                 <td>
                   <select class="form-select producto-select" required>
-                    <option value="">Selecciona un producto</option>
-                    ${pedido.productosDisponibles.map(p => `
-                      <option value="${p.id_producto}" data-precio="${p.precio_base}" ${p.id_producto == producto.id_producto ? 'selected' : ''}>
-                        ${p.nombre}
-                      </option>
-                    `).join('')}
+                    ${options}
                   </select>
                 </td>
                 <td>
-                  <input type="number" class="form-control precio-unitario" readonly value="${producto.precio_unitario.toFixed(2)}">
+                  <input type="number" class="form-control precio-unitario" readonly>
                 </td>
                 <td>
-                  <input type="number" class="form-control cantidad" min="1" value="${producto.cantidad}" required>
+                  <input type="number" class="form-control cantidad" min="1" value="1" required>
                 </td>
                 <td>
-                  <input type="number" class="form-control total-producto" readonly value="${producto.total_producto.toFixed(2)}">
+                  <input type="number" class="form-control total-producto" readonly value="0.00">
                 </td>
                 <td>
                   <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto">Eliminar</button>
                 </td>
               </tr>
             `;
-            $('#tabla-productos-pedido-editar tbody').append(fila);
-          });
-
-          actualizarTotalPedidoEditar();
-
-          // Manejar la lógica de agregar productos
-          $('#form-modalEditarPedido').on('click', '#btn-agregar-producto-pedido-editar', function() {
-            // Obtener la lista de productos disponibles via AJAX o tenerlos precargados
-            $.ajax({
-              url: 'index.php?controller=admin&action=getProductosJSON',
-              type: 'GET',
-              dataType: 'json',
-              success: function(productos) {
-                let options = '<option value="">Selecciona un producto</option>';
-                productos.forEach(producto => {
-                  options += `<option value="${producto.id_producto}" data-precio="${producto.precio_base}">${producto.nombre}</option>`;
-                });
-
-                const fila = `
-                  <tr>
-                    <td>
-                      <select class="form-select producto-select" required>
-                        ${options}
-                      </select>
-                    </td>
-                    <td>
-                      <input type="number" class="form-control precio-unitario" readonly>
-                    </td>
-                    <td>
-                      <input type="number" class="form-control cantidad" min="1" value="1" required>
-                    </td>
-                    <td>
-                      <input type="number" class="form-control total-producto" readonly value="0.00">
-                    </td>
-                    <td>
-                      <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto">Eliminar</button>
-                    </td>
-                  </tr>
-                `;
-                $('#tabla-productos-pedido-editar tbody').append(fila);
-              },
-              error: function(error) {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'No se pudo cargar la lista de productos.'
-                });
-              }
+            $('#tabla-productos-pedido tbody').append(fila);
+          },
+          error: function(error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo cargar la lista de productos.'
             });
-          });
-
-          // Delegación de eventos para cambios en la selección de productos y cantidades
-          $('#admin-content').on('change', '.producto-select', function() {
-            const precio = $(this).find('option:selected').data('precio') || 0;
-            const fila = $(this).closest('tr');
-            fila.find('.precio-unitario').val(precio.toFixed(2));
-            const cantidad = parseInt(fila.find('.cantidad').val()) || 0;
-            const total = precio * cantidad;
-            fila.find('.total-producto').val(total.toFixed(2));
-            actualizarTotalPedidoEditar();
-          });
-
-          $('#admin-content').on('input', '.cantidad', function() {
-            const fila = $(this).closest('tr');
-            const precio = parseFloat(fila.find('.precio-unitario').val()) || 0;
-            const cantidad = parseInt($(this).find('.cantidad').val()) || 0;
-            const total = precio * cantidad;
-            fila.find('.total-producto').val(total.toFixed(2));
-            actualizarTotalPedidoEditar();
-          });
-
-          // Delegación de eventos para eliminar productos
-          $('#admin-content').on('click', '.btn-eliminar-producto', function() {
-            $(this).closest('tr').remove();
-            actualizarTotalPedidoEditar();
-          });
-
-          // Función para actualizar el total del pedido
-          function actualizarTotalPedidoEditar() {
-            let total = 0;
-            $('#tabla-productos-pedido-editar tbody tr').each(function() {
-              const totalProducto = parseFloat($(this).find('.total-producto').val()) || 0;
-              total += totalProducto;
-            });
-            $('#total_pedido_editar').text(total.toFixed(2));
           }
+        });
+      });
 
-          // Manejar el envío del formulario de edición
-          $('#form-modalEditarPedido').on('submit', function(e) {
-            e.preventDefault();
+      // Evento al cambiar la selección del producto
+      $('#form-modalCrearPedido').on('change', '.producto-select', function() {
+        const fila = $(this).closest('tr');
+        // Leer el precio desde data-precio
+        const rawPrecio = $(this).find(':selected').data('precio'); 
+        console.log("rawPrecio =", rawPrecio);  // <-- LOG
 
-            // Validaciones adicionales
-            const id_pedido = $('#id_pedido').val().trim();
-            const id_usuario = $('#id_usuario_editar').val().trim();
-            const direccion = $('#direccion_editar').val().trim();
-            const total_pedido = parseFloat($('#total_pedido_editar').text()) || 0;
+        const precio = parseFloat(rawPrecio) || 0;
+        console.log("precio =", precio);        // <-- LOG
 
-            if (!id_pedido) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'ID del pedido no válido.'
-              });
-              return;
-            }
+        // Asignar el precio unitario
+        fila.find('.precio-unitario').val(precio.toFixed(2));
 
-            if (!id_usuario) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'El ID de usuario es obligatorio.'
-              });
-              return;
-            }
+        // Leer la cantidad actual
+        const cantidad = parseInt(fila.find('.cantidad').val()) || 0;
+        console.log("cantidad =", cantidad);    // <-- LOG
 
-            if (!direccion) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'La dirección es obligatoria.'
-              });
-              return;
-            }
+        // Calcular total por producto
+        const total = precio * cantidad;
+        console.log("total =", total);          // <-- LOG
 
-            if ($('#tabla-productos-pedido-editar tbody tr').length === 0) {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Debes agregar al menos un producto al pedido.'
-              });
-              return;
-            }
+        // Asignarlo en la columna de total
+        fila.find('.total-producto').attr('value', total.toFixed(2));
+        console.log('Después de attr:', fila.find('.total-producto').val());
 
-            // Construir la lista de productos
-            let productos = [];
-            let valid = true;
-            $('#tabla-productos-pedido-editar tbody tr').each(function() {
-              const id_producto = $(this).find('.producto-select').val();
-              const nombre_producto = $(this).find('.producto-select option:selected').text();
-              const precio_unitario = parseFloat($(this).find('.precio-unitario').val()) || 0;
-              const cantidad = parseInt($(this).find('.cantidad').val()) || 0;
-              const total_producto = parseFloat($(this).find('.total-producto').val()) || 0;
+        actualizarTotalPedido();
+      });
 
-              if (!id_producto) {
-                valid = false;
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Todos los productos deben estar seleccionados.'
-                });
-                return false; // Break loop
-              }
 
-              if (cantidad <= 0) {
-                valid = false;
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Las cantidades deben ser mayores a cero.'
-                });
-                return false; // Break loop
-              }
 
-              productos.push({
-                id_producto,
-                nombre_producto,
-                precio_unitario,
-                cantidad,
-                total_producto
-              });
-            });
+      // Evento al cambiar la cantidad
+      $('#form-modalCrearPedido').on('input', '.cantidad', function() {
+        const fila = $(this).closest('tr');
+        const precio = parseFloat(fila.find('.precio-unitario').val()) || 0;
 
-            if (!valid) return;
+        // Importante: obtener la cantidad directamente de 'this'
+        const cantidad = parseInt($(this).val()) || 0;
 
-            // Deshabilitar el botón de actualizar para prevenir múltiples envíos
-            const $submitButton = $(this).find('button[type="submit"]');
-            $submitButton.prop('disabled', true).text('Actualizando...');
+        const total = precio * cantidad;
+        fila.find('.total-producto').val(total.toFixed(2));
 
-            // Construir el objeto de pedido
-            const pedidoData = {
-              id_pedido,
-              id_usuario,
-              direccion,
-              telefono: $('#telefono_editar').val().trim(),
-              correo: $('#correo_editar').val().trim(),
-              metodo_pago: $('#metodo_pago_editar').val().trim(),
-              productos
-            };
+        actualizarTotalPedido();
+      });
 
-            // Solicitud AJAX para actualizar el pedido
-            $.ajax({
-              url: 'index.php?controller=admin&action=updatePedido',
-              type: 'POST',
-              data: JSON.stringify(pedidoData),
-              contentType: 'application/json',
-              dataType: 'json',
-              success: function(response) {
-                if (response.status === 'ok') {
-                  Swal.fire({
-                    icon: 'success',
-                    title: '¡Éxito!',
-                    text: response.message,
-                    timer: 1500,
-                    showConfirmButton: false
-                  }).then(() => {
-                    modal.hide();
-                    currentDataTable.ajax.reload(null, false);
-                  });
-                } else if (response.status === 'error') {
-                  if (response.errors) {
-                    const errorMessages = Object.values(response.errors).join('<br>');
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Errores de Validación',
-                      html: errorMessages
-                    });
-                  } else {
-                    Swal.fire({
-                      icon: 'error',
-                      title: 'Error',
-                      text: response.message
-                    });
-                  }
-                  $submitButton.prop('disabled', false).text('Actualizar');
-                }
-              },
-              error: function(xhr, status, error) {
-                console.error('Error AJAX:', status, error);
-                console.error('Respuesta del servidor:', xhr.responseText);
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: 'Ocurrió un error inesperado.'
-                });
-                $submitButton.prop('disabled', false).text('Actualizar');
-              }
-            });
-          });
-        },
-        error: function(error) {
+      // Delegación de eventos para eliminar productos
+      $('#form-modalCrearPedido').on('click', '.btn-eliminar-producto', function() {
+        $(this).closest('tr').remove();
+        actualizarTotalPedido();
+      });
+
+      // Función para actualizar el total del pedido
+      function actualizarTotalPedido() {
+        let totalGeneral = 0;
+        $('#tabla-productos-pedido tbody tr').each(function() {
+          const totalFila = parseFloat($(this).find('.total-producto').val()) || 0;
+          totalGeneral += totalFila;
+        });
+        $('#total_pedido').text(totalGeneral.toFixed(2));
+      }
+      // Manejar el envío del formulario de creación
+      $('#form-modalCrearPedido').on('submit', function(e) {
+        e.preventDefault();
+
+        // Validaciones adicionales
+        // Al hacer submit en #form-modalCrearPedido...
+        const id_usuario = $('#id_usuario_select').val().trim();
+        const direccion  = $('#direccion_select').val().trim();
+        const metodo_pago = $('#metodo_pago').val();
+        const total_pedido = parseFloat($('#total_pedido').text()) || 0;
+
+        if (!id_usuario) {
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'No se pudo obtener los detalles del pedido.'
+            text: 'El ID de usuario es obligatorio.'
+          });
+          return;
+        }
+
+        if (!direccion) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'La dirección es obligatoria.'
+          });
+          return;
+        }
+
+        if (!metodo_pago) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Debes seleccionar un método de pago.'
+          });
+          return;
+        }
+
+        if ($('#tabla-productos-pedido tbody tr').length === 0) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Debes agregar al menos un producto al pedido.'
+          });
+          return;
+        }
+
+        // Construir la lista de productos
+        let productos = [];
+        let valid = true;
+        $('#tabla-productos-pedido tbody tr').each(function(index) {
+          const id_producto = $(this).find('.producto-select').val();
+          const nombre_producto = $(this).find('.producto-select option:selected').text();
+          const precio_unitario = parseFloat($(this).find('.precio-unitario').val()) || 0;
+          const cantidad = parseInt($(this).find('.cantidad').val()) || 0;
+          const total_producto = parseFloat($(this).find('.total-producto').val()) || 0;
+
+          if (!id_producto) {
+            valid = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: `El producto en la fila ${index + 1} no está seleccionado.`
+            });
+            return false; // Break loop
+          }
+
+          if (cantidad <= 0) {
+            valid = false;
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: `La cantidad en la fila ${index + 1} debe ser mayor a cero.`
+            });
+            return false; // Break loop
+          }
+
+          productos.push({
+            id_producto,
+            nombre_producto,
+            precio_unitario,
+            cantidad,
+            total_producto
+          });
+        });
+
+        if (!valid) return;
+
+        // Deshabilitar el botón de guardar para prevenir múltiples clics
+        const $submitButton = $(this).find('button[type="submit"]');
+        $submitButton.prop('disabled', true).text('Guardando...');
+
+        // Construir el objeto de pedido
+        const pedidoData = {
+          id_usuario,
+          direccion,
+          telefono: $('#telefono').val().trim(),
+          correo: $('#correo').val().trim(),
+          metodo_pago,
+          productos
+        };
+
+        // Solicitud AJAX para crear el pedido
+        $.ajax({
+          url: 'index.php?controller=admin&action=createPedido',
+          type: 'POST',
+          data: JSON.stringify(pedidoData),
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function(response) {
+            if (response.status === 'ok') {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                modal.hide();
+                currentDataTable.ajax.reload(null, false);
+              });
+            } else if (response.status === 'error') {
+              if (response.errors) {
+                const errorMessages = Object.values(response.errors).join('<br>');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Errores de Validación',
+                  html: errorMessages
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message
+                });
+              }
+              $submitButton.prop('disabled', false).text('Guardar');
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error('Error AJAX:', status, error);
+            console.error('Respuesta del servidor:', xhr.responseText);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Ocurrió un error inesperado.'
+            });
+            $submitButton.prop('disabled', false).text('Guardar');
+          }
+        });
+      });
+    });
+
+    // Delegación de eventos para botones de editar y borrar pedidos
+    $('#tabla-pedidos tbody').on('click', '.btn-editar-pedido', function() {
+      const pedidoId = $(this).data('id');
+      console.log("pedidoId=", pedidoId);
+      // 1) Solicita detalles del pedido vía AJAX
+      $.ajax({
+        url: 'index.php?controller=admin&action=getPedidoDetallesJSON',
+        method: 'GET',
+        data: { id_pedido: pedidoId },
+        dataType: 'json',
+        success: function(response) {
+          if (response.status === 'ok') {
+            // 2) Muestra el modal pre-cargado
+            showEditarPedidoModal(response.pedido, response.productosDisponibles);
+          } else {
+            Swal.fire('Error', response.message, 'error');
+          }
+        },
+        error: function(err) {
+          console.error('Error al obtener detalles del pedido:', err);
+          Swal.fire('Error', 'No se pudo obtener el detalle del pedido', 'error');
+        }
+      });
+    });
+
+    function showEditarPedidoModal(pedido, productosDisponibles) {
+      // Crear el modal (SIN form en createModal, porque lo pondremos dentro)
+      const modalId = 'modalEditarPedido';
+      const modal = createModal(
+        modalId,
+        'Editar Pedido (ID ' + pedido.id_pedido + ')',
+        `
+            <input type="hidden" name="id_pedido" value="${pedido.id_pedido}">
+
+            <!-- ID Usuario -->
+            <div class="mb-3">
+              <label for="id_usuario_select_ed" class="form-label">Usuario <span class="text-danger">*</span></label>
+              <select class="form-select" id="id_usuario_select_ed" name="id_usuario" required>
+                <!-- Se llenará con la lista de usuarios (ver más abajo) -->
+              </select>
+            </div>
+
+            <!-- Dirección -->
+            <div class="mb-3">
+              <label for="direccion_ed" class="form-label">Dirección <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="direccion_ed" name="direccion" value="${pedido.direccion}" required>
+            </div>
+
+            <!-- Teléfono y Correo -->
+            <div class="mb-3">
+              <label for="telefono_ed" class="form-label">Teléfono</label>
+              <input type="text" class="form-control" id="telefono_ed" name="telefono" value="${pedido.telefono}">
+            </div>
+            <div class="mb-3">
+              <label for="correo_ed" class="form-label">Correo</label>
+              <input type="email" class="form-control" id="correo_ed" name="correo" value="${pedido.correo}">
+            </div>
+
+            <!-- Método de Pago -->
+            <div class="mb-3">
+              <label for="metodo_pago_ed" class="form-label">Método de Pago <span class="text-danger">*</span></label>
+              <select class="form-select" id="metodo_pago_ed" name="metodo_pago" required>
+                <option value="">Selecciona un método de pago</option>
+                <option value="PayPal" ${pedido.metodo_pago === 'PayPal' ? 'selected' : ''}>PayPal</option>
+                <option value="Tarjeta de Crédito" ${pedido.metodo_pago === 'Tarjeta de Crédito' ? 'selected' : ''}>Tarjeta de Crédito</option>
+                <option value="Transferencia Bancaria" ${pedido.metodo_pago === 'Transferencia Bancaria' ? 'selected' : ''}>Transferencia Bancaria</option>
+              </select>
+            </div>
+
+            <hr>
+            <h5>Productos</h5>
+            <button type="button" class="btn btn-primary btn-sm mb-2" id="btn-agregar-producto-pedido-ed">
+              Agregar Producto
+            </button>
+
+            <table class="table table-bordered" id="tabla-productos-pedido-ed">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Precio Unitario ($)</th>
+                  <th>Cantidad</th>
+                  <th style="width: 120px;">Total ($)</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Llenado dinámicamente -->
+              </tbody>
+            </table>
+            <div class="text-end">
+              <h5>Total Pedido: $<span id="total_pedido_ed">0.00</span></h5>
+            </div>
+        `,
+        `
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-primary" id="btn-update-pedido">Actualizar</button>
+        `,
+        true
+      );
+
+      modal.show();
+
+      // 1) Cargar la lista completa de usuarios (similar a createPedido)
+      //    Para preseleccionar "pedido.id_usuario"
+      $.ajax({
+        url: 'index.php?controller=admin&action=getUsuariosJSON',
+        method: 'GET',
+        dataType: 'json',
+        success: function(usuarios) {
+          let options = '<option value="">Selecciona un usuario</option>';
+          usuarios.forEach(u => {
+            const selected = (u.id_usuario == pedido.id_usuario) ? 'selected' : '';
+            options += `<option value="${u.id_usuario}" ${selected}>${u.nombre_completo}</option>`;
+          });
+          $('#id_usuario_select_ed').html(options);
+        },
+        error: function(err) {
+          console.error('Error cargando usuarios:', err);
+          Swal.fire('Error', 'No se pudo obtener la lista de usuarios', 'error');
+        }
+      });
+
+      // 2) Renderizar productos existentes en "pedido.productos"
+      //    (Parecido a tu create, pero con valores ya asignados)
+      renderProductosEd(pedido.productos, productosDisponibles);
+
+      // 3) Lógica para recalcular total, etc.
+      //    (igual que tu create: cambiar select => precio, input => recalcula, etc.)
+      attachEditarPedidoEvents(productosDisponibles);
+
+      // 4) Manejar el "submit" => updatePedido
+      $('#form-' + modalId).on('submit', function(e) {
+        e.preventDefault();
+
+        // Similar a tu create: recolectar datos, validar, mandar AJAX
+        const id_pedido = pedido.id_pedido;
+        const id_usuario = $('#id_usuario_select_ed').val();
+        const direccion = $('#direccion_ed').val().trim();
+        const telefono = $('#telefono_ed').val().trim();
+        const correo = $('#correo_ed').val().trim();
+        const metodo_pago = $('#metodo_pago_ed').val();
+
+        // Recolectar productos del #tabla-productos-pedido-ed
+        let productos = [];
+        let valid = true;
+
+        $('#tabla-productos-pedido-ed tbody tr').each(function(index) {
+          const id_prod = $(this).find('.producto-select-ed').val();
+          const nombre_prod = $(this).find('.producto-select-ed option:selected').text();
+          const precio_unitario = parseFloat($(this).find('.precio-unitario').val()) || 0;
+          const cant = parseInt($(this).find('.cantidad').val()) || 0;
+          const total_prod = parseFloat($(this).find('.total-producto').val()) || 0;
+
+          if (!id_prod || cant <= 0) {
+            valid = false;
+            Swal.fire('Error', `Revisa la fila ${index + 1}`, 'error');
+            return false; // break
+          }
+          productos.push({
+            id_producto: id_prod,
+            nombre_producto: nombre_prod,
+            precio_unitario,
+            cantidad: cant,
+            total_producto: total_prod
+          });
+        });
+
+        if (!valid) return;
+
+        // Estructura final a enviar
+        const pedidoData = {
+          id_pedido,
+          id_usuario,
+          direccion,
+          telefono,
+          correo,
+          metodo_pago,
+          productos
+        };
+
+        // AJAX a updatePedido
+        $('#btn-update-pedido').prop('disabled', true).text('Actualizando...');
+
+        $.ajax({
+          url: 'index.php?controller=admin&action=updatePedido',
+          type: 'POST',
+          data: JSON.stringify(pedidoData),
+          contentType: 'application/json',
+          dataType: 'json',
+          success: function(response) {
+            if (response.status === 'ok') {
+              Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: response.message,
+                timer: 1500,
+                showConfirmButton: false
+              }).then(() => {
+                modal.hide();
+                currentDataTable.ajax.reload(null, false);
+              });
+            } else if (response.status === 'error') {
+              if (response.errors) {
+                const errorMessages = Object.values(response.errors).join('<br>');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Errores de Validación',
+                  html: errorMessages
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message
+                });
+              }
+              $('#btn-update-pedido').prop('disabled', false).text('Actualizar');
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error('Error AJAX:', status, error);
+            console.error('Respuesta del servidor:', xhr.responseText);
+            Swal.fire('Error', 'Ocurrió un error inesperado.', 'error');
+            $('#btn-update-pedido').prop('disabled', false).text('Actualizar');
+          }
+        });
+      });
+    }
+
+    function renderProductosEd(productosPedido, productosDisponibles) {
+      const $tbody = $('#tabla-productos-pedido-ed tbody');
+      $tbody.empty();
+
+      productosPedido.forEach(det => {
+        // Generar <option> de productos con "selected" si coincide
+        let options = '<option value="">Selecciona un producto</option>';
+        productosDisponibles.forEach(prod => {
+          const selected = (prod.id_producto == det.id_producto) ? 'selected' : '';
+          options += `
+            <option 
+              value="${prod.id_producto}"
+              data-precio="${parseFloat(prod.precio_base).toFixed(2)}"
+              ${selected}
+            >
+              ${prod.nombre}
+            </option>
+          `;
+        });
+
+        // Fila con valores precargados
+        const fila = `
+          <tr>
+            <td>
+              <select class="form-select producto-select-ed" required>
+                ${options}
+              </select>
+            </td>
+            <td>
+              <input type="number" class="form-control precio-unitario" readonly value="${parseFloat(det.precio_unitario).toFixed(2)}">
+            </td>
+            <td>
+              <input type="number" class="form-control cantidad" min="1" value="${det.cantidad}" required>
+            </td>
+            <td>
+              <input type="number" class="form-control total-producto" readonly value="${parseFloat(det.total_producto).toFixed(2)}">
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto-ed">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        `;
+        $tbody.append(fila);
+      });
+
+      // Calcular total inicial
+      recalcularTotalEd();
+    }
+
+    function attachEditarPedidoEvents(productosDisponibles) {
+
+      //Borramos eventos previos para evitar duplicaciones
+      $(document).off('click', '#btn-agregar-producto-pedido-ed');
+      // Handler para "Agregar Producto" en la edición
+      $(document).on('click', '#btn-agregar-producto-pedido-ed', function() {
+        // Generar la fila vacía
+        let options = '<option value="">Selecciona un producto</option>';
+        productosDisponibles.forEach(prod => {
+          options += `
+            <option
+              value="${prod.id_producto}"
+              data-precio="${parseFloat(prod.precio_base).toFixed(2)}"
+            >
+              ${prod.nombre}
+            </option>
+          `;
+        });
+
+        const nuevaFila = `
+          <tr>
+            <td>
+              <select class="form-select producto-select-ed" required>
+                ${options}
+              </select>
+            </td>
+            <td><input type="number" class="form-control precio-unitario" readonly value="0.00"></td>
+            <td><input type="number" class="form-control cantidad" min="1" value="1" required></td>
+            <td><input type="number" class="form-control total-producto" readonly value="0.00"></td>
+            <td>
+              <button type="button" class="btn btn-danger btn-sm btn-eliminar-producto-ed">Eliminar</button>
+            </td>
+          </tr>
+        `;
+        $('#tabla-productos-pedido-ed tbody').append(nuevaFila);
+      });
+
+      // Handler: al cambiar la selección del producto
+      $(document).on('change', '.producto-select-ed', function() {
+        const $fila = $(this).closest('tr');
+        const precio = parseFloat($(this).find(':selected').data('precio')) || 0;
+        const cant = parseInt($fila.find('.cantidad').val()) || 0;
+        const total = precio * cant;
+
+        $fila.find('.precio-unitario').val(precio.toFixed(2));
+        $fila.find('.total-producto').val(total.toFixed(2));
+
+        recalcularTotalEd();
+      });
+
+      // Handler: al cambiar la cantidad
+      $(document).on('input', '#tabla-productos-pedido-ed .cantidad', function() {
+        const $fila = $(this).closest('tr');
+        const precio = parseFloat($fila.find('.precio-unitario').val()) || 0;
+        const cant = parseInt($(this).val()) || 0;
+        $fila.find('.total-producto').val( (precio * cant).toFixed(2) );
+        recalcularTotalEd();
+      });
+
+      // Handler: eliminar producto
+      $(document).on('click', '.btn-eliminar-producto-ed', function() {
+        $(this).closest('tr').remove();
+        recalcularTotalEd();
+      });
+    }
+
+    // Función de recalcular total en edición
+    function recalcularTotalEd() {
+      let total = 0;
+      $('#tabla-productos-pedido-ed tbody tr').each(function() {
+        const sub = parseFloat($(this).find('.total-producto').val()) || 0;
+        total += sub;
+      });
+      $('#total_pedido_ed').text(total.toFixed(2));
+    }
+
+    $('#tabla-pedidos tbody').on('click', '.btn-borrar-pedido', function() {
+      const pedidoId = $(this).data('id');
+
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Deseas borrar el pedido con ID: ${pedidoId}? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Enviar solicitud AJAX para borrar el pedido
+          $.ajax({
+            url: 'index.php?controller=admin&action=deletePedido',
+            type: 'POST',
+            data: { id_pedido: pedidoId },
+            dataType: 'json',
+            success: function(response) {
+              if (response.status === 'ok') {
+                Swal.fire({
+                  icon: 'success',
+                  title: '¡Borrado!',
+                  text: response.message,
+                  timer: 1500,
+                  showConfirmButton: false
+                });
+                currentDataTable.ajax.reload();
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: response.message
+                });
+              }
+            },
+            error: function(error) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un error al borrar el pedido. Inténtalo de nuevo.'
+              });
+              console.error('Error AJAX:', error);
+            }
           });
         }
       });
