@@ -80,12 +80,13 @@ class ProductoDAO {
     }
 
     // Insertar un nuevo producto
-    public static function store(Producto $producto): bool
+    public static function store(Producto $producto)
     {
         $con = DataBase::connect();
-        $stmt = $con->prepare("INSERT INTO Proyecto1.Producto
-            (nombre, descripcion, precio_base, img, tipo)
-            VALUES (?, ?, ?, ?, ?)");
+        $stmt = $con->prepare("
+            INSERT INTO Proyecto1.Producto (nombre, descripcion, precio_base, img, tipo)
+            VALUES (?, ?, ?, ?, ?)
+        ");
 
         if (!$stmt) {
             error_log("Prepare failed in store: (" . $con->errno . ") " . $con->error);
@@ -104,11 +105,19 @@ class ProductoDAO {
         $res = $stmt->execute();
         if (!$res) {
             error_log("Execute failed in store: " . $stmt->error);
+            $stmt->close();
+            $con->close();
+            return false;
         }
+
+        // AQUÍ capturamos el ID recién insertado
+        $lastId = $stmt->insert_id;  // o $con->insert_id
 
         $stmt->close();
         $con->close();
-        return $res;
+
+        // Devolvemos ese ID (o false si no es válido)
+        return ($lastId > 0) ? $lastId : false;
     }
 
     public static function updateProducto(Producto $producto): bool

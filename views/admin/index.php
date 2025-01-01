@@ -12,6 +12,7 @@
         <button class="btn-hover btn btn-secondary" id="btn-usuarios">Usuarios</button>
         <button class="btn-hover btn btn-secondary" id="btn-pedidos">Pedidos</button>
         <button class="btn-hover btn btn-secondary" id="btn-productos">Productos</button>
+        <button class="btn-hover btn btn-secondary" id="btn-logs">Logs</button>
     </div>
 
     <!-- Contenedor dinámico -->
@@ -1699,11 +1700,59 @@ $(document).ready(function() {
     });
   });
 }
+function loadLogs() {
+  if (currentDataTable) {
+    currentDataTable.destroy();
+    $('#admin-content').empty();
+  }
+
+  let cardHtml = `
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Logs del Sistema</h4>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped table-bordered nowrap" style="width:100%" id="tabla-logs">
+            <thead>
+              <tr>
+                <th>ID Log</th>
+                <th>Tabla</th>
+                <th>Acción</th>
+                <th>ID Afectado</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  $('#admin-content').html(cardHtml);
+
+  currentDataTable = $('#tabla-logs').DataTable({
+    ...dtConfig,
+    ajax: {
+      url: 'index.php?controller=admin&action=getLogsJSON', 
+      type: 'GET',
+      dataSrc: ''
+    },
+    columns: [
+      { data: 'id_log' },
+      { data: 'tabla' },
+      { data: 'tipo_accion' },
+      { data: 'id_afectado' },
+      { data: 'fecha' } 
+    ]
+  });
+}
+
 
   // Listeners para los menús
   $('#btn-usuarios').click(loadUsuarios);
   $('#btn-pedidos').click(loadPedidos);
   $('#btn-productos').click(loadProductos);
+  $('#btn-logs').click(loadLogs);
 
   // Cargar la sección de usuarios por defecto al cargar la página
   loadUsuarios();

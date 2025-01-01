@@ -268,6 +268,7 @@ class AdminController
             $resultado = UsuarioDAO::newUser($usuario);
 
             if ($resultado) {
+                $this->logAction("Usuario", "INSERT", id_afectado: $resultado); 
                 header('Content-Type: application/json');
                 echo json_encode(['status' => 'ok', 'message' => 'Usuario creado exitosamente.']);
                 exit();
@@ -352,6 +353,7 @@ class AdminController
             // Llamar DAO
             $ok = UsuarioDAO::updateUser($u);
             if ($ok) {
+                $this->logAction("Usuario", "UPDATE", $id_usuario);
                 echo json_encode(['status'=>'ok','message'=>'Usuario actualizado']);
             } else {
                 echo json_encode(['status'=>'error','message'=>'Error al actualizar usuario']);
@@ -368,6 +370,7 @@ class AdminController
             if ($id) {
                 $ok = UsuarioDAO::deleteUser($id);
                 if ($ok) {
+                    $this->logAction("Usuario", "DELETE", $id);
                     echo json_encode(['status' => 'ok', 'message' => 'Usuario eliminado con éxito']);
                 } else {
                     echo json_encode(['status' => 'error', 'message' => 'Error al eliminar']);
@@ -487,7 +490,7 @@ class AdminController
 
                 // Confirmar transacción
                 $con->commit();
-
+                $this->logAction("Pedido", "INSERT", $pedidoInsertado->getIdPedido());
                 $this->sendJsonResponse(['status' => 'ok', 'message' => 'Pedido creado exitosamente.']);
             } catch (Exception $e) {
                 // Revertir transacción
@@ -654,7 +657,7 @@ class AdminController
 
                 // Confirmar transacción
                 $con->commit();
-
+                $this->logAction("Pedido", "UPDATE", $id_pedido);
                 $this->sendJsonResponse(['status' => 'ok', 'message' => 'Pedido actualizado exitosamente.']);
             } catch (Exception $e) {
                 // Revertir transacción
@@ -674,6 +677,7 @@ class AdminController
             if ($id) {
                 $ok = PedidoDAO::deletePedido($id);
                 if ($ok) {
+                    $this->logAction("Pedido", "DELETE", $id);
                     echo json_encode(['status'=>'ok','message'=>'Pedido eliminado exitosamente.']);
                 } else {
                     echo json_encode(['status'=>'error','message'=>'Error al eliminar pedido.']);
@@ -740,6 +744,7 @@ class AdminController
                 $resultado = ProductoDAO::store($producto);
 
                 if ($resultado !== false) {
+                    $this->logAction("Producto", "INSERT", $resultado);
                     header('Content-Type: application/json');
                     echo json_encode(['status' => 'ok', 'message' => 'Producto creado exitosamente.']);
                     exit();
@@ -824,6 +829,7 @@ class AdminController
                     $resultado = ProductoDAO::updateProducto($producto);
 
                     if ($resultado !== false) {
+                        $this->logAction("Producto", "UPDATE", $id_producto);
                         header('Content-Type: application/json');
                         echo json_encode(['status' => 'ok', 'message' => 'Producto actualizado exitosamente.']);
                         exit();
@@ -855,6 +861,7 @@ class AdminController
             if ($id) {
                 $ok = ProductoDAO::destroy($id);
                 if ($ok !== false) {
+                    $this->logAction("Producto", "DELETE", $id);
                     echo json_encode(['status'=>'ok','message'=>'Producto eliminado']);
                 } else {
                     echo json_encode(['status'=>'error','message'=>'Error al eliminar producto']);
@@ -866,5 +873,51 @@ class AdminController
             header("HTTP/1.1 405 Method Not Allowed");
         }
     }
+
+    private function logAction($tabla, $tipo_accion, $id_afectado)
+    {
+        // Conexión a la base de datos
+        $con = DataBase::connect();
+        // Preparar la sentencia
+        $stmt = $con->prepare("INSERT INTO Logs (tabla, tipo_accion, id_afectado) VALUES (?, ?, ?)");
+        $stmt->bind_param("ssi", $tabla, $tipo_accion, $id_afectado);
+        $stmt->execute();
+        $stmt->close();
+        $con->close();
+    }
+    // AdminController.php
+
+    public function getLogsJSON()
+    {
+        // Tu consulta a la tabla logs
+        $con = DataBase::connect();
+        // Ajusta el nombre de tu tabla y campos
+        $sql = "SELECT id_log, tabla, tipo_accion, id_afectado, fecha
+                FROM Logs
+                ORDER BY id_log DESC"; // Por ejemplo, ordenado descendente
+
+        $result = $con->query($sql);
+        $logs = [];
+
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $logs[] = [
+                    'id_log'      => $row['id_log'],
+                    'tabla'       => $row['tabla'],
+                    'tipo_accion' => $row['tipo_accion'],
+                    'id_afectado' => $row['id_afectado'],
+                    // Ajusta el formateo de fecha/hora si lo necesitas
+                    'fecha'       => $row['fecha']
+                ];
+            }
+        }
+
+        $con->close();
+
+        header('Content-Type: application/json');
+        echo json_encode($logs);
+    }
+
+
 
 }
