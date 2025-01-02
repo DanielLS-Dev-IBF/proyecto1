@@ -7,6 +7,17 @@
     <h2 class="text-center">Panel de Administración</h2>
     <hr>
 
+    <!-- Selector de Moneda -->
+    <div class="mb-4 d-flex justify-content-end">
+        <label for="select-moneda-admin" class="me-2 align-self-center">Moneda:</label>
+        <select id="select-moneda-admin" class="form-select" style="width: 150px;">
+            <option value="EUR" selected>€ EUR</option>
+            <option value="USD">$ USD</option>
+            <option value="CAD">C$ CAD</option>
+            <!-- Agrega más monedas según necesidad -->
+        </select>
+    </div>
+
     <!-- Botones principales centrados -->
     <div class="mb-4 d-flex justify-content-center gap-2">
         <button class="btn-hover btn btn-secondary" id="btn-usuarios">Usuarios</button>
@@ -1318,7 +1329,7 @@ $(document).ready(function() {
       if (rates) {
         // Verificar si hay una moneda seleccionada previamente
         const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
-        $('#select-moneda-topnav').val(savedCurrency);
+        $('#select-moneda-admin').val(savedCurrency);
         CurrencyConverter.actualizarPrecios('.precio-pedido', savedCurrency);
         
         // Actualizar la cabecera de la tabla
@@ -1445,7 +1456,7 @@ $(document).ready(function() {
     if (rates) {
       // Verificar si hay una moneda seleccionada previamente
       const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
-      $('#select-moneda-topnav').val(savedCurrency);
+      $('#select-moneda-admin').val(savedCurrency);
       CurrencyConverter.actualizarPrecios('.precio-base', savedCurrency);
       
       // Actualizar la cabecera de la tabla
@@ -1455,7 +1466,7 @@ $(document).ready(function() {
   });
 
   // Manejar el cambio de moneda
-  $(document).on('change', '#select-moneda-topnav', function() {
+  $(document).on('change', '#select-moneda-admin', function() {
     const selectedCurrency = $(this).val(); // "EUR", "USD", "CAD", etc.
     sessionStorage.setItem('selectedCurrency', selectedCurrency);
     CurrencyConverter.actualizarPrecios('.precio-base', selectedCurrency);
@@ -1784,7 +1795,7 @@ $(document).ready(function() {
     if (rates) {
       // Verificar si hay una moneda seleccionada previamente
       const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
-      $('#select-moneda-topnav').val(savedCurrency);
+      $('#select-moneda-admin').val(savedCurrency);
       CurrencyConverter.actualizarPrecios('.precio-base', savedCurrency);
       
       // Actualizar la cabecera de la tabla
@@ -1869,7 +1880,7 @@ function loadLogs() {
   }
 
   // 6. Manejar el cambio de moneda (listener global dentro de document.ready)
-  $(document).on('change', '#select-moneda-topnav', function() {
+  $(document).on('change', '#select-moneda-admin', function() {
     const selectedCurrency = $(this).val(); // "EUR", "USD", "CAD", etc.
     sessionStorage.setItem('selectedCurrency', selectedCurrency);
     
