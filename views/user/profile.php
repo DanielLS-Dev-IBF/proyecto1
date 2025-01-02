@@ -85,6 +85,13 @@ include_once "views/TopNav.php";
             }
 
             if ($action === 'pedidos') {
+                // Botón para cargar el último pedido
+                ?>
+                <form action="index.php?controller=carrito&action=cargarUltimoPedido" method="post" class="mb-4">
+                    <button type="submit" class="btn btn-primary">Cargar Último Pedido en el Carrito</button>
+                </form>
+                <?php
+
                 // Mostrar la lista de pedidos con paginación
                 if (isset($pedidos) && !empty($pedidos)) {
                     foreach ($pedidos as $pedido) {
@@ -101,10 +108,10 @@ include_once "views/TopNav.php";
                                 <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#detallePedido<?= $pedido['id_pedido'] ?>" aria-expanded="false" aria-controls="detallePedido<?= $pedido['id_pedido'] ?>">
                                     Ver Detalles
                                     <!-- Íconos de flecha -->
-                                    <svg class="icono-flecha abajo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                    <svg class="icono-flecha abajo" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                       <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
                                     </svg>
-                                    <svg class="icono-flecha arriba d-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-up" viewBox="0 0 16 16">
+                                    <svg class="icono-flecha arriba d-none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                       <path fill-rule="evenodd" d="M1.646 11.354a.5.5 0 0 1 .708 0L8 6.707l5.646 5.647a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1-.708 0l-6 6a.5.5 0 0 1 0-.708z"/>
                                     </svg>
                                 </button>

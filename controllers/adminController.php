@@ -1,5 +1,5 @@
 <?php
-// controllers/AdminController.php
+// controllers/adminController.php
 
 include_once 'models/UsuarioDAO.php';
 include_once 'models/PedidoDAO.php';

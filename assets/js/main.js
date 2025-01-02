@@ -593,11 +593,16 @@ $(document).ready(function () {
         method: "GET",
         dataType: "json",
         success: function (usuarios) {
-          // Llenar el <select> con las opciones de usuarios
-          let options = '<option value="">Selecciona un usuario</option>';
-          usuarios.forEach((u) => {
-            options += `<option value="${u.id_usuario}">${u.nombre_completo}</option>`;
-          });
+          // Utilizar map para transformar cada usuario en una opción <option>
+          const options = [
+            '<option value="">Selecciona un usuario</option>',
+            ...usuarios.map(
+              (u) =>
+                `<option value="${u.id_usuario}">${u.nombre_completo}</option>`
+            ),
+          ].join("");
+
+          // Insertar las opciones en el <select>
           $("#id_usuario_select").html(options);
         },
         error: function (err) {
@@ -1071,18 +1076,32 @@ $(document).ready(function () {
         method: "GET",
         dataType: "json",
         success: function (usuarios) {
+          console.log("Usuarios recibidos (Editar Pedido):", usuarios); // Depuración
+
+          if (!Array.isArray(usuarios)) {
+            console.error("La respuesta no es un array.");
+            Swal.fire(
+              "Error",
+              "Formato de datos inválido recibido del servidor.",
+              "error"
+            );
+            return;
+          }
+
           const options = [
             '<option value="">Selecciona un usuario</option>',
             ...usuarios.map(
               (u) =>
-                `<option value="${u.id_usuario}">${u.nombre_completo}</option>`
+                `<option value="${u.id_usuario}" ${
+                  u.id_usuario == pedido.id_usuario ? "selected" : ""
+                }>${u.nombre_completo}</option>`
             ),
           ].join("");
 
-          $("#id_usuario_select").html(options);
+          $("#id_usuario_select_ed").html(options);
         },
         error: function (err) {
-          console.error("Error cargando usuarios:", err);
+          console.error("Error cargando usuarios (Editar Pedido):", err);
           Swal.fire(
             "Error",
             "No se pudo obtener la lista de usuarios",

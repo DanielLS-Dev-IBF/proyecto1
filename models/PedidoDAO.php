@@ -145,7 +145,7 @@ class PedidoDAO {
             return null;
         }
     }
-
+    
     /**
      * Obtener pedidos paginados de un usuario junto con sus detalles.
      *
@@ -410,6 +410,19 @@ class PedidoDAO {
         $stmt->close();
         $con->close();
         return $res; // true o false según éxito
+    }
+    public static function obtenerUltimoPedidoPorUsuario($id_usuario) {
+        $conn = DataBase::connect();
+        $stmt = $conn->prepare("SELECT * FROM Pedidos WHERE id_usuario = ? ORDER BY fecha_pedido DESC LIMIT 1");
+        $stmt->bind_param("i", $id_usuario);
+        
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+            if ($pedido = $result->fetch_assoc()) {
+                return $pedido;
+            }
+        }
+        return null;
     }
 
 

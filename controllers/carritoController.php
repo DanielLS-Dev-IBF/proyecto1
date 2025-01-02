@@ -558,5 +558,81 @@ class carritoController {
         $view = 'views/productos/confirmacion.php';
         include_once 'views/main.php';
     }
+
+    /**
+     * Carga los productos del último pedido en el carrito.
+     */
+    public function cargarUltimoPedido() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET') {
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+    
+            // Verificar si el usuario está autenticado
+            if (!isset($_SESSION['id_usuario'])) {
+                $_SESSION['error'] = 'Debes iniciar sesión para cargar el último pedido.';
+                header('Location: index.php?controller=usuario&action=login');
+                exit();
+            }
+    
+            $id_usuario = $_SESSION['id_usuario'];
+            $ultimo_pedido = PedidoDAO::obtenerUltimoPedidoPorUsuario($id_usuario);
+    
+            if ($ultimo_pedido) {
+                $id_pedido = $ultimo_pedido['id_pedido'];
+                $detalles_pedido = DetallePedidoDAO::obtenerDetallesPorPedido($id_pedido);
+    
+                if (!empty($detalles_pedido)) {
+                    // Limpiar el carrito actual
+                    $_SESSION['carrito'] = [];
+    
+                    foreach ($detalles_pedido as $detalle) {
+                        // Acceder a las propiedades usando métodos getter
+                        $producto_id = $detalle->getIdProducto();
+                        $cantidad = $detalle->getCantidad();
+    
+                        // Obtener información actual del producto
+                        $producto = ProductoDAO::getProducto($producto_id);
+    
+                        if ($producto) {
+                            // Agregar o actualizar el producto en el carrito
+                            if (isset($_SESSION['carrito'][$producto_id])) {
+                                $_SESSION['carrito'][$producto_id]['cantidad'] += $cantidad;
+                            } else {
+                                $_SESSION['carrito'][$producto_id] = array(
+                                    'id_producto' => $producto->getId_producto(),
+                                    'nombre' => $producto->getNombre(),
+                                    'precio_base' => $producto->getPrecio_base(),
+                                    'img' => $producto->getImg(),
+                                    'cantidad' => $cantidad,
+                                    'tipo' => $producto->getTipo()
+                                );
+                            }
+                        } else {
+                            // Manejar el caso en que el producto ya no existe
+                            $_SESSION['error'] = 'Algunos productos del último pedido ya no están disponibles.';
+                        }
+                    }
+    
+                    // Calcular nuevamente los totales del carrito
+                    $this->index();
+    
+                    $_SESSION['mensaje'] = 'Los productos de tu último pedido han sido cargados en el carrito.';
+                } else {
+                    $_SESSION['error'] = 'El último pedido no contiene productos.';
+                }
+            } else {
+                $_SESSION['error'] = 'No tienes pedidos anteriores para cargar.';
+            }
+    
+            // Redirigir al carrito
+            header('Location: index.php?controller=carrito&action=index');
+            exit();
+        } else {
+            // Si no es una solicitud válida, redirigir al carrito
+            header('Location: index.php?controller=carrito&action=index');
+            exit();
+        }
+    }    
 }
 ?>
