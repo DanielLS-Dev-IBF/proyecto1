@@ -29,6 +29,9 @@
     <!-- SweetAlert2 CSS y JS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.3/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Incluir el Módulo CurrencyConverter -->
+    <script src="assets/js/currencyConverter.js"></script>
 </head>
 <body>
     <?php

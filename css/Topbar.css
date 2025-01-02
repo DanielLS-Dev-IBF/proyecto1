@@ -346,3 +346,14 @@ header.fixed {
 .submenu-toggle .arrow-icon {
   margin-left: 0; /* Elimina margen izquierdo */
 }
+
+#select-moneda-topnav {
+  padding: 0.25rem;
+  border: none;
+  background-color: transparent;
+  color: white;
+}
+
+#select-moneda-topnav:focus {
+  box-shadow: none;
+}

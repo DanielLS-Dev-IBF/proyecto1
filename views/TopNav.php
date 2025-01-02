@@ -20,6 +20,13 @@
         </div>
 
         <div id="flex-item-right" class="flex-item">
+            <!-- Selector de Moneda -->
+            <select id="select-moneda-topnav" class="form-select form-select-sm me-3" style="width: auto;">
+                <option value="EUR" selected>EUR</option>
+                <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
+                <!-- Puedes agregar más monedas según tus necesidades -->
+            </select>
             <!-- Botón Cuenta con menú desplegable (Desktop) -->
             <div class="dropdown">
                 <?php if (isset($_SESSION['id_usuario'])): ?>

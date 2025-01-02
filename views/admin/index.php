@@ -35,6 +35,40 @@ $(document).ready(function() {
       "<'row'<'col-sm-12 col-md-5 d-flex align-items-center justify-content-start'i><'col-sm-12 col-md-7 d-flex align-items-center justify-content-end'p>>"
   };
 
+  // === sessionStorage: recordar pestaña y moneda ===
+  const savedTab = sessionStorage.getItem('selectedTab');
+  const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
+
+  // 1. Definir la función obtenerSimboloMoneda al inicio
+  function obtenerSimboloMoneda(moneda) {
+    switch(moneda) {
+      case 'USD':
+        return '$';
+      case 'CAD':
+        return 'C$';
+      case 'EUR':
+      default:
+        return '€';
+    }
+  }
+
+  // 2. Definir funciones auxiliares
+  function actualizarPreciosEnTablas(moneda) {
+    CurrencyConverter.actualizarPrecios('.precio-base', moneda);
+    CurrencyConverter.actualizarPrecios('.precio-pedido', moneda);
+    // Añade más selectores si tienes otras tablas con precios
+  }
+
+  function actualizarEncabezados(simbolo) {
+    // Tabla de Productos
+    $('#tabla-productos thead tr th').eq(3).text(`Precio Base (${simbolo})`);
+    
+    // Tabla de Pedidos
+    $('#tabla-pedidos thead tr th').eq(3).text(`Total (${simbolo})`);
+    
+    // Añade más tablas si es necesario
+  }
+
   function createModal(modalId, title, bodyContent, footerButtons, isForm = false) {
     $('.modal-backdrop').remove();
     const formStart = isForm ? '<form id="form-' + modalId + '">' : '';
@@ -439,7 +473,7 @@ $(document).ready(function() {
                   <th>ID Pedido</th>
                   <th>ID Usuario</th>
                   <th>Fecha</th>
-                  <th>Total ($)</th>
+                  <th>Total</th>
                   <th>Dirección</th>
                   <th>Acciones</th>
                 </tr>
@@ -464,7 +498,12 @@ $(document).ready(function() {
         { data: 'id_pedido' },
         { data: 'id_usuario' },
         { data: 'fecha_pedido' },
-        { data: 'total' },
+        { 
+          data: 'total',
+          render: function(data, type, row) {
+            return `<span class="precio-pedido" data-eur="${parseFloat(data)}">${parseFloat(data).toFixed(2)} €</span>`;
+          }
+        },
         { data: 'direccion' },
         {
           data: null,
@@ -524,7 +563,7 @@ $(document).ready(function() {
                   <th>Producto</th>
                   <th>Precio Unitario ($)</th>
                   <th>Cantidad</th>
-                  <th style="width: 120px;">Total ($)</th>
+                  <th>Total</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -533,7 +572,7 @@ $(document).ready(function() {
               </tbody>
             </table>
             <div class="text-end">
-              <h5>Total Pedido: $<span id="total_pedido">0.00</span></h5>
+              <h5>Total Pedido: <span id="total_pedido">0.00</span></h5>
             </div>
         `,
         `
@@ -951,7 +990,7 @@ $(document).ready(function() {
                   <th>Producto</th>
                   <th>Precio Unitario ($)</th>
                   <th>Cantidad</th>
-                  <th style="width: 120px;">Total ($)</th>
+                  <th>Total</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -960,7 +999,7 @@ $(document).ready(function() {
               </tbody>
             </table>
             <div class="text-end">
-              <h5>Total Pedido: $<span id="total_pedido_ed">0.00</span></h5>
+              <h5>Total Pedido:<span id="total_pedido_ed">0.00</span></h5>
             </div>
         `,
         `
@@ -1274,6 +1313,19 @@ $(document).ready(function() {
         }
       });
     });
+    // Inicializar la conversión de moneda para Pedidos
+    CurrencyConverter.fetchCurrencyRates().then(rates => {
+      if (rates) {
+        // Verificar si hay una moneda seleccionada previamente
+        const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
+        $('#select-moneda-topnav').val(savedCurrency);
+        CurrencyConverter.actualizarPrecios('.precio-pedido', savedCurrency);
+        
+        // Actualizar la cabecera de la tabla
+        const simboloCabecera = obtenerSimboloMoneda(savedCurrency);
+        $('#tabla-pedidos thead tr th').eq(3).text(`Total (${simboloCabecera})`);
+      }
+    });
   }
   // ==========================
   //        PRODUCTOS
@@ -1348,6 +1400,9 @@ $(document).ready(function() {
         data: 'precio_base',
         responsivePriority: 2,
         width: '10%',
+        render: function(data, type, row) {
+          return `<span class="precio-base" data-eur="${parseFloat(data)}">${parseFloat(data).toFixed(2)} €</span>`;
+        }
       },
       { 
         data: 'tipo',
@@ -1383,6 +1438,31 @@ $(document).ready(function() {
         searchable: false
       }
     ]
+  });
+
+  // Inicializar la conversión de moneda para Productos
+  CurrencyConverter.fetchCurrencyRates().then(rates => {
+    if (rates) {
+      // Verificar si hay una moneda seleccionada previamente
+      const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
+      $('#select-moneda-topnav').val(savedCurrency);
+      CurrencyConverter.actualizarPrecios('.precio-base', savedCurrency);
+      
+      // Actualizar la cabecera de la tabla
+      const simboloCabecera = obtenerSimboloMoneda(savedCurrency);
+      $('#tabla-productos thead tr th').eq(3).text(`Precio Base (${simboloCabecera})`);
+    }
+  });
+
+  // Manejar el cambio de moneda
+  $(document).on('change', '#select-moneda-topnav', function() {
+    const selectedCurrency = $(this).val(); // "EUR", "USD", "CAD", etc.
+    sessionStorage.setItem('selectedCurrency', selectedCurrency);
+    CurrencyConverter.actualizarPrecios('.precio-base', selectedCurrency);
+
+    // Actualizar la cabecera de la tabla
+    const simboloCabecera = selectedCurrency === 'USD' ? '$' : selectedCurrency === 'CAD' ? 'C$' : '€';
+    $('#tabla-productos thead tr th').eq(3).text(`Precio Base (${simboloCabecera})`);
   });
 
   // Botón Crear Producto
@@ -1699,6 +1779,19 @@ $(document).ready(function() {
       }
     });
   });
+  // Después de la inicialización de DataTable en loadProductos()
+  CurrencyConverter.fetchCurrencyRates().then(rates => {
+    if (rates) {
+      // Verificar si hay una moneda seleccionada previamente
+      const savedCurrency = sessionStorage.getItem('selectedCurrency') || 'EUR';
+      $('#select-moneda-topnav').val(savedCurrency);
+      CurrencyConverter.actualizarPrecios('.precio-base', savedCurrency);
+      
+      // Actualizar la cabecera de la tabla
+      const simboloCabecera = obtenerSimboloMoneda(savedCurrency);
+      $('#tabla-productos thead tr th').eq(3).text(`Precio Base (${simboloCabecera})`);
+    }
+  });
 }
 function loadLogs() {
   if (currentDataTable) {
@@ -1746,7 +1839,43 @@ function loadLogs() {
     ]
   });
 }
+  // 4. Listeners para los menús
+  $('#btn-usuarios').click(function() {
+    sessionStorage.setItem('selectedTab', 'btn-usuarios');
+    loadUsuarios();
+  });
+  $('#btn-pedidos').click(function() {
+    sessionStorage.setItem('selectedTab', 'btn-pedidos');
+    loadPedidos();
+  });
+  $('#btn-productos').click(function() {
+    sessionStorage.setItem('selectedTab', 'btn-productos');
+    loadProductos();
+  });
+  $('#btn-logs').click(function() {
+    sessionStorage.setItem('selectedTab', 'btn-logs');
+    loadLogs();
+  });
 
+  // 5. Cargar la sección guardada en sessionStorage o la predeterminada
+  if (savedTab) {
+    if (savedTab === 'btn-usuarios') loadUsuarios();
+    else if (savedTab === 'btn-pedidos') loadPedidos();
+    else if (savedTab === 'btn-productos') loadProductos();
+    else if (savedTab === 'btn-logs') loadLogs();
+  } else {
+    // Si no existe nada, cargamos usuarios
+    loadUsuarios();
+  }
+
+  // 6. Manejar el cambio de moneda (listener global dentro de document.ready)
+  $(document).on('change', '#select-moneda-topnav', function() {
+    const selectedCurrency = $(this).val(); // "EUR", "USD", "CAD", etc.
+    sessionStorage.setItem('selectedCurrency', selectedCurrency);
+    
+    actualizarPreciosEnTablas(selectedCurrency);
+    actualizarEncabezados(obtenerSimboloMoneda(selectedCurrency));
+  });
 
   // Listeners para los menús
   $('#btn-usuarios').click(loadUsuarios);
@@ -1754,8 +1883,8 @@ function loadLogs() {
   $('#btn-productos').click(loadProductos);
   $('#btn-logs').click(loadLogs);
 
-  // Cargar la sección de usuarios por defecto al cargar la página
-  loadUsuarios();
+  // // Cargar la sección de usuarios por defecto al cargar la página
+  // loadUsuarios();
 });
 </script>
 
