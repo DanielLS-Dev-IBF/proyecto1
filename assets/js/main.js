@@ -566,7 +566,7 @@ $(document).ready(function () {
                 <thead>
                   <tr>
                     <th>Producto</th>
-                    <th>Precio Unitario ($)</th>
+                    <th>Precio Unitario</th>
                     <th>Cantidad</th>
                     <th>Total</th>
                     <th>Acciones</th>
@@ -720,25 +720,20 @@ $(document).ready(function () {
         const fila = $(this).closest("tr");
         // Leer el precio desde data-precio
         const rawPrecio = $(this).find(":selected").data("precio");
-        console.log("rawPrecio =", rawPrecio); // <-- LOG
 
         const precio = parseFloat(rawPrecio) || 0;
-        console.log("precio =", precio); // <-- LOG
 
         // Asignar el precio unitario
         fila.find(".precio-unitario").val(precio.toFixed(2));
 
         // Leer la cantidad actual
         const cantidad = parseInt(fila.find(".cantidad").val()) || 0;
-        console.log("cantidad =", cantidad); // <-- LOG
 
         // Calcular total por producto
         const total = precio * cantidad;
-        console.log("total =", total); // <-- LOG
 
         // Asignarlo en la columna de total
         fila.find(".total-producto").attr("value", total.toFixed(2));
-        console.log("Después de attr:", fila.find(".total-producto").val());
 
         actualizarTotalPedido();
       });
@@ -769,14 +764,14 @@ $(document).ready(function () {
 
       // Función para actualizar el total del pedido
       function actualizarTotalPedido() {
-        let totalGeneral = 0;
-        $("#tabla-productos-pedido tbody tr").each(function () {
-          const totalFila =
-            parseFloat($(this).find(".total-producto").val()) || 0;
-          totalGeneral += totalFila;
-        });
+        const totalGeneral = $("#tabla-productos-pedido tbody tr")
+          .toArray()
+          .map((fila) => parseFloat($(fila).find(".total-producto").val()) || 0)
+          .reduce((acc, curr) => acc + curr, 0);
+
         $("#total_pedido").text(totalGeneral.toFixed(2));
       }
+
       // Manejar el envío del formulario de creación
       $("#form-modalCrearPedido").on("submit", function (e) {
         e.preventDefault();
@@ -824,52 +819,59 @@ $(document).ready(function () {
           return;
         }
 
-        // Construir la lista de productos
-        let productos = [];
-        let valid = true;
-        $("#tabla-productos-pedido tbody tr").each(function (index) {
-          const id_producto = $(this).find(".producto-select").val();
-          const nombre_producto = $(this)
+        // Obtener todas las filas de productos
+        const filas = $("#tabla-productos-pedido tbody tr").toArray();
+
+        // Mapear cada fila a un objeto de producto
+        const productos = filas.map((fila, index) => {
+          const $fila = $(fila);
+          const id_producto = $fila.find(".producto-select").val();
+          const nombre_producto = $fila
             .find(".producto-select option:selected")
             .text();
           const precio_unitario =
-            parseFloat($(this).find(".precio-unitario").val()) || 0;
-          const cantidad = parseInt($(this).find(".cantidad").val()) || 0;
+            parseFloat($fila.find(".precio-unitario").val()) || 0;
+          const cantidad = parseInt($fila.find(".cantidad").val()) || 0;
           const total_producto =
-            parseFloat($(this).find(".total-producto").val()) || 0;
+            parseFloat($fila.find(".total-producto").val()) || 0;
 
-          if (!id_producto) {
-            valid = false;
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: `El producto en la fila ${index + 1} no está seleccionado.`,
-            });
-            return false; // Break loop
-          }
-
-          if (cantidad <= 0) {
-            valid = false;
-            Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: `La cantidad en la fila ${
-                index + 1
-              } debe ser mayor a cero.`,
-            });
-            return false; // Break loop
-          }
-
-          productos.push({
+          return {
             id_producto,
             nombre_producto,
             precio_unitario,
             cantidad,
             total_producto,
-          });
+            index: index + 1,
+          };
         });
 
-        if (!valid) return;
+        // Filtrar los productos que tienen datos inválidos
+        const productosInvalidos = productos.filter((producto) => {
+          if (!producto.id_producto) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: `El producto en la fila ${producto.index} no está seleccionado.`,
+            });
+            return true;
+          }
+
+          if (producto.cantidad <= 0) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: `La cantidad en la fila ${producto.index} debe ser mayor a cero.`,
+            });
+            return true;
+          }
+
+          return false;
+        });
+
+        // Verificar si hay productos inválidos
+        if (productosInvalidos.length > 0) {
+          return; // Detener el proceso si hay errores
+        }
 
         // Deshabilitar el botón de guardar para prevenir múltiples clics
         const $submitButton = $(this).find('button[type="submit"]');
@@ -941,7 +943,6 @@ $(document).ready(function () {
     // Delegación de eventos para botones de editar y borrar pedidos
     $("#tabla-pedidos tbody").on("click", ".btn-editar-pedido", function () {
       const pedidoId = $(this).data("id");
-      console.log("pedidoId=", pedidoId);
       // 1) Solicita detalles del pedido vía AJAX
       $.ajax({
         url: "index.php?controller=admin&action=getPedidoDetallesJSON",
@@ -1040,7 +1041,7 @@ $(document).ready(function () {
                 <thead>
                   <tr>
                     <th>Producto</th>
-                    <th>Precio Unitario ($)</th>
+                    <th>Precio Unitario</th>
                     <th>Cantidad</th>
                     <th>Total</th>
                     <th>Acciones</th>
@@ -1070,13 +1071,15 @@ $(document).ready(function () {
         method: "GET",
         dataType: "json",
         success: function (usuarios) {
-          let options = '<option value="">Selecciona un usuario</option>';
-          usuarios.forEach((u) => {
-            const selected =
-              u.id_usuario == pedido.id_usuario ? "selected" : "";
-            options += `<option value="${u.id_usuario}" ${selected}>${u.nombre_completo}</option>`;
-          });
-          $("#id_usuario_select_ed").html(options);
+          const options = [
+            '<option value="">Selecciona un usuario</option>',
+            ...usuarios.map(
+              (u) =>
+                `<option value="${u.id_usuario}">${u.nombre_completo}</option>`
+            ),
+          ].join("");
+
+          $("#id_usuario_select").html(options);
         },
         error: function (err) {
           console.error("Error cargando usuarios:", err);

@@ -2,6 +2,7 @@
 
 const CurrencyConverter = (function () {
   let currencyRates = {};
+  let currencySymbols = {};
 
   // Función para obtener las tasas de cambio desde el apiController
   async function fetchCurrencyRates() {
@@ -35,6 +36,44 @@ const CurrencyConverter = (function () {
     }
   }
 
+  // Función para obtener la lista de monedas y sus símbolos
+  async function fetchCurrenciesList() {
+    try {
+      const response = await fetch(
+        "index.php?controller=api&action=getCurrenciesList",
+        {
+          method: "GET",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al obtener la lista de monedas");
+      }
+
+      const data = await response.json();
+
+      if (data.status !== "ok") {
+        throw new Error(data.message || "Error desconocido");
+      }
+
+      const currencies = data.data;
+
+      // Construir el mapeo de símbolos
+      currencies.forEach((currency) => {
+        currencySymbols[currency.code] = currency.symbol;
+      });
+
+      return currencies;
+    } catch (error) {
+      console.error("Error al obtener la lista de monedas:", error);
+      Swal.fire("Error", "No se pudo obtener la lista de monedas", "error");
+      return null;
+    }
+  }
+
   // Función para actualizar los precios en elementos específicos
   function actualizarPrecios(selector, moneda) {
     // Verificar si las tasas de cambio están disponibles
@@ -57,18 +96,17 @@ const CurrencyConverter = (function () {
         nuevoPrecio = precioBase * rate;
       }
 
-      // Formatear el precio con dos decimales y el símbolo de la moneda
-      let simbolo = "€";
-      if (moneda === "USD") simbolo = "$";
-      else if (moneda === "CAD") simbolo = "C$";
-      // Puedes agregar más símbolos según las monedas que soportes
+      // Obtener el símbolo de la moneda
+      let simbolo = currencySymbols[moneda] || moneda + " ";
 
+      // Formatear el precio con dos decimales y el símbolo de la moneda
       $(this).text(`${nuevoPrecio.toFixed(2)} ${simbolo}`);
     });
   }
 
   return {
     fetchCurrencyRates,
+    fetchCurrenciesList,
     actualizarPrecios,
   };
 })();

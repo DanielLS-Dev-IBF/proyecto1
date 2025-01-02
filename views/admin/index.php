@@ -11,10 +11,7 @@
     <div class="mb-4 d-flex justify-content-end">
         <label for="select-moneda-admin" class="me-2 align-self-center">Moneda:</label>
         <select id="select-moneda-admin" class="form-select" style="width: 150px;">
-            <option value="EUR" selected>€ EUR</option>
-            <option value="USD">$ USD</option>
-            <option value="CAD">C$ CAD</option>
-            <!-- Agrega más monedas según necesidad -->
+            <!-- Las opciones serán cargadas dinámicamente -->
         </select>
     </div>
 
@@ -33,3 +30,31 @@
 <?php
     include_once "views/Footer.php";
 ?>
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        // Obtener la lista de monedas y sus símbolos
+        const currencies = await CurrencyConverter.fetchCurrenciesList();
+        const select = document.getElementById("select-moneda-admin");
+
+        if (currencies) {
+            currencies.forEach(function (currency) {
+                const option = document.createElement("option");
+                option.value = currency.code;
+                option.textContent = `${currency.symbol} ${currency.code}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Obtener las tasas de cambio
+        await CurrencyConverter.fetchCurrencyRates();
+
+        // Evento al cambiar la moneda
+        select.addEventListener("change", function () {
+            const selectedCurrency = this.value;
+            CurrencyConverter.actualizarPrecios(".precio-elemento", selectedCurrency);
+        });
+
+        // Inicializar precios con EUR por defecto
+        CurrencyConverter.actualizarPrecios(".precio-elemento", "EUR");
+    });
+</script>
