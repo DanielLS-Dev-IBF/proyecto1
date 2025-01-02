@@ -10,3 +10,8 @@
   justify-content: center !important; /* Asegura horizontal */
   min-height: calc(100% - 1rem) !important; /* Ajuste de bootstrap */
 }
+
+* {
+  margin: 0;
+  padding: 0;
+}

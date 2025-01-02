@@ -32,6 +32,8 @@
 
     <!-- Incluir el Módulo CurrencyConverter -->
     <script src="assets/js/currencyConverter.js"></script>
+    <script src="assets/js/utils.js"></script>
+
 </head>
 <body>
     <?php
