@@ -442,7 +442,16 @@ class AdminController
             }
 
             $descuento = 0; // Implementar lógica de descuentos si es necesario
-            $gastos_envio = 0; // Implementar lógica de gastos de envío si es necesario
+            $gastos_envio = 0; // Implementar lógica de gastos de envío
+
+            // Lógica de gastos de envío
+            $minimo_envio_gratuito = 50.00;
+            if ($subtotal - $descuento >= $minimo_envio_gratuito) {
+                $gastos_envio = 0.00; // Envío gratuito
+            } else {
+                $gastos_envio = 5.00; // Costo fijo de envío
+            }
+
             $total = $subtotal - $descuento + $gastos_envio;
 
             // Crear objeto Pedido
@@ -482,20 +491,20 @@ class AdminController
                         floatval($producto['total_producto'])
                     );
 
-                    $agregado = DetallePedidoDAO::agregarDetallePedido($detalle, $con);
-                    if (!$agregado) {
-                        throw new Exception('Error al agregar los detalles del pedido.');
+                    $resultado_detalle = DetallePedidoDAO::agregarDetallePedido($detalle, $con);
+                    if (!$resultado_detalle) {
+                        throw new Exception('Error al crear el detalle del pedido.');
                     }
                 }
 
-                // Confirmar transacción
+                // Confirmar la transacción
                 $con->commit();
                 $this->logAction("Pedido", "INSERT", $pedidoInsertado->getIdPedido());
                 $this->sendJsonResponse(['status' => 'ok', 'message' => 'Pedido creado exitosamente.']);
             } catch (Exception $e) {
-                // Revertir transacción
+                // Revertir la transacción en caso de error
                 $con->rollback();
-                error_log($e->getMessage());
+                error_log("Error al procesar el pedido: " . $e->getMessage());
                 $this->sendJsonResponse(['status' => 'error', 'message' => 'Error al crear el pedido.']);
             }
 
@@ -538,6 +547,9 @@ class AdminController
             if (empty($direccion)) {
                 $errores['direccion'] = 'La dirección es obligatoria.';
             }
+            if (empty($metodo_pago)) {
+                $errores['metodo_pago'] = 'El método de pago es obligatorio.';
+            }
             if (empty($productos) || !is_array($productos)) {
                 $errores['productos'] = 'Debe agregar al menos un producto al pedido.';
             } else {
@@ -563,8 +575,16 @@ class AdminController
                 $subtotal += floatval($producto['precio_unitario']) * intval($producto['cantidad']);
             }
 
-            $descuento = 0; // Puedes implementar lógica para descuentos
-            $gastos_envio = 0; // Puedes implementar lógica para gastos de envío
+            $descuento = 0; // Implementar lógica de descuentos si es necesario
+
+            // Lógica de gastos de envío
+            $minimo_envio_gratuito = 50.00;
+            if ($subtotal - $descuento >= $minimo_envio_gratuito) {
+                $gastos_envio = 0.00; // Envío gratuito
+            } else {
+                $gastos_envio = 5.00; // Costo fijo de envío
+            }
+
             $total = $subtotal - $descuento + $gastos_envio;
 
             // Crear objeto Pedido
@@ -603,7 +623,6 @@ class AdminController
 
                 // Procesar los productos enviados
                 $productosEnviados = $productos;
-                $productosEnviadosIds = []; // Para tracking si es necesario
 
                 foreach ($productosEnviados as $producto) {
                     // Verificar si el detalle ya existe (por ejemplo, por id_producto)

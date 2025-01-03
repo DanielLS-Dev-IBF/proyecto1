@@ -17,6 +17,88 @@ $(document).ready(function () {
   const savedTab = sessionStorage.getItem("selectedTab");
   const savedCurrency = sessionStorage.getItem("selectedCurrency") || "EUR";
 
+  // Definir los parámetros de envío
+  const MINIMO_ENVIO_GRATUITO = 50.0; // Monto mínimo para envío gratuito en EUR
+  const COSTO_ENVIO = 5.0; // Costo fijo de envío en EUR
+
+  // Función para recalcular los totales en el modal de creación de pedidos
+  function recalcularTotalesModal() {
+    let subtotal = 0;
+    $("#tabla-productos-pedido tbody tr").each(function () {
+      const precioUnitario =
+        parseFloat($(this).find(".precio-unitario").val()) || 0;
+      const cantidad = parseInt($(this).find(".cantidad").val()) || 0;
+      const totalProducto = precioUnitario * cantidad;
+      $(this).find(".total-producto").val(totalProducto.toFixed(2));
+      subtotal += totalProducto;
+    });
+
+    // Calcular gastos de envío
+    let gastosEnvio = 0.0;
+    if (subtotal < MINIMO_ENVIO_GRATUITO) {
+      gastosEnvio = COSTO_ENVIO;
+      $("#gastos_envio_pedido_modal")
+        .removeClass("text-success")
+        .addClass("text-danger");
+    } else {
+      gastosEnvio = 0.0;
+      $("#gastos_envio_pedido_modal")
+        .removeClass("text-danger")
+        .addClass("text-success");
+    }
+
+    // Calcular total
+    const total = subtotal + gastosEnvio;
+
+    // Actualizar los campos en la vista
+    $("#subtotal_pedido_modal").text(subtotal.toFixed(2) + " €");
+    $("#gastos_envio_pedido_modal").text(gastosEnvio.toFixed(2) + " €");
+    $("#total_pedido_modal").text(total.toFixed(2) + " €");
+
+    // Animación de resaltado (opcional)
+    $("#gastos_envio_pedido_modal").fadeOut(100).fadeIn(100);
+    $("#total_pedido_modal").fadeOut(100).fadeIn(100);
+  }
+
+  // Función para recalcular los totales en el modal de edición de pedidos
+  function recalcularTotalesModalEd() {
+    let subtotal = 0;
+    $("#tabla-productos-pedido-ed tbody tr").each(function () {
+      const precioUnitario =
+        parseFloat($(this).find(".precio-unitario").val()) || 0;
+      const cantidad = parseInt($(this).find(".cantidad").val()) || 0;
+      const totalProducto = precioUnitario * cantidad;
+      $(this).find(".total-producto").val(totalProducto.toFixed(2));
+      subtotal += totalProducto;
+    });
+
+    // Calcular gastos de envío
+    let gastosEnvio = 0.0;
+    if (subtotal < MINIMO_ENVIO_GRATUITO) {
+      gastosEnvio = COSTO_ENVIO;
+      $("#gastos_envio_pedido_ed_modal")
+        .removeClass("text-success")
+        .addClass("text-danger");
+    } else {
+      gastosEnvio = 0.0;
+      $("#gastos_envio_pedido_ed_modal")
+        .removeClass("text-danger")
+        .addClass("text-success");
+    }
+
+    // Calcular total
+    const total = subtotal + gastosEnvio;
+
+    // Actualizar los campos en la vista
+    $("#subtotal_pedido_ed_modal").text(subtotal.toFixed(2) + " €");
+    $("#gastos_envio_pedido_ed_modal").text(gastosEnvio.toFixed(2) + " €");
+    $("#total_pedido_ed_modal").text(total.toFixed(2) + " €");
+
+    // Animación de resaltado (opcional)
+    $("#gastos_envio_pedido_ed_modal").fadeOut(100).fadeIn(100);
+    $("#total_pedido_ed_modal").fadeOut(100).fadeIn(100);
+  }
+
   // 1. Definir la función obtenerSimboloMoneda al inicio
   function obtenerSimboloMoneda(moneda) {
     switch (moneda) {
@@ -577,7 +659,20 @@ $(document).ready(function () {
                 </tbody>
               </table>
               <div class="text-end">
-                <h5>Total Pedido: <span id="total_pedido">0.00</span></h5>
+                <table class="table">
+                  <tr>
+                    <th>Subtotal:</th>
+                    <td id="subtotal_pedido_modal">0.00 €</td>
+                  </tr>
+                  <tr>
+                    <th>Gastos de Envío:</th>
+                    <td id="gastos_envio_pedido_modal">0.00 €</td>
+                  </tr>
+                  <tr>
+                    <th>Total:</th>
+                    <td id="total_pedido_modal">0.00 €</td>
+                  </tr>
+                </table>
               </div>
           `,
         `
@@ -717,6 +812,8 @@ $(document).ready(function () {
               });
             },
           });
+          // Después de agregar la fila, recalcular los totales
+          recalcularTotalesModal();
         }
       );
 
@@ -740,7 +837,8 @@ $(document).ready(function () {
         // Asignarlo en la columna de total
         fila.find(".total-producto").attr("value", total.toFixed(2));
 
-        actualizarTotalPedido();
+        // Recalcular los totales
+        recalcularTotalesModal();
       });
 
       // Evento al cambiar la cantidad
@@ -754,7 +852,8 @@ $(document).ready(function () {
         const total = precio * cantidad;
         fila.find(".total-producto").val(total.toFixed(2));
 
-        actualizarTotalPedido();
+        // Recalcular los totales
+        recalcularTotalesModal();
       });
 
       // Delegación de eventos para eliminar productos
@@ -763,19 +862,19 @@ $(document).ready(function () {
         ".btn-eliminar-producto",
         function () {
           $(this).closest("tr").remove();
-          actualizarTotalPedido();
+          recalcularTotalesModal();
         }
       );
 
       // Función para actualizar el total del pedido
-      function actualizarTotalPedido() {
-        const totalGeneral = $("#tabla-productos-pedido tbody tr")
-          .toArray()
-          .map((fila) => parseFloat($(fila).find(".total-producto").val()) || 0)
-          .reduce((acc, curr) => acc + curr, 0);
+      // function actualizarTotalPedido() {
+      //   const totalGeneral = $("#tabla-productos-pedido tbody tr")
+      //     .toArray()
+      //     .map((fila) => parseFloat($(fila).find(".total-producto").val()) || 0)
+      //     .reduce((acc, curr) => acc + curr, 0);
 
-        $("#total_pedido").text(totalGeneral.toFixed(2));
-      }
+      //   $("#total_pedido").text(totalGeneral.toFixed(2));
+      // }
 
       // Manejar el envío del formulario de creación
       $("#form-modalCrearPedido").on("submit", function (e) {
@@ -786,7 +885,12 @@ $(document).ready(function () {
         const id_usuario = $("#id_usuario_select").val().trim();
         const direccion = $("#direccion_select").val().trim();
         const metodo_pago = $("#metodo_pago").val();
-        const total_pedido = parseFloat($("#total_pedido").text()) || 0;
+
+        // Obtener los totales
+        const subtotal = parseFloat($("#subtotal_pedido_modal").text()) || 0;
+        const gastosEnvio =
+          parseFloat($("#gastos_envio_pedido_modal").text()) || 0;
+        const total = parseFloat($("#total_pedido_modal").text()) || 0;
 
         if (!id_usuario) {
           Swal.fire({
@@ -889,6 +993,9 @@ $(document).ready(function () {
           telefono: $("#telefono").val().trim(),
           correo: $("#correo").val().trim(),
           metodo_pago,
+          subtotal,
+          gastos_envio: gastosEnvio,
+          total,
           productos,
         };
 
@@ -1057,7 +1164,20 @@ $(document).ready(function () {
                 </tbody>
               </table>
               <div class="text-end">
-                <h5>Total Pedido:<span id="total_pedido_ed">0.00</span></h5>
+                <table class="table">
+                  <tr>
+                    <th>Subtotal:</th>
+                    <td id="subtotal_pedido_ed_modal">0.00 €</td>
+                  </tr>
+                  <tr>
+                    <th>Gastos de Envío:</th>
+                    <td id="gastos_envio_pedido_ed_modal">0.00 €</td>
+                  </tr>
+                  <tr>
+                    <th>Total:</th>
+                    <td id="total_pedido_ed_modal">0.00 €</td>
+                  </tr>
+                </table>
               </div>
           `,
         `
@@ -1119,10 +1239,11 @@ $(document).ready(function () {
       attachEditarPedidoEvents(productosDisponibles);
 
       // 4) Manejar el "submit" => updatePedido
+      // Manejar el envío del formulario de edición
       $("#form-" + modalId).on("submit", function (e) {
         e.preventDefault();
 
-        // Similar a tu create: recolectar datos, validar, mandar AJAX
+        // Recolectar datos
         const id_pedido = pedido.id_pedido;
         const id_usuario = $("#id_usuario_select_ed").val();
         const direccion = $("#direccion_ed").val().trim();
@@ -1130,51 +1251,122 @@ $(document).ready(function () {
         const correo = $("#correo_ed").val().trim();
         const metodo_pago = $("#metodo_pago_ed").val();
 
-        // Recolectar productos del #tabla-productos-pedido-ed
-        let productos = [];
-        let valid = true;
+        // Obtener los totales
+        const subtotal = parseFloat($("#subtotal_pedido_ed_modal").text()) || 0;
+        const gastosEnvio =
+          parseFloat($("#gastos_envio_pedido_ed_modal").text()) || 0;
+        const total = parseFloat($("#total_pedido_ed_modal").text()) || 0;
 
-        $("#tabla-productos-pedido-ed tbody tr").each(function (index) {
-          const id_prod = $(this).find(".producto-select-ed").val();
-          const nombre_prod = $(this)
+        // Validaciones
+        if (!id_usuario) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "El ID de usuario es obligatorio.",
+          });
+          return;
+        }
+
+        if (!direccion) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "La dirección es obligatoria.",
+          });
+          return;
+        }
+
+        if (!metodo_pago) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Debes seleccionar un método de pago.",
+          });
+          return;
+        }
+
+        if ($("#tabla-productos-pedido-ed tbody tr").length === 0) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Debes agregar al menos un producto al pedido.",
+          });
+          return;
+        }
+
+        // Obtener todas las filas de productos
+        const filas = $("#tabla-productos-pedido-ed tbody tr").toArray();
+
+        // Mapear cada fila a un objeto de producto
+        const productos = filas.map((fila, index) => {
+          const $fila = $(fila);
+          const id_producto = $fila.find(".producto-select-ed").val();
+          const nombre_producto = $fila
             .find(".producto-select-ed option:selected")
             .text();
           const precio_unitario =
-            parseFloat($(this).find(".precio-unitario").val()) || 0;
-          const cant = parseInt($(this).find(".cantidad").val()) || 0;
-          const total_prod =
-            parseFloat($(this).find(".total-producto").val()) || 0;
+            parseFloat($fila.find(".precio-unitario").val()) || 0;
+          const cantidad = parseInt($fila.find(".cantidad").val()) || 0;
+          const total_producto =
+            parseFloat($fila.find(".total-producto").val()) || 0;
 
-          if (!id_prod || cant <= 0) {
-            valid = false;
-            Swal.fire("Error", `Revisa la fila ${index + 1}`, "error");
-            return false; // break
-          }
-          productos.push({
-            id_producto: id_prod,
-            nombre_producto: nombre_prod,
+          return {
+            id_producto,
+            nombre_producto,
             precio_unitario,
-            cantidad: cant,
-            total_producto: total_prod,
-          });
+            cantidad,
+            total_producto,
+            index: index + 1,
+          };
         });
 
-        if (!valid) return;
+        // Filtrar los productos que tienen datos inválidos
+        const productosInvalidos = productos.filter((producto) => {
+          if (!producto.id_producto) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: `El producto en la fila ${producto.index} no está seleccionado.`,
+            });
+            return true;
+          }
 
-        // Estructura final a enviar
+          if (producto.cantidad <= 0) {
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: `La cantidad en la fila ${producto.index} debe ser mayor a cero.`,
+            });
+            return true;
+          }
+
+          return false;
+        });
+
+        // Verificar si hay productos inválidos
+        if (productosInvalidos.length > 0) {
+          return; // Detener el proceso si hay errores
+        }
+
+        // Deshabilitar el botón de actualizar para prevenir múltiples clics
+        const $submitButton = $("#btn-update-pedido");
+        $submitButton.prop("disabled", true).text("Actualizando...");
+
+        // Construir el objeto de pedido
         const pedidoData = {
           id_pedido,
           id_usuario,
           direccion,
-          telefono,
-          correo,
+          telefono: $("#telefono_ed").val().trim(),
+          correo: $("#correo_ed").val().trim(),
           metodo_pago,
+          subtotal,
+          gastos_envio: gastosEnvio,
+          total,
           productos,
         };
 
-        // AJAX a updatePedido
-        $("#btn-update-pedido").prop("disabled", true).text("Actualizando...");
-
+        // Solicitud AJAX para actualizar el pedido
         $.ajax({
           url: "index.php?controller=admin&action=updatePedido",
           type: "POST",
@@ -1210,16 +1402,14 @@ $(document).ready(function () {
                   text: response.message,
                 });
               }
-              $("#btn-update-pedido")
-                .prop("disabled", false)
-                .text("Actualizar");
+              $submitButton.prop("disabled", false).text("Actualizar");
             }
           },
           error: function (xhr, status, error) {
             console.error("Error AJAX:", status, error);
             console.error("Respuesta del servidor:", xhr.responseText);
             Swal.fire("Error", "Ocurrió un error inesperado.", "error");
-            $("#btn-update-pedido").prop("disabled", false).text("Actualizar");
+            $submitButton.prop("disabled", false).text("Actualizar");
           },
         });
       });
@@ -1280,7 +1470,7 @@ $(document).ready(function () {
       });
 
       // Calcular total inicial
-      recalcularTotalEd();
+      recalcularTotalesModalEd();
     }
 
     function attachEditarPedidoEvents(productosDisponibles) {
@@ -1330,7 +1520,8 @@ $(document).ready(function () {
         $fila.find(".precio-unitario").val(precio.toFixed(2));
         $fila.find(".total-producto").val(total.toFixed(2));
 
-        recalcularTotalEd();
+        // Recalcular los totales
+        recalcularTotalesModalEd();
       });
 
       // Handler: al cambiar la cantidad
@@ -1342,25 +1533,17 @@ $(document).ready(function () {
           const precio = parseFloat($fila.find(".precio-unitario").val()) || 0;
           const cant = parseInt($(this).val()) || 0;
           $fila.find(".total-producto").val((precio * cant).toFixed(2));
-          recalcularTotalEd();
+          // Recalcular los totales
+          recalcularTotalesModalEd();
         }
       );
 
       // Handler: eliminar producto
       $(document).on("click", ".btn-eliminar-producto-ed", function () {
         $(this).closest("tr").remove();
-        recalcularTotalEd();
+        // Recalcular los totales
+        recalcularTotalesModalEd();
       });
-    }
-
-    // Función de recalcular total en edición
-    function recalcularTotalEd() {
-      let total = 0;
-      $("#tabla-productos-pedido-ed tbody tr").each(function () {
-        const sub = parseFloat($(this).find(".total-producto").val()) || 0;
-        total += sub;
-      });
-      $("#total_pedido_ed").text(total.toFixed(2));
     }
 
     $("#tabla-pedidos tbody").on("click", ".btn-borrar-pedido", function () {

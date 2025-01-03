@@ -88,7 +88,7 @@ include_once "views/TopNav.php";
                 // Botón para cargar el último pedido
                 ?>
                 <form action="index.php?controller=carrito&action=cargarUltimoPedido" method="post" class="mb-4">
-                    <button type="submit" class="btn btn-primary">Cargar Último Pedido en el Carrito</button>
+                    <button type="submit" class="btn-hover">Cargar Último Pedido en el Carrito</button>
                 </form>
                 <?php
 
