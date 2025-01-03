@@ -156,56 +156,84 @@ class PedidoDAO {
      */
     public static function obtenerPedidosPorUsuarioPaginados($id_usuario, $limit, $offset) {
         $con = DataBase::connect();
-        $sql = "SELECT p.*, dp.nombre_producto, dp.precio_unitario, dp.cantidad, dp.total_producto
-                FROM Pedidos p
-                LEFT JOIN Detalles_pedidos dp ON p.id_pedido = dp.id_pedido
-                WHERE p.id_usuario = ?
-                ORDER BY p.fecha_pedido DESC, dp.id_detalle_pedido ASC
-                LIMIT ? OFFSET ?";
-        $stmt = $con->prepare($sql);
-        if (!$stmt) {
-            error_log("Error preparando la consulta: " . $con->error);
+    
+        // Paso 1: Obtener los pedidos paginados
+        $sql_pedidos = "SELECT * FROM Pedidos WHERE id_usuario = ? ORDER BY fecha_pedido DESC LIMIT ? OFFSET ?";
+        $stmt_pedidos = $con->prepare($sql_pedidos);
+        if (!$stmt_pedidos) {
+            error_log("Error preparando la consulta de pedidos: " . $con->error);
             return [];
         }
-
-        $stmt->bind_param("iii", $id_usuario, $limit, $offset);
-        if (!$stmt->execute()) {
-            error_log("Error ejecutando la consulta: " . $stmt->error);
-            $stmt->close();
+        $stmt_pedidos->bind_param("iii", $id_usuario, $limit, $offset);
+        if (!$stmt_pedidos->execute()) {
+            error_log("Error ejecutando la consulta de pedidos: " . $stmt_pedidos->error);
+            $stmt_pedidos->close();
             $con->close();
             return [];
         }
-
-        $result = $stmt->get_result();
+        $result_pedidos = $stmt_pedidos->get_result();
         $pedidos = [];
-        while ($row = $result->fetch_assoc()) {
+        $pedido_ids = [];
+        while ($row = $result_pedidos->fetch_assoc()) {
             $pedido_id = $row['id_pedido'];
-            if (!isset($pedidos[$pedido_id])) {
-                $pedidos[$pedido_id] = [
-                    'id_pedido' => $pedido_id,
-                    'fecha_pedido' => $row['fecha_pedido'],
-                    'total' => $row['total'],
-                    'direccion' => $row['direccion'],
-                    'metodo_pago' => $row['metodo_pago'],
-                    'detalles_pago' => $row['detalles_pago'],
-                    'detalles' => []
-                ];
-            }
-
-            if ($row['nombre_producto']) {
-                $pedidos[$pedido_id]['detalles'][] = [
-                    'nombre_producto' => $row['nombre_producto'],
-                    'precio_unitario' => $row['precio_unitario'],
-                    'cantidad' => $row['cantidad'],
-                    'total_producto' => $row['total_producto']
-                ];
-            }
+            $pedidos[$pedido_id] = [
+                'id_pedido' => $pedido_id,
+                'fecha_pedido' => $row['fecha_pedido'],
+                'total' => $row['total'],
+                'direccion' => $row['direccion'],
+                'metodo_pago' => $row['metodo_pago'],
+                'detalles_pago' => $row['detalles_pago'],
+                'detalles' => []
+            ];
+            $pedido_ids[] = $pedido_id;
         }
-
-        $stmt->close();
+        $stmt_pedidos->close();
+    
+        if (!empty($pedido_ids)) {
+            // Paso 2: Obtener todos los detalles para los pedidos obtenidos
+            $placeholders = implode(',', array_fill(0, count($pedido_ids), '?'));
+            $sql_detalles = "SELECT dp.*, pr.nombre AS nombre_producto 
+                             FROM Detalles_pedidos dp 
+                             LEFT JOIN Producto pr ON dp.id_producto = pr.id_producto 
+                             WHERE dp.id_pedido IN ($placeholders) 
+                             ORDER BY dp.id_detalle_pedido ASC";
+            $stmt_detalles = $con->prepare($sql_detalles);
+            if (!$stmt_detalles) {
+                error_log("Error preparando la consulta de detalles: " . $con->error);
+                $con->close();
+                return array_values($pedidos);
+            }
+    
+            // Crear el tipo de parámetros para bind_param
+            $types = str_repeat('i', count($pedido_ids)); // 'i' para enteros
+            $stmt_detalles->bind_param($types, ...$pedido_ids);
+    
+            if (!$stmt_detalles->execute()) {
+                error_log("Error ejecutando la consulta de detalles: " . $stmt_detalles->error);
+                $stmt_detalles->close();
+                $con->close();
+                return array_values($pedidos);
+            }
+    
+            $result_detalles = $stmt_detalles->get_result();
+            while ($row = $result_detalles->fetch_assoc()) {
+                $pedido_id = $row['id_pedido'];
+                if (isset($pedidos[$pedido_id])) {
+                    $pedidos[$pedido_id]['detalles'][] = [
+                        'nombre_producto' => $row['nombre_producto'],
+                        'precio_unitario' => $row['precio_unitario'],
+                        'cantidad' => $row['cantidad'],
+                        'total_producto' => $row['total_producto']
+                    ];
+                }
+            }
+            $stmt_detalles->close();
+        }
+    
         $con->close();
         return array_values($pedidos); // Reindexar array
-    }
+    }    
+    
 
     /**
      * Contar el total de pedidos de un usuario.
@@ -221,7 +249,7 @@ class PedidoDAO {
             error_log("Error preparando la consulta: " . $con->error);
             return 0;
         }
-
+    
         $stmt->bind_param("i", $id_usuario);
         if (!$stmt->execute()) {
             error_log("Error ejecutando la consulta: " . $stmt->error);
@@ -229,16 +257,16 @@ class PedidoDAO {
             $con->close();
             return 0;
         }
-
+    
         $result = $stmt->get_result();
         $fila = $result->fetch_assoc();
         $total = isset($fila['total']) ? (int)$fila['total'] : 0;
-
+    
         $stmt->close();
         $con->close();
-
+    
         return $total;
-    }
+    }    
 
     /**
      * Obtener pedidos completos de un usuario (sin paginación).

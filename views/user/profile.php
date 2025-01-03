@@ -94,8 +94,7 @@ include_once "views/TopNav.php";
 
                 // Mostrar la lista de pedidos con paginación
                 if (isset($pedidos) && !empty($pedidos)) {
-                    foreach ($pedidos as $pedido) {
-                        ?>
+                    foreach ($pedidos as $pedido): ?>
                         <div class="card mb-4">
                             <div class="card-header fw-semibold">
                                 Pedido del <?= htmlspecialchars($pedido['fecha_pedido']) ?>
@@ -143,8 +142,8 @@ include_once "views/TopNav.php";
                                 </div>
                             </div>
                         </div>
-                        <?php
-                    }
+                    <?php endforeach; ?>
+                    <?php
 
                     // Implementar la paginación
                     if (isset($totalPaginas) && $totalPaginas > 1):

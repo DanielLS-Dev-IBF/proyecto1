@@ -266,33 +266,33 @@ class UsuarioController {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-
+    
         if (!isset($_SESSION['id_usuario'])) {
             $_SESSION['error'] = "Debes iniciar sesión para ver tus pedidos.";
             header('Location: index.php?controller=usuario&action=login');
             exit();
         }
-
+    
         $usuario_id = $_SESSION['id_usuario'];
-
+    
         // Obtener la información del usuario
         $usuario = UsuarioDAO::obtenerUsuarioPorId($usuario_id);
-
+    
         if ($usuario) {
             // Obtener direcciones del usuario
             $direcciones = DireccionDAO::getDireccionesByUsuario($usuario_id);
-
+    
             // Implementación de Paginación
             // Parámetros de Paginación
             $currentPage = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
             $limit = 2; // Pedidos por página
             $offset = ($currentPage - 1) * $limit;
-
+    
             // Obtener el total de pedidos
             $totalPedidos = PedidoDAO::contarPedidosPorUsuario($usuario_id);
             $totalPaginas = ceil($totalPedidos / $limit);
             if ($totalPaginas < 1) $totalPaginas = 1;
-
+    
             // Asegurarse de que la página actual está dentro de los límites
             if ($currentPage > $totalPaginas) {
                 $currentPage = $totalPaginas;
@@ -302,10 +302,10 @@ class UsuarioController {
                 $currentPage = 1;
                 $offset = 0;
             }
-
+    
             // Obtener los pedidos paginados
             $pedidos = PedidoDAO::obtenerPedidosPorUsuarioPaginados($usuario_id, $limit, $offset);
-
+    
             // Pasar variables a la vista
             $view = 'views/user/profile.php';
             include_once 'views/main.php';
@@ -313,7 +313,7 @@ class UsuarioController {
             http_response_code(404);
             echo "Usuario no encontrado.";
         }
-    }
+    }    
 
     public function update() {
         if (session_status() == PHP_SESSION_NONE) {

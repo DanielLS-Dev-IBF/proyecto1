@@ -1196,8 +1196,6 @@ $(document).ready(function () {
         method: "GET",
         dataType: "json",
         success: function (usuarios) {
-          console.log("Usuarios recibidos (Editar Pedido):", usuarios); // Depuración
-
           if (!Array.isArray(usuarios)) {
             console.error("La respuesta no es un array.");
             Swal.fire(
