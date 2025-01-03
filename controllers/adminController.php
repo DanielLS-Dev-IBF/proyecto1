@@ -581,7 +581,17 @@ class AdminController
 
             $total = $subtotal - $descuento + $gastos_envio;
 
-            // Crear objeto Pedido
+            // Obtener el pedido existente para preservar 'detalles_pago'
+            $pedido_existente = PedidoDAO::getPedidoById($id_pedido);
+            if (!$pedido_existente) {
+                $this->sendJsonResponse(['status' => 'error', 'message' => 'Pedido no encontrado.']);
+                return;
+            }
+
+            // Preservar 'detalles_pago' del pedido existente
+            $detalles_pago = $pedido_existente->getDetallesPago(); // Asegúrate de que este método existe en la clase Pedido
+
+            // Crear objeto Pedido con los datos actualizados y 'detalles_pago' preservado
             $pedido = new Pedido(
                 $id_usuario,
                 '', // nombre_completo si es necesario
@@ -589,7 +599,7 @@ class AdminController
                 $telefono,
                 $correo,
                 $metodo_pago,
-                '', // detalles_pago si es necesario
+                $detalles_pago, // Preservar 'detalles_pago'
                 $subtotal,
                 $descuento,
                 $gastos_envio,
@@ -604,21 +614,19 @@ class AdminController
 
             try {
                 // Actualizar pedido
-                $pedidoActualizado = PedidoDAO::updatePedido($pedido, $con); // Modificar para aceptar conexión
+                $pedidoActualizado = PedidoDAO::updatePedido($pedido, $con); // Asegúrate de que este método acepta la conexión
                 if (!$pedidoActualizado) {
                     throw new Exception('Error al actualizar el pedido.');
                 }
 
                 // Obtener detalles actuales del pedido
-                $detallesActuales = DetallePedidoDAO::obtenerDetallesPorPedido($id_pedido, $con); // Modificar para aceptar conexión
+                $detallesActuales = DetallePedidoDAO::obtenerDetallesPorPedido($id_pedido, $con); // Asegúrate de que este método acepta la conexión
                 $detallesActualesIds = array_map(function($detalle) {
-                    return $detalle->getIdPedido();
+                    return $detalle->getIdPedido(); // Asegúrate de que este método existe
                 }, $detallesActuales);
 
                 // Procesar los productos enviados
-                $productosEnviados = $productos;
-
-                foreach ($productosEnviados as $producto) {
+                foreach ($productos as $producto) {
                     // Verificar si el detalle ya existe (por ejemplo, por id_producto)
                     $detalleExistente = null;
                     foreach ($detallesActuales as $detalle) {
@@ -653,7 +661,7 @@ class AdminController
                             floatval($producto['total_producto'])
                         );
 
-                        $agregado = DetallePedidoDAO::agregarDetallePedido($detalleNuevo, $con); // Modificar para aceptar conexión
+                        $agregado = DetallePedidoDAO::agregarDetallePedido($detalleNuevo, $con); // Implementar en DetallePedidoDAO
                         if (!$agregado) {
                             throw new Exception('Error al agregar un nuevo detalle al pedido.');
                         }
