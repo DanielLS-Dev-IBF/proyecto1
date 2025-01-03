@@ -1,9 +1,6 @@
 <?php
 // models/DetallePedidoDAO.php
 
-include_once("config/db.php");
-include_once("DetallePedido.php");
-
 class DetallePedidoDAO {
     /**
      * Agregar un detalle de pedido a la base de datos

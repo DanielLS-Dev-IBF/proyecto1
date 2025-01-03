@@ -1,12 +1,6 @@
 <?php
 // controllers/adminController.php
 
-include_once 'models/UsuarioDAO.php';
-include_once 'models/PedidoDAO.php';
-include_once 'models/DetallePedidoDAO.php';
-include_once 'models/ProductoDAO.php';
-include_once 'models/DireccionDAO.php';
-
 class AdminController
 {
     public function __construct()
@@ -936,6 +930,26 @@ class AdminController
         header('Content-Type: application/json');
         echo json_encode($logs);
     }
+
+    public function testAutoload()
+    {
+        if (class_exists('DataBase')) {
+            echo "La clase DataBase se ha cargado correctamente.";
+        } else {
+            echo "La clase DataBase no se ha podido cargar.";
+        }
+    }
+    public function testDataBase()
+{
+    try {
+        $con = DataBase::connect();
+        if ($con) {
+            echo "Conexión exitosa.";
+        }
+    } catch (Exception $e) {
+        echo "Error en DataBase::connect(): " . $e->getMessage();
+    }
+}
 
 
 

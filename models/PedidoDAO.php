@@ -1,9 +1,6 @@
 <?php
 // models/PedidoDAO.php
 
-include_once("config/db.php");
-include_once("Pedido.php");
-
 class PedidoDAO {
     public static function getPedidoById($id_pedido, $con = null) {
         $ownConnection = false;

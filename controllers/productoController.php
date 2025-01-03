@@ -1,6 +1,4 @@
 <?php
-include_once("models/ProductoDAO.php");
-include_once("models/Producto.php");
 
 class productoController {
     public function index(){

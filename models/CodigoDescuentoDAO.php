@@ -1,8 +1,6 @@
 <?php
 // models/CodigoDescuentoDAO.php
 
-include_once("config/db.php");
-
 class CodigoDescuentoDAO {
 
     // Obtener descuento por código

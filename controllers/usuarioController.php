@@ -1,11 +1,6 @@
 <?php
 // controllers/UsuarioController.php
 
-include_once("models/UsuarioDAO.php");
-include_once("models/Usuario.php");
-include_once("models/PedidoDAO.php");
-include_once("models/DireccionDAO.php");
-
 class UsuarioController {
     public function index() {
         header('Location: index.php?controller=usuario&action=login');

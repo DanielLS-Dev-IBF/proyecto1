@@ -1,10 +1,8 @@
 <?php
 session_start();
 
-// Importación de archivos necesarios
-foreach (glob("controllers/*Controller.php") as $file) {
-    include_once $file;
-}
+// Incluir el autoloader
+require_once __DIR__ . '/autoload.php';
 include_once("config/parameters.php");
 
 // Controlador y acción por defecto

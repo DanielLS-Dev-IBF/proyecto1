@@ -1,9 +1,6 @@
 <?php
 // models/DireccionDAO.php
 
-include_once("config/db.php");
-include_once("Direccion.php");
-
 class DireccionDAO {
     /**
      * Obtener todas las direcciones de un usuario

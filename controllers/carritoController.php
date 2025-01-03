@@ -1,14 +1,6 @@
 <?php
 // controllers/carritoController.php
 
-include_once("models/CodigoDescuentoDAO.php");
-include_once("models/PedidoDAO.php");
-include_once("models/DetallePedidoDAO.php");
-include_once("models/Pedido.php");
-include_once("models/DetallePedido.php");
-include_once("models/UsuarioDAO.php"); // Asegúrate de tener este archivo
-include_once("models/DireccionDAO.php"); // Asegúrate de tener este archivo
-
 class carritoController {
     public function __construct() {
         if (session_status() == PHP_SESSION_NONE) {

@@ -1,6 +1,4 @@
 <?php
-include_once("Producto.php");
-include_once("config/db.php");
 
 class ProductoDAO {
     // Obtener todos los productos ordenados alfabéticamente
