@@ -1,3 +1,4 @@
+// assets/js/main.js
 $(document).ready(function () {
   let currentDataTable = null;
 

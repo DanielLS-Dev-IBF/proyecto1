@@ -1,4 +1,4 @@
-// utils.js
+// assets/js/utils.js
 
 /**
  * Función helper para realizar peticiones HTTP usando fetch.
