@@ -30,7 +30,7 @@ CREATE TABLE `Usuario_Descuento` (
   KEY `id_codigo_descuento` (`id_codigo_descuento`),
   CONSTRAINT `Usuario_Descuento_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuario` (`id_usuario`),
   CONSTRAINT `Usuario_Descuento_ibfk_2` FOREIGN KEY (`id_codigo_descuento`) REFERENCES `Codigo_Descuento` (`id_codigo_descuento`)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-04 18:24:42
+-- Dump completed on 2025-01-04 19:58:07
