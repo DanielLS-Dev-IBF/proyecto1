@@ -1,4 +1,5 @@
-<!-- views/user/login.php -->
+<!-- views/productos/show.php -->
+
 <!-- Luego, el CSS personalizado -->
 <link rel="stylesheet" href="css/Login.css">
 <main class="position-relative d-flex align-items-center justify-content-center">

@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `Proyecto1` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `Proyecto1`;
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: Proyecto1
@@ -35,7 +33,7 @@ CREATE TABLE `Detalles_pedidos` (
   PRIMARY KEY (`id_detalle_pedido`),
   KEY `id_pedido` (`id_pedido`),
   CONSTRAINT `Detalles_pedidos_ibfk_1` FOREIGN KEY (`id_pedido`) REFERENCES `Pedidos` (`id_pedido`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -44,7 +42,7 @@ CREATE TABLE `Detalles_pedidos` (
 
 LOCK TABLES `Detalles_pedidos` WRITE;
 /*!40000 ALTER TABLE `Detalles_pedidos` DISABLE KEYS */;
-INSERT INTO `Detalles_pedidos` VALUES (29,22,21,'Brownie de Harina de Almendra',5.00,1,5.00),(30,23,25,'Bowl de Acai y Frutas',7.50,1,7.50),(38,29,20,'Chía Pudding de Coco',3.99,1,3.99),(42,31,25,'Bowl de Acai y Frutas',7.50,2,15.00),(45,33,26,'Bowl de Pollo al Curry',9.25,5,46.25),(48,31,26,'Bowl de Pollo al Curry',9.25,3,27.75),(49,29,21,'Brownie de Harina de Almendra',5.00,1,5.00),(50,34,26,'Bowl de Pollo al Curry',9.25,4,37.00),(51,35,26,'Bowl de Pollo al Curry',9.25,10,92.50),(52,35,9,'Jugo Detox de Remolacha',4.25,4,17.00),(53,35,17,'Barra Energética de Dátiles',3.75,2,7.50),(55,36,9,'Jugo Detox de Remolacha',4.25,4,17.00),(56,36,17,'Barra Energética de Dátiles',3.75,2,7.50),(57,37,20,'Chía Pudding de Coco',3.99,1,3.99),(58,37,21,'Brownie de Harina de Almendra',5.00,1,5.00),(59,37,32,'Bowl de Poke de Atún',11.50,5,57.50);
+INSERT INTO `Detalles_pedidos` VALUES (29,22,21,'Brownie de Harina de Almendra',5.00,1,5.00),(30,23,25,'Bowl de Acai y Frutas',7.50,1,7.50),(38,29,20,'Chía Pudding de Coco',3.99,1,3.99),(42,31,25,'Bowl de Acai y Frutas',7.50,2,15.00),(45,33,26,'Bowl de Pollo al Curry',9.25,5,46.25),(48,31,26,'Bowl de Pollo al Curry',9.25,3,27.75),(49,29,21,'Brownie de Harina de Almendra',5.00,1,5.00),(50,34,26,'Bowl de Pollo al Curry',9.25,4,37.00),(51,35,26,'Bowl de Pollo al Curry',9.25,10,92.50),(52,35,9,'Jugo Detox de Remolacha',4.25,4,17.00),(53,35,17,'Barra Energética de Dátiles',3.75,2,7.50),(55,36,9,'Jugo Detox de Remolacha',4.25,4,17.00),(56,36,17,'Barra Energética de Dátiles',3.75,2,7.50),(57,37,20,'Chía Pudding de Coco',3.99,1,3.99),(58,37,21,'Brownie de Harina de Almendra',5.00,1,5.00),(59,37,32,'Bowl de Poke de Atún',11.50,5,57.50),(60,38,9,'Jugo Detox de Remolacha',4.25,4,17.00),(61,38,17,'Barra Energética de Dátiles',3.75,2,7.50),(62,38,31,'Bowl de Buda con Hummus',7.99,1,7.99),(63,38,32,'Bowl de Poke de Atún',11.50,1,11.50),(64,39,26,'Bowl de Pollo al Curry',9.25,2,18.50),(65,39,7,'Agua de Coco Natural',3.50,1,3.50);
 /*!40000 ALTER TABLE `Detalles_pedidos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -57,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-01-03 13:34:07
+-- Dump completed on 2025-01-04 18:24:42
