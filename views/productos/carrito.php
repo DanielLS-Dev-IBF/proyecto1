@@ -1,3 +1,5 @@
+<!-- views/productos/carrito.php -->
+
 <?php include_once "views/TopNav.php"; ?>
 
 <?php

@@ -8,7 +8,7 @@ class Usuario {
     private $password;
     private $telefono;
     private $fecha_registro;
-    private $rol; // <--- NUEVO ATRIBUTO
+    private $rol;
 
     // Constructor vacío
     public function __construct() {
@@ -41,7 +41,7 @@ class Usuario {
     }
 
     public function getRol() {
-        return $this->rol; // <--- GETTER PARA ROL
+        return $this->rol;
     }
 
     // Setters
@@ -70,7 +70,7 @@ class Usuario {
     }
 
     public function setRol($rol) {
-        $this->rol = $rol; // <--- SETTER PARA ROL
+        $this->rol = $rol;
     }
 }
 ?>

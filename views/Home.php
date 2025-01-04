@@ -1,4 +1,5 @@
 
+<!-- views/Home.php -->
 <link rel="stylesheet" href="css/Home.css">
 <?php include_once "TopNav.php"; ?>
 <main>

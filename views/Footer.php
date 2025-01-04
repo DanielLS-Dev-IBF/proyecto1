@@ -1,3 +1,4 @@
+<!-- views/Footer.php -->
 <footer class="footer">
     <div class="container">
         <!-- Logo y selección de idioma -->
@@ -46,8 +47,8 @@
             <div class="footer-column">
                 <span class="footer-title">COMENZAR</span>
                 <ul class="list-unstyled">
-                    <li><a href="#"><span>Regístrate gratis</span></a></li>
-                    <li><a href="#"><span>Iniciar sesión</span></a></li>
+                    <li><a href="?controller=usuario&action=register"><span>Regístrate gratis</span></a></li>
+                    <li><a href="?controller=usuario&action=login"><span>Iniciar sesión</span></a></li>
                 </ul>
             </div>
         </div>

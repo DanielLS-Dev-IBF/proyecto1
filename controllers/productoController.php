@@ -1,4 +1,5 @@
 <?php
+// controllers/carritoController.php
 
 class productoController {
     public function index(){
@@ -97,11 +98,9 @@ class productoController {
         $precio_base = $_POST['precio_base'];
         $img = $_POST['img']; // Asegúrate de manejar la subida de archivos correctamente
         $tipo = $_POST['tipo'];
-        $volumen = isset($_POST['volumen']) ? $_POST['volumen'] : null;
-        $calorias = isset($_POST['calorias']) ? $_POST['calorias'] : null;
 
         // Crear un nuevo objeto Producto
-        $producto = new Producto(null, $nombre, $descripcion, $precio_base, $img, $tipo, $volumen, $calorias);
+        $producto = new Producto(null, $nombre, $descripcion, $precio_base, $img, $tipo);
 
         // Almacenar el producto en la base de datos
         ProductoDAO::store($producto);

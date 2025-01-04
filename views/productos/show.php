@@ -1,3 +1,4 @@
+<!-- views/productos/show.php -->
 <?php include_once "views/TopNav.php"; ?>
 <div class="container my-5 product-detail-container position-relative page-show">
     <!-- Botón de volver con flecha -->
