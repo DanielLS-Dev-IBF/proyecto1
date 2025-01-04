@@ -66,7 +66,7 @@
                 
                 <!-- Botón antes de la imagen -->
                  <div>
-                    <a class="btn-hover mb-3" href="">Que empiece la magia</a>
+                    <a class="btn-hover mb-3" href="?controller=Producto&action=carta">Que empiece la magia</a>
                  </div>
                 
                 <!-- Imagen debajo del botón -->
@@ -81,13 +81,15 @@
 
 
 
-    <section class="container text-center my-5">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-10 col-lg-8">
-                <h1 class="display-4">Acerca de nuestros</h1>
-                <h1 class="display-4">ingredientes</h1>
-                <p class="lead">Descubre más acerca de nuestros ingredientes y su procedencia</p>
-                <a class="btn-hover" href="">Descubrir más</a>
+    <section class="ingredientes-section">
+        <div class="container text-center my-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <h1 class="display-4">Acerca de nuestros</h1>
+                    <h1 class="display-4">ingredientes</h1>
+                    <p class="lead">Descubre más acerca de nuestros ingredientes y su procedencia</p>
+                    <a class="btn-hover" href="?controller=Producto&action=carta">Descubrir más</a>
+                </div>
             </div>
         </div>
     </section>

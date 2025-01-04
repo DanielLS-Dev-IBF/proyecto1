@@ -5,3 +5,16 @@ footer,
 header {
   background-color: var(--secondary-color) !important;
 }
+
+/* Estilo específico para la sección "Acerca de nuestros ingredientes" */
+.ingredientes-section {
+  background-color: #005d13; /* Color de fondo solicitado */
+  color: #ffffff; /* Color de texto blanco para mejor contraste */
+  padding: 2rem 0; /* Espaciado interno opcional */
+}
+
+/* Asegúrate de que los enlaces y otros elementos tengan colores apropiados */
+.ingredientes-section a {
+  background-color: var(--secondary-color) !important; /* Enlaces en blanco */
+  color: black;
+}
